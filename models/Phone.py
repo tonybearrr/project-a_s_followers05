@@ -11,9 +11,9 @@ from .Field import Field
 class Phone(Field):
     """
     Phone number field with validation.
-    
+
     Validates that phone numbers are exactly 10 digits and contain only numbers.
-    
+
     Attributes:
         value (str): The validated phone number
     """
@@ -21,10 +21,10 @@ class Phone(Field):
     def __init__(self, value):
         """
         Initialize a phone field with validation.
-        
+
         Args:
             value (str): Phone number to validate and store
-            
+
         Raises:
             ValueError: If phone number is not 10 digits or contains non-numeric characters
         """

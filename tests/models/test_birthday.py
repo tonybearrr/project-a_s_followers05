@@ -8,7 +8,6 @@ from datetime import date
 from models.Birthday import Birthday
 
 
-
 class TestBirthday:
     """Test suite for the Birthday class."""
 
