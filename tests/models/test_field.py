@@ -7,7 +7,6 @@ This module contains tests for the base Field class functionality.
 from models.Field import Field
 
 
-
 class TestField:
     """Test suite for the Field class."""
 

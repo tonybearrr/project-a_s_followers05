@@ -11,9 +11,9 @@ from .Field import Field
 class Name(Field):
     """
     Name field with validation.
-    
+
     Validates that names are not empty.
-    
+
     Attributes:
         value (str): The validated name
     """
@@ -21,10 +21,10 @@ class Name(Field):
     def __init__(self, value):
         """
         Initialize a name field with validation.
-        
+
         Args:
             value (str): Name to validate and store
-            
+
         Raises:
             ValueError: If name is empty
         """

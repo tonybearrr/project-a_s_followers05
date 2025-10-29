@@ -12,9 +12,9 @@ from .Field import Field
 class Birthday(Field):
     """
     Birthday field with validation.
-    
+
     Validates that dates are in DD.MM.YYYY format and converts them to date objects.
-    
+
     Attributes:
         value (date): The validated birthday date
     """
@@ -22,10 +22,10 @@ class Birthday(Field):
     def __init__(self, value):
         """
         Initialize a birthday field with validation.
-        
+
         Args:
             value (str): Birthday date in DD.MM.YYYY format
-            
+
         Raises:
             ValueError: If date format is invalid
         """
@@ -38,7 +38,7 @@ class Birthday(Field):
     def __str__(self):
         """
         Return string representation of the birthday.
-        
+
         Returns:
             str: Birthday in DD.MM.YYYY format
         """
