@@ -7,7 +7,6 @@ This module contains tests for the Name field validation functionality.
 from models.Name import Name
 
 
-
 class TestName:
     """Test suite for the Name class."""
 
