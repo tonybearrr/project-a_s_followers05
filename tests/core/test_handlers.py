@@ -3,10 +3,7 @@ Tests for the handlers module.
 
 This module contains tests for all handler functions in the address book bot.
 """
-
-import tempfile
-import os
-from handlers import (
+from core.handlers import (
     add_contact,
     update_contact,
     get_all_contacts,
@@ -14,9 +11,7 @@ from handlers import (
     delete_contact,
     add_birthday,
     show_birthday,
-    birthdays,
-    save_data,
-    load_data
+    birthdays
 )
 from models.AddressBook import AddressBook
 from models.Record import Record
@@ -208,31 +203,3 @@ class TestBirthdays:
         book.add_record(record)
         result = birthdays(book)
         assert "John Doe" in result
-
-
-class TestSaveAndLoadData:
-    """Test suite for save_data and load_data functions."""
-
-    def test_save_and_load_data(self):
-        """Test saving and loading address book."""
-        book = AddressBook()
-        record = Record("John Doe")
-        record.add_phone("1234567890")
-        book.add_record(record)
-
-        with tempfile.NamedTemporaryFile(delete=False, suffix=".pkl") as f:
-            filename = f.name
-            try:
-                save_data(book, filename)
-                loaded_book = load_data(filename)
-                assert len(loaded_book.data) == 1
-                assert "John Doe" in loaded_book.data
-            finally:
-                if os.path.exists(filename):
-                    os.remove(filename)
-
-    def test_load_data_file_not_found(self):
-        """Test loading when file doesn't exist."""
-        loaded_book = load_data("nonexistent.pkl")
-        assert isinstance(loaded_book, AddressBook)
-        assert len(loaded_book.data) == 0

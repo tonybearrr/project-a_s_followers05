@@ -15,11 +15,17 @@ class Birthday(Field):
 
     Validates that dates are in DD.MM.YYYY format and converts them to date objects.
 
+
+    Validates that dates are in DD.MM.YYYY
+    format and converts them to date objects.
+
     Attributes:
         value (date): The validated birthday date
     """
+    DATE_FORMAT = "%d.%m.%Y"
+    DATE_FORMAT_DISPLAY = "DD.MM.YYYY"
 
-    def __init__(self, value):
+    def __init__(self, value: str):
         """
         Initialize a birthday field with validation.
 
@@ -30,10 +36,10 @@ class Birthday(Field):
             ValueError: If date format is invalid
         """
         try:
-            date_value = datetime.strptime(value, "%d.%m.%Y").date()
+            date_value = datetime.strptime(value, Birthday.DATE_FORMAT).date()
             super().__init__(date_value)
-        except ValueError as exc:
-            raise ValueError("Invalid date format. Use DD.MM.YYYY") from exc
+        except ValueError:
+            raise ValueError(f"""Invalid date format. Use {Birthday.DATE_FORMAT_DISPLAY} format.""")
 
     def __str__(self):
         """
@@ -42,4 +48,4 @@ class Birthday(Field):
         Returns:
             str: Birthday in DD.MM.YYYY format
         """
-        return self.value.strftime("%d.%m.%Y")
+        return self.value.strftime(Birthday.DATE_FORMAT)

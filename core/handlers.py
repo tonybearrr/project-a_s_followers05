@@ -4,11 +4,11 @@ Handler functions for the address book bot.
 This module contains all the command handler functions that process
 user commands and interact with the AddressBook and Record classes.
 """
-import pickle
-from decorators import input_error
 from models.AddressBook import AddressBook
 from models.Record import Record
-
+from models.Birthday import Birthday
+from .decorators import input_error
+from .commands import Command
 
 @input_error
 def add_contact(args, book: AddressBook):
@@ -22,20 +22,19 @@ def add_contact(args, book: AddressBook):
     Returns:
         str: Success message or error message
     """
-    name, phone, *_ = args
+    if len(args) < 2:
+        return f"Error: [{Command.ADD_CONTACT}] command requires a name and a phone number."
+
+    name = args[0]
+    phone = args[1]
     record = book.find(name)
-    message = "Contact updated"
-    if record is None:
+    is_not_found = record is None
+    if is_not_found:
         record = Record(name)
         book.add_record(record)
-        message = "Contact added"
-    if phone:
-        try:
-            record.add_phone(phone)
-        except ValueError as e:
-            return str(e)
-    return message
-
+    record.add_phone(phone)
+    status = "added" if is_not_found else "updated"
+    return f"Contact '{name}' with phone '{phone}' {status} successfully."
 
 @input_error
 def update_contact(args, book: AddressBook):
@@ -49,16 +48,16 @@ def update_contact(args, book: AddressBook):
     Returns:
         str: Success message or error message
     """
+    if len(args) < 3:
+        return f"Error: [{Command.UPDATE_CONTACT}] command requires a name, old phone number and a new phone number."
     name, old_phone, new_phone = args
     record = book.find(name)
-    try:
-        record.edit_phone(old_phone, new_phone)
-        return f"Phone number for {name} updated from {old_phone} to {new_phone}."
-    except ValueError as e:
-        return str(e)
+    if not record:
+        return f"Contact '{name}' not found."
+    record.edit_phone(old_phone, new_phone)
+    return f"Phone number for {name} updated from {old_phone} to {new_phone}."
 
 
-@input_error
 def get_all_contacts(book: AddressBook):
     """
     Get all contacts from the address book.
@@ -85,8 +84,12 @@ def get_one_contact(args, book: AddressBook):
     Returns:
         str: Contact name and phone numbers or error message
     """
+    if len(args) < 1:
+        return f"Error: [{Command.SHOW_CONTACT}] command requires a name."
     name = args[0]
     record = book.find(name)
+    if not record:
+        return f"Contact '{name}' not found."
     phones = "; ".join(p.value for p in record.phones) if record.phones else "no phones"
     return f"{name}: {phones}"
 
@@ -103,6 +106,8 @@ def delete_contact(args, book: AddressBook):
     Returns:
         str: Success message or error message
     """
+    if len(args) < 1:
+        return f"Error: [{Command.DELETE_CONTACT}] command requires a name."
     name = args[0]
     book.delete(name)
     return f"Contact '{name}' deleted."
@@ -120,8 +125,13 @@ def add_birthday(args, book: AddressBook):
     Returns:
         str: Success message or error message
     """
+    if len(args) < 2:
+        return f"Error: [{Command.ADD_BIRTHDAY}] command requires a name and a birthday ({Birthday.DATE_FORMAT_DISPLAY})."
+
     name, bday, *_ = args
     record = book.find(name)
+    if not record:
+        return f"Contact '{name}' not found."
     record.add_birthday(bday)
     return f"Birthday added for {name}: {bday}"
 
@@ -138,14 +148,17 @@ def show_birthday(args, book: AddressBook):
     Returns:
         str: Birthday information or error message
     """
+    if len(args) < 1:
+        return f"Error: [{Command.SHOW_BIRTHDAY}] command requires a name."
     name = args[0]
     record = book.find(name)
+    if not record:
+        return f"Contact '{name}' not found."
     if record.birthday:
         return f"{name}'s birthday is {record.birthday}"
     return f"{name} has no birthday set."
 
 
-@input_error
 def birthdays(book: AddressBook):
     """
     Get upcoming birthdays in the next 7 days.
@@ -161,32 +174,3 @@ def birthdays(book: AddressBook):
         return "No birthdays in the next 7 days."
     lines = [f"{name}: {bday}" for name, bday in upcoming]
     return "\n".join(lines)
-
-
-def save_data(book, filename="addressbook.pkl"):
-    """
-    Save the address book to a file.
-
-    Args:
-        book (AddressBook): Address book instance
-        filename (str): Name of the file to save to
-    """
-    with open(filename, "wb") as f:
-        pickle.dump(book, f)
-
-
-def load_data(filename="addressbook.pkl"):
-    """
-    Load the address book from a file.
-
-    Args:
-        filename (str): Name of the file to load from
-
-    Returns:
-        AddressBook: Address book instance
-    """
-    try:
-        with open(filename, "rb") as f:
-            return pickle.load(f)
-    except FileNotFoundError:
-        return AddressBook()
