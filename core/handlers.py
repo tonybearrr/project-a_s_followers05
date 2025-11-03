@@ -10,6 +10,7 @@ from models.Birthday import Birthday
 from .decorators import input_error
 from .commands import Command
 
+
 @input_error
 def add_contact(args, book: AddressBook):
     """
@@ -35,6 +36,7 @@ def add_contact(args, book: AddressBook):
     record.add_phone(phone)
     status = "added" if is_not_found else "updated"
     return f"Contact '{name}' with phone '{phone}' {status} successfully."
+
 
 @input_error
 def update_contact(args, book: AddressBook):

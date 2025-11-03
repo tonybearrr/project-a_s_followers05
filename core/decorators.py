@@ -17,7 +17,7 @@ def input_error(func):
     - KeyError: Returns "Contact not found"
     - IndexError: Returns "Enter the argument for the command"
     - AttributeError: Returns "Contact not found"
-    
+
     Args:
         func: Function to be decorated
 

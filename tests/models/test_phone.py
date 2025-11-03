@@ -19,10 +19,10 @@ class TestPhone:
         """Test Phone initialization with formatted number (spaces, dashes)."""
         phone = Phone("123-456-7890")
         assert phone.value == "1234567890"
-        
+
         phone = Phone("123 456 7890")
         assert phone.value == "1234567890"
-        
+
         phone = Phone("(123) 456-7890")
         assert phone.value == "1234567890"
 

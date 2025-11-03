@@ -38,7 +38,7 @@ class TestGetOutputByCommand:
         book = AddressBook()
         output, is_exit = get_output_by_command(Command.ADD_CONTACT, ["John", "1234567890"], book)
         assert is_exit is False
-        assert "Contact added" in output or "Contact updated" in output
+        assert "added successfully" in output.lower() or "updated successfully" in output.lower()
 
     def test_show_all_contacts_command(self):
         """Test show all contacts command."""

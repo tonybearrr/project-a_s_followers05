@@ -24,7 +24,7 @@ class TestAddContact:
         """Test adding a new contact."""
         book = AddressBook()
         result = add_contact(["John Doe", "1234567890"], book)
-        assert result == "Contact added"
+        assert "added successfully" in result.lower()
         assert "John Doe" in book.data
 
     def test_update_existing_contact_with_phone(self):
@@ -33,7 +33,7 @@ class TestAddContact:
         record = Record("John Doe")
         book.add_record(record)
         result = add_contact(["John Doe", "1234567890"], book)
-        assert result == "Contact updated"
+        assert "updated successfully" in result.lower()
         assert len(record.phones) == 1
 
     def test_add_contact_invalid_phone(self):

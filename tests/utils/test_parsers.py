@@ -55,4 +55,3 @@ class TestParseInput:
         """Test parsing empty input."""
         result = parse_input("")
         assert result == ("",)
-

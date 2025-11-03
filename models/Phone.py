@@ -30,9 +30,7 @@ class Phone(Field):
         Raises:
             ValueError: If phone number is not 10 digits or contains non-numeric characters
         """
-        if not (value.isdigit() and len(value) == 10):
-            raise ValueError("Phone number must be 10 digits and contain only numbers")
-        super().__init__(value)
+        # Clean the phone number (remove all non-digit characters)
         phone = re.sub(r"\D", "", value)
         if phone == Phone.EMPTY_PHONE:
             raise ValueError("Phone number cannot be empty")
@@ -40,4 +38,5 @@ class Phone(Field):
         if not (phone.isdigit() and len(phone) == Phone.PHONE_LEN):
             raise ValueError(f"""Phone number must be {Phone.PHONE_LEN} digits
                              and contain only digits""")
+
         super().__init__(phone)
