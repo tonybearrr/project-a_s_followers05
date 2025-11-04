@@ -4,7 +4,7 @@ Tests for the Field class.
 This module contains tests for the base Field class functionality.
 """
 
-from models.Field import Field
+from models.field import Field
 
 
 class TestField:

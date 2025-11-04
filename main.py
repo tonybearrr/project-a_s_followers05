@@ -6,21 +6,24 @@ which allows users to add, update, delete, and view contacts with
 phone numbers and birthdays.
 """
 from core.commands import Command
-from models.Birthday import Birthday
-from models.Phone import Phone
+from models.birthday import Birthday
+from models.phone import Phone
 from core.handlers import (
     add_contact, update_contact, get_all_contacts, get_one_contact,
-    delete_contact, add_birthday, show_birthday, birthdays
+    delete_contact, add_birthday, show_birthday, birthdays,
+    add_note, list_notes, search_notes, search_notes_by_tags,
+    edit_note, delete_note
 )
 from utils.parsers import parse_input
 from storage.file_storage import load_data, save_data
+from storage.file_storage import load_notes, save_notes
 
 
-def get_output_by_command(command, args, book):
+def get_output_by_command(command, args, book, notebook):
     """
     Main function that runs the address book bot.
 
-    Creates an AddressBook instance and runs the main command loop,
+    Creates an AddressBook and NoteBook instances and runs the main command loop,
     processing user commands until 'close' or 'exit' is entered.
     """
     is_exit = False
@@ -45,6 +48,19 @@ def get_output_by_command(command, args, book):
         output = show_birthday(args, book)
     elif command == Command.SHOW_UPCOMING_BIRTHDAYS:
         output = birthdays(book)
+    # Note commands
+    elif command == Command.ADD_NOTE:
+        output = add_note(args, notebook)
+    elif command == Command.LIST_NOTES:
+        output = list_notes(args, notebook)
+    elif command == Command.SEARCH_NOTES:
+        output = search_notes(args, notebook)
+    elif command == Command.SEARCH_TAGS:
+        output = search_notes_by_tags(args, notebook)
+    elif command == Command.EDIT_NOTE:
+        output = edit_note(args, notebook)
+    elif command == Command.DELETE_NOTE:
+        output = delete_note(args, notebook)
     elif command == Command.HELP or command == Command.HELP_ALT:
         output = (
             "Available commands:\n"
@@ -60,6 +76,12 @@ def get_output_by_command(command, args, book):
             Add birthday to a contact\n"""
             f"{Command.SHOW_BIRTHDAY} <name> - Show birthday of a contact\n"
             f"{Command.SHOW_UPCOMING_BIRTHDAYS} - Show contacts with upcoming birthdays\n"
+            f"{Command.ADD_NOTE} <text> [tags] - Add a new note with optional tags\n"
+            f"{Command.LIST_NOTES} [sort] - List all notes (sort: created/updated/text/tags)\n"
+            f"{Command.SEARCH_NOTES} <query> - Search notes by text or tags\n"
+            f"{Command.SEARCH_TAGS} <tags> - Search notes by specific tags\n"
+            f"{Command.EDIT_NOTE} <identifier> <text> [tags] - Edit a note\n"
+            f"{Command.DELETE_NOTE} <identifier> - Delete a note\n"
             f"{Command.EXIT_1}, {Command.EXIT_2} - Exit the program"
         )
     else:
@@ -69,12 +91,14 @@ def get_output_by_command(command, args, book):
 
 if __name__ == "__main__":
     book = load_data()
+    notebook = load_notes()
     print("Welcome to the assistant bot!")
     while True:
         user_input = input("Enter a command: ")
         command, *args = parse_input(user_input)
-        output, is_exit = get_output_by_command(command, args, book)
+        output, is_exit = get_output_by_command(command, args, book, notebook)
         print(output)
         if is_exit:
             save_data(book)
+            save_notes(notebook)
             break

@@ -4,7 +4,7 @@ Tests for the Name class.
 This module contains tests for the Name field validation functionality.
 """
 
-from models.Name import Name
+from models.name import Name
 
 
 class TestName:

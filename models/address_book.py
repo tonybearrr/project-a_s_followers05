@@ -7,7 +7,7 @@ for birthday management.
 """
 
 from collections import UserDict
-from models.Birthday import Birthday
+from models.birthday import Birthday
 from datetime import datetime, timedelta
 
 

@@ -5,9 +5,9 @@ This module provides the Record class that represents a single contact
 with name, phone numbers, and birthday information.
 """
 
-from .Phone import Phone
-from .Name import Name
-from .Birthday import Birthday
+from .phone import Phone
+from .name import Name
+from .birthday import Birthday
 
 
 class Record:
