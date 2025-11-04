@@ -13,10 +13,11 @@ def input_error(func):
     Decorator to handle common input errors and provide user-friendly messages.
 
     Handles the following exceptions:
-    - ValueError: Returns "Enter the argument for the command"
+    - ValueError: Returns "Error: {error_message}" (specific error message from the exception)
     - KeyError: Returns "Contact not found"
     - IndexError: Returns "Enter the argument for the command"
     - AttributeError: Returns "Contact not found"
+
     Args:
         func: Function to be decorated
 
@@ -27,8 +28,8 @@ def input_error(func):
     def inner(*args, **kwargs):
         try:
             return func(*args, **kwargs)
-        except ValueError:
-            return "Enter the argument for the command"
+        except ValueError as e:
+            return f"Error: {str(e)}"
         except KeyError:
             return "Contact not found"
         except IndexError:

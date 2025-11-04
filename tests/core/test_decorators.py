@@ -4,7 +4,7 @@ Tests for the decorators module.
 This module contains tests for the input_error decorator functionality.
 """
 
-from decorators import input_error
+from core.decorators import input_error
 
 
 def test_input_error_handles_value_error():
@@ -15,7 +15,7 @@ def test_input_error_handles_value_error():
         raise ValueError("Test error")
 
     result = test_func()
-    assert result == "Enter the argument for the command"
+    assert result == "Error: Test error"
 
 
 def test_input_error_handles_key_error():

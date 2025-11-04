@@ -73,6 +73,8 @@ class Record:
         for idx, phone in enumerate(self.phones):
             if phone.value == old_phone:
                 self.phones[idx] = Phone(new_phone)
+                return
+        raise ValueError(f"Phone {old_phone} not found")
 
     def delete_phone(self, phone_number):
         """
