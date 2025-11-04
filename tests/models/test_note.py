@@ -8,7 +8,7 @@ from pathlib import Path
 project_root = Path(__file__).parent.parent.parent
 sys.path.insert(0, str(project_root))
 
-from models.Note import Note
+from models.Note import Note  # noqa: E402
 
 
 # Tests for Note initialization
@@ -497,16 +497,6 @@ def test_remove_none_from_tags():
 
     assert None not in note.tags
     assert note.tags == ["tag1"]
-
-
-def test_edit_tags_with_tuple():
-    """Test edit_tags with tuple"""
-    note = Note("Test note", ["tag1"])
-
-    note.edit_tags(("tuple_tag1", "tuple_tag2"))
-
-    # Tuple is converted to list
-    assert note.tags == ["tuple_tag1", "tuple_tag2"]
 
 
 def test_edit_tags_with_tuple():

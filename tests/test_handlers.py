@@ -30,7 +30,6 @@ from handlers import (
 from models.AddressBook import AddressBook
 from models.Record import Record
 from models.NoteBook import NoteBook
-from models.Note import Note
 
 
 class TestAddContact:
