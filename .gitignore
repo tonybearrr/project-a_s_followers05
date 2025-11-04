@@ -210,3 +210,5 @@ __marimo__/
 /.idea/vcs.xml
 /.idea/workspace.xml
 /.idea/project-a_s_followers05.iml
+/addressbook.pkl
+/notes.pkl

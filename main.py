@@ -9,7 +9,9 @@ phone numbers and birthdays.
 from handlers import (
     add_contact, update_contact, get_all_contacts, get_one_contact,
     delete_contact, add_birthday, show_birthday, birthdays, load_data,
-    save_data
+    save_data,
+    add_note, list_notes, search_notes, search_notes_by_tags,
+    edit_note, delete_note, load_notes, save_notes
 )
 from decorators import input_error
 
@@ -34,10 +36,11 @@ def main():
     """
     Main function that runs the address book bot.
 
-    Creates an AddressBook instance and runs the main command loop,
+    Creates an AddressBook and NoteBook instances and runs the main command loop,
     processing user commands until 'close' or 'exit' is entered.
     """
     book = load_data()
+    notebook = load_notes()
     print("Welcome to the assistant bot!")
 
     while True:
@@ -47,9 +50,11 @@ def main():
         if command in ["close", "exit"]:
             print("Good bye!")
             save_data(book)
+            save_notes(notebook)
             break
         elif command == "hello":
             print("How can I help you?")
+        # Contact commands
         elif command == "add":
             print(add_contact(args, book))
         elif command == "change":
@@ -66,6 +71,19 @@ def main():
             print(show_birthday(args, book))
         elif command == "birthdays":
             print(birthdays(book))
+        # Note commands
+        elif command == "add-note":
+            print(add_note(args, notebook))
+        elif command == "list-notes":
+            print(list_notes(args, notebook))
+        elif command == "search-notes":
+            print(search_notes(args, notebook))
+        elif command == "search-tags":
+            print(search_notes_by_tags(args, notebook))
+        elif command == "edit-note":
+            print(edit_note(args, notebook))
+        elif command == "delete-note":
+            print(delete_note(args, notebook))
         else:
             print("Invalid command.")
 
