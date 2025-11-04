@@ -12,7 +12,7 @@ from core.handlers import (
     add_contact, update_contact, get_all_contacts, get_one_contact,
     delete_contact, add_birthday, show_birthday, birthdays,
     add_note, list_notes, search_notes, search_notes_by_tags,
-    edit_note, delete_note
+    edit_note, delete_note, add_email, delete_email, show_email
 )
 from utils.parsers import parse_input
 from storage.file_storage import load_data, save_data
@@ -48,6 +48,12 @@ def get_output_by_command(command, args, book, notebook):
         output = show_birthday(args, book)
     elif command == Command.SHOW_UPCOMING_BIRTHDAYS:
         output = birthdays(book)
+    elif command == Command.ADD_EMAIL:
+        output = add_email(args, book)
+    elif command == Command.DELETE_EMAIL:
+        output = delete_email(args, book)
+    elif command == Command.SHOW_EMAIL:
+        output = show_email(args, book)
     # Note commands
     elif command == Command.ADD_NOTE:
         output = add_note(args, notebook)
@@ -76,6 +82,9 @@ def get_output_by_command(command, args, book, notebook):
             Add birthday to a contact\n"""
             f"{Command.SHOW_BIRTHDAY} <name> - Show birthday of a contact\n"
             f"{Command.SHOW_UPCOMING_BIRTHDAYS} - Show contacts with upcoming birthdays\n"
+            f"{Command.ADD_EMAIL} <name> <email> - Add or update email address for a contact\n"
+            f"{Command.DELETE_EMAIL} <name> - Delete email address from a contact\n"
+            f"{Command.SHOW_EMAIL} <name> - Show contact's email address\n"
             f"{Command.ADD_NOTE} <text> [tags] - Add a new note with optional tags\n"
             f"{Command.LIST_NOTES} [sort] - List all notes (sort: created/updated/text/tags)\n"
             f"{Command.SEARCH_NOTES} <query> - Search notes by text or tags\n"

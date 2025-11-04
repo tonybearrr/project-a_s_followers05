@@ -18,7 +18,10 @@ from core.handlers import (
     search_notes_by_tags,
     edit_note,
     delete_note,
-    list_notes
+    list_notes,
+    add_email,
+    delete_email,
+    show_email
 )
 from models.address_book import AddressBook
 from models.notebook import NoteBook
@@ -814,3 +817,112 @@ class TestIntegrationNoteHandlers:
         # Now operations should work
         result = search_notes(["Test"], notebook)
         assert "Found 1 note(s)" in result
+class TestAddEmail:
+    """Test suite for the add_email handler."""
+
+    def test_add_email_to_existing_contact(self):
+        """Test adding email to existing contact."""
+        book = AddressBook()
+        record = Record("John Doe")
+        book.add_record(record)
+        result = add_email(["John Doe", "test@example.com"], book)
+        assert ("added" in result.lower() or "updated" in result.lower())
+        assert record.email is not None
+        assert record.email.value == "test@example.com"
+
+    def test_update_email_to_existing_contact(self):
+        """Test updating email for existing contact."""
+        book = AddressBook()
+        record = Record("John Doe")
+        record.add_email("old@example.com")
+        book.add_record(record)
+        result = add_email(["John Doe", "new@example.com"], book)
+        assert "updated" in result.lower() or "added" in result.lower()
+        assert record.email.value == "new@example.com"
+
+    def test_add_email_to_nonexistent_contact(self):
+        """Test adding email to non-existent contact."""
+        book = AddressBook()
+        result = add_email(["Nonexistent", "test@example.com"], book)
+        assert "not found" in result.lower()
+
+    def test_add_email_missing_args(self):
+        """Test adding email with missing arguments."""
+        book = AddressBook()
+        result = add_email(["John"], book)
+        assert "Error" in result and "requires" in result.lower()
+
+    def test_add_email_invalid_format(self):
+        """Test adding email with invalid format."""
+        book = AddressBook()
+        record = Record("John Doe")
+        book.add_record(record)
+        result = add_email(["John Doe", "invalid-email"], book)
+        assert "Error" in result or "Invalid email format" in result
+
+
+class TestDeleteEmail:
+    """Test suite for the delete_email handler."""
+
+    def test_delete_email(self):
+        """Test deleting email from contact."""
+        book = AddressBook()
+        record = Record("John Doe")
+        record.add_email("test@example.com")
+        book.add_record(record)
+        result = delete_email(["John Doe"], book)
+        assert "deleted" in result.lower()
+        assert record.email is None
+
+    def test_delete_email_no_email(self):
+        """Test deleting email when contact has no email."""
+        book = AddressBook()
+        record = Record("John Doe")
+        book.add_record(record)
+        result = delete_email(["John Doe"], book)
+        assert "no email" in result.lower()
+
+    def test_delete_email_not_found(self):
+        """Test deleting email for non-existent contact."""
+        book = AddressBook()
+        result = delete_email(["Nonexistent"], book)
+        assert "not found" in result.lower()
+
+    def test_delete_email_missing_args(self):
+        """Test deleting email with missing arguments."""
+        book = AddressBook()
+        result = delete_email([], book)
+        assert "Error" in result and "requires" in result.lower()
+
+
+class TestShowEmail:
+    """Test suite for the show_email handler."""
+
+    def test_show_email_with_email(self):
+        """Test showing contact with email."""
+        book = AddressBook()
+        record = Record("John Doe")
+        record.add_email("test@example.com")
+        book.add_record(record)
+        result = show_email(["John Doe"], book)
+        assert "test@example.com" in result
+
+    def test_show_email_no_email(self):
+        """Test showing contact without email."""
+        book = AddressBook()
+        record = Record("John Doe")
+        book.add_record(record)
+        result = show_email(["John Doe"], book)
+        assert "no email" in result.lower()
+
+    def test_show_email_not_found(self):
+        """Test showing email for non-existent contact."""
+        book = AddressBook()
+        result = show_email(["Nonexistent"], book)
+        assert "not found" in result.lower()
+
+    def test_show_email_missing_args(self):
+        """Test showing email with missing arguments."""
+        book = AddressBook()
+        result = show_email([], book)
+        assert "Error" in result and "requires" in result.lower()

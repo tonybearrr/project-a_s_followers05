@@ -163,6 +163,79 @@ def show_birthday(args, book: AddressBook):
     return f"{name} has no birthday set."
 
 
+@input_error
+def add_email(args, book: AddressBook):
+    """
+    Add or update email address for a contact.
+
+    Args:
+        args (list): Command arguments [name, email]
+        book (AddressBook): Address book instance
+
+    Returns:
+        str: Success message or error message
+    """
+    if len(args) < 2:
+        return f"Error: [{Command.ADD_EMAIL}] command requires a name and an email address."
+
+    name, email = args
+    record = book.find(name)
+    if not record:
+        return f"Contact '{name}' not found."
+    old_email = record.email.value if record.email else None
+    record.add_email(email)
+    status = "updated" if old_email else "added"
+    return f"Email '{email}' {status} for contact '{name}'."
+
+
+@input_error
+def delete_email(args, book: AddressBook):
+    """
+    Delete email address from a contact.
+
+    Args:
+        args (list): Command arguments [name]
+        book (AddressBook): Address book instance
+
+    Returns:
+        str: Success message or error message
+    """
+    if len(args) < 1:
+        return f"Error: [{Command.DELETE_EMAIL}] command requires a name."
+
+    name = args[0]
+    record = book.find(name)
+    if not record:
+        return f"Contact '{name}' not found."
+    if not record.email:
+        return f"Contact '{name}' has no email to delete."
+    record.delete_email()
+    return f"Email deleted from contact '{name}'."
+
+
+@input_error
+def show_email(args, book: AddressBook):
+    """
+    Show a contact's email address.
+
+    Args:
+        args (list): Command arguments [name]
+        book (AddressBook): Address book instance
+
+    Returns:
+        str: Contact name and email address or error message
+    """
+    if len(args) < 1:
+        return f"Error: [{Command.SHOW_EMAIL}] command requires a name."
+
+    name = args[0]
+    record = book.find(name)
+    if not record:
+        return f"Contact '{name}' not found."
+    email = record.email.value if record.email else "no email"
+    return f"{name}: {email}"
+
+
 def birthdays(book: AddressBook):
     """
     Get upcoming birthdays in the next 7 days.
