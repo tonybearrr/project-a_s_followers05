@@ -84,4 +84,3 @@ class TestEmail:
         """Test accessing the value attribute."""
         email = Email("user@domain.com")
         assert email.value == "user@domain.com"
-

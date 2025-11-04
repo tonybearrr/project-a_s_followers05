@@ -817,6 +817,8 @@ class TestIntegrationNoteHandlers:
         # Now operations should work
         result = search_notes(["Test"], notebook)
         assert "Found 1 note(s)" in result
+
+
 class TestAddEmail:
     """Test suite for the add_email handler."""
 
