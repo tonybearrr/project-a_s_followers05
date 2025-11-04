@@ -6,8 +6,8 @@ which allows users to add, update, delete, and view contacts with
 phone numbers and birthdays.
 """
 from core.commands import Command
-from models.Birthday import Birthday
-from models.Phone import Phone
+from models.birthday import Birthday
+from models.phone import Phone
 from core.handlers import (
     add_contact, update_contact, get_all_contacts, get_one_contact,
     delete_contact, add_birthday, show_birthday, birthdays,

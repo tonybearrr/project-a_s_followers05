@@ -4,7 +4,7 @@ Tests for the Record class.
 This module contains tests for contact record management functionality.
 """
 
-from models.Record import Record
+from models.record import Record
 
 
 class TestRecord:

@@ -4,7 +4,7 @@ Tests for the Phone class.
 This module contains tests for the Phone field validation functionality.
 """
 
-from models.Phone import Phone
+from models.phone import Phone
 
 
 class TestPhone:

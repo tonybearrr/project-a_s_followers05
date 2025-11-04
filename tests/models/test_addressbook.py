@@ -5,8 +5,8 @@ This module contains tests for address book management functionality.
 """
 
 from datetime import date, timedelta
-from models.AddressBook import AddressBook
-from models.Record import Record
+from models.address_book import AddressBook
+from models.record import Record
 
 
 class TestAddressBook:

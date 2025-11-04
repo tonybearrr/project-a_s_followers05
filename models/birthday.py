@@ -6,7 +6,7 @@ birthday dates in the address book system.
 """
 
 from datetime import datetime
-from .Field import Field
+from .field import Field
 
 
 class Birthday(Field):

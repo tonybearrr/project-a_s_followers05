@@ -20,9 +20,9 @@ from core.handlers import (
     delete_note,
     list_notes
 )
-from models.AddressBook import AddressBook
-from models.NoteBook import NoteBook
-from models.Record import Record
+from models.address_book import AddressBook
+from models.notebook import NoteBook
+from models.record import Record
 
 
 class TestAddContact:

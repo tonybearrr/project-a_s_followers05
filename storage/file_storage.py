@@ -1,6 +1,6 @@
 import pickle
-from models.AddressBook import AddressBook
-from models.NoteBook import NoteBook
+from models.address_book import AddressBook
+from models.notebook import NoteBook
 
 
 def save_data(book, filename="addressbook.pkl"):

@@ -1,8 +1,8 @@
 import pytest
 import time
 
-from models.Note import Note
-from models.NoteBook import NoteBook
+from models.note import Note
+from models.notebook import NoteBook
 
 
 # Tests for NoteBook initialization

@@ -2,13 +2,13 @@ import tempfile
 import os
 
 from core.handlers import add_note
-from models.NoteBook import NoteBook
+from models.notebook import NoteBook
 from storage.file_storage import (
     save_data,
     load_data, load_notes, save_notes
 )
-from models.AddressBook import AddressBook
-from models.Record import Record
+from models.address_book import AddressBook
+from models.record import Record
 
 
 class TestSaveAndLoadData:

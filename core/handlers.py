@@ -4,11 +4,11 @@ Handler functions for the address book bot.
 This module contains all the command handler functions that process
 user commands and interact with the AddressBook and Record classes.
 """
-from models.AddressBook import AddressBook
-from models.Record import Record
-from models.NoteBook import NoteBook
-from models.Note import Note
-from models.Birthday import Birthday
+from models.address_book import AddressBook
+from models.record import Record
+from models.notebook import NoteBook
+from models.note import Note
+from models.birthday import Birthday
 from .decorators import input_error
 from .commands import Command
 

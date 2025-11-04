@@ -1,5 +1,5 @@
 from typing import Optional
-from models.Note import Note
+from models.note import Note
 
 
 class NoteBook:

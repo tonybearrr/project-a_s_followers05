@@ -5,7 +5,7 @@ This module provides the Phone class for storing and validating
 phone numbers in the address book system.
 """
 import re
-from .Field import Field
+from .field import Field
 
 
 class Phone(Field):

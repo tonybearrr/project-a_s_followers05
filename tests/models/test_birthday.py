@@ -5,7 +5,7 @@ This module contains tests for the Birthday field validation functionality.
 """
 
 from datetime import date
-from models.Birthday import Birthday
+from models.birthday import Birthday
 
 
 class TestBirthday:

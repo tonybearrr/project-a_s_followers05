@@ -5,7 +5,7 @@ This module provides the Name class for storing and validating
 contact names in the address book system.
 """
 
-from .Field import Field
+from .field import Field
 
 
 class Name(Field):

@@ -6,8 +6,8 @@ This module contains tests for the main functionality and get_output_by_command.
 
 from main import get_output_by_command
 from core.commands import Command
-from models.AddressBook import AddressBook
-from models.NoteBook import NoteBook
+from models.address_book import AddressBook
+from models.notebook import NoteBook
 
 
 class TestGetOutputByCommand:
