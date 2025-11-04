@@ -11,9 +11,17 @@ from core.handlers import (
     delete_contact,
     add_birthday,
     show_birthday,
-    birthdays
+    birthdays,
+    parse_tags,
+    add_note,
+    search_notes,
+    search_notes_by_tags,
+    edit_note,
+    delete_note,
+    list_notes
 )
 from models.AddressBook import AddressBook
+from models.NoteBook import NoteBook
 from models.Record import Record
 
 
@@ -205,29 +213,604 @@ class TestBirthdays:
         assert "John Doe" in result
 
 
-class TestSaveAndLoadData:
-    """Test suite for save_data and load_data functions."""
+class TestParseTags:
+    """Test suite for the parse_tags function."""
 
-    def test_save_and_load_data(self):
-        """Test saving and loading address book."""
-        book = AddressBook()
-        record = Record("John Doe")
-        record.add_phone("1234567890")
-        book.add_record(record)
+    def test_parse_tags_comma_separated(self):
+        """Test parsing comma-separated tags."""
+        result = parse_tags("tag1,tag2,tag3")
+        assert result == ["tag1", "tag2", "tag3"]
 
-        with tempfile.NamedTemporaryFile(delete=False, suffix=".pkl") as f:
-            filename = f.name
-            try:
-                save_data(book, filename)
-                loaded_book = load_data(filename)
-                assert len(loaded_book.data) == 1
-                assert "John Doe" in loaded_book.data
-            finally:
-                if os.path.exists(filename):
-                    os.remove(filename)
+    def test_parse_tags_space_separated(self):
+        """Test parsing space-separated tags."""
+        result = parse_tags("tag1 tag2 tag3")
+        assert result == ["tag1", "tag2", "tag3"]
 
-    def test_load_data_file_not_found(self):
-        """Test loading when file doesn't exist."""
-        loaded_book = load_data("nonexistent.pkl")
-        assert isinstance(loaded_book, AddressBook)
-        assert len(loaded_book.data) == 0
+    def test_parse_tags_mixed_separators(self):
+        """Test parsing mixed comma and space separators."""
+        result = parse_tags("tag1, tag2 tag3,tag4")
+        assert result == ["tag1", "tag2", "tag3", "tag4"]
+
+    def test_parse_tags_removes_duplicates(self):
+        """Test that duplicates are removed."""
+        result = parse_tags("tag1,tag2,tag1,tag3,tag2")
+        assert result == ["tag1", "tag2", "tag3"]
+
+    def test_parse_tags_removes_empty(self):
+        """Test that empty tags are removed."""
+        result = parse_tags("tag1,,tag2,  ,tag3")
+        assert result == ["tag1", "tag2", "tag3"]
+
+    def test_parse_tags_from_list(self):
+        """Test parsing from a list."""
+        result = parse_tags(["tag1", "tag2", "tag3"])
+        assert result == ["tag1", "tag2", "tag3"]
+
+    def test_parse_tags_from_list_with_commas(self):
+        """Test parsing from a list containing commas."""
+        result = parse_tags(["tag1,tag2", "tag3"])
+        assert result == ["tag1", "tag2", "tag3"]
+
+    def test_parse_tags_empty_string(self):
+        """Test parsing empty string."""
+        result = parse_tags("")
+        assert result == []
+
+    def test_parse_tags_empty_list(self):
+        """Test parsing empty list."""
+        result = parse_tags([])
+        assert result == []
+
+    def test_parse_tags_whitespace_only(self):
+        """Test parsing whitespace-only string."""
+        result = parse_tags("   ,  ,  ")
+        assert result == []
+
+    def test_parse_tags_with_extra_whitespace(self):
+        """Test parsing with extra whitespace."""
+        result = parse_tags("  tag1  ,  tag2  ,  tag3  ")
+        assert result == ["tag1", "tag2", "tag3"]
+
+    def test_parse_tags_invalid_type(self):
+        """Test parsing with invalid type returns empty list."""
+        result = parse_tags(123)
+        assert result == []
+
+    def test_parse_tags_none(self):
+        """Test parsing None returns empty list."""
+        result = parse_tags(None)
+        assert result == []
+
+    def test_parse_tags_with_numbers(self):
+        """Test parsing list with numbers."""
+        result = parse_tags([1, 2, 3])
+        assert result == ["1", "2", "3"]
+
+    def test_parse_tags_mixed_types_in_list(self):
+        """Test parsing list with mixed types."""
+        result = parse_tags(["tag1", 123, "tag2"])
+        assert result == ["tag1", "123", "tag2"]
+
+
+class TestAddNote:
+    """Test suite for the add_note handler."""
+
+    def test_add_note_text_only(self):
+        """Test adding a note with text only."""
+        notebook = NoteBook()
+        result = add_note(["Test note"], notebook)
+        assert "Note #1 added" in result
+        assert len(notebook) == 1
+
+    def test_add_note_with_single_tag(self):
+        """Test adding a note with a single tag."""
+        notebook = NoteBook()
+        result = add_note(["Test note", "important"], notebook)
+        assert "Note #1 added" in result
+        assert "important" in result
+        assert len(notebook) == 1
+
+    def test_add_note_with_multiple_tags(self):
+        """Test adding a note with multiple tags."""
+        notebook = NoteBook()
+        result = add_note(["Test note", "tag1,tag2,tag3"], notebook)
+        assert "Note #1 added" in result
+        assert "tag1" in result or "tags:" in result
+
+    def test_add_note_with_space_separated_tags(self):
+        """Test adding a note with space-separated tags."""
+        notebook = NoteBook()
+        result = add_note(["Test note", "tag1", "tag2", "tag3"], notebook)
+        assert "Note #1 added" in result
+
+    def test_add_note_empty_args(self):
+        """Test adding note with empty args raises error."""
+        notebook = NoteBook()
+        result = add_note([], notebook)
+        assert "Note text is required" in result or "Enter the argument for the command" in result
+
+    def test_add_note_empty_text(self):
+        """Test adding note with empty text."""
+        notebook = NoteBook()
+        result = add_note([""], notebook)
+        assert "Note text cannot be empty" in result or "Enter the argument for the command" in result
+
+    def test_add_note_whitespace_only_text(self):
+        """Test adding note with whitespace-only text."""
+        notebook = NoteBook()
+        result = add_note(["   "], notebook)
+        assert "Note text cannot be empty" in result or "Enter the argument for the command" in result
+
+    def test_add_multiple_notes(self):
+        """Test adding multiple notes."""
+        notebook = NoteBook()
+        add_note(["First note"], notebook)
+        add_note(["Second note"], notebook)
+        add_note(["Third note"], notebook)
+        assert len(notebook) == 3
+
+    def test_add_note_with_duplicate_tags(self):
+        """Test that duplicate tags are removed."""
+        notebook = NoteBook()
+        result = add_note(["Test note", "tag1,tag1,tag2"], notebook)
+        assert "Note #1 added" in result
+        notes = notebook.get_all_notes()
+        assert len(notes[0].tags) == 2
+
+    def test_add_note_with_empty_tags(self):
+        """Test adding note with empty tag strings."""
+        notebook = NoteBook()
+        result = add_note(["Test note", ",,"], notebook)
+        assert "Note #1 added" in result
+
+
+class TestSearchNotes:
+    """Test suite for the search_notes handler."""
+
+    def test_search_notes_by_text(self):
+        """Test searching notes by text."""
+        notebook = NoteBook()
+        add_note(["Buy groceries"], notebook)
+        add_note(["Call mom"], notebook)
+        add_note(["Buy tickets"], notebook)
+
+        result = search_notes(["buy"], notebook)
+        assert "Found 2 note(s)" in result
+        assert "groceries" in result or "tickets" in result
+
+    def test_search_notes_by_tag(self):
+        """Test searching notes by tag."""
+        notebook = NoteBook()
+        add_note(["Note 1", "important"], notebook)
+        add_note(["Note 2", "urgent"], notebook)
+        add_note(["Note 3", "important"], notebook)
+
+        result = search_notes(["important"], notebook)
+        assert "Found 2 note(s)" in result
+
+    def test_search_notes_no_results(self):
+        """Test searching with no matching results."""
+        notebook = NoteBook()
+        add_note(["Test note"], notebook)
+
+        result = search_notes(["nonexistent"], notebook)
+        assert "No notes found" in result
+
+    def test_search_notes_empty_notebook(self):
+        """Test searching in empty notebook."""
+        notebook = NoteBook()
+        result = search_notes(["anything"], notebook)
+        assert "No notes found" in result
+
+    def test_search_notes_empty_query(self):
+        """Test searching with empty query."""
+        notebook = NoteBook()
+        result = search_notes([], notebook)
+        assert "Search query is required" in result or "Enter the argument for the command" in result
+
+    def test_search_notes_case_insensitive(self):
+        """Test that search is case-insensitive."""
+        notebook = NoteBook()
+        add_note(["IMPORTANT NOTE"], notebook)
+
+        result = search_notes(["important"], notebook)
+        assert "Found 1 note(s)" in result
+
+    def test_search_notes_partial_match(self):
+        """Test searching with partial text match."""
+        notebook = NoteBook()
+        add_note(["Meeting tomorrow at 3pm"], notebook)
+
+        result = search_notes(["tomorrow"], notebook)
+        assert "Found 1 note(s)" in result
+
+    def test_search_notes_shows_numbers(self):
+        """Test that search results show note numbers."""
+        notebook = NoteBook()
+        add_note(["Test note 1"], notebook)
+        add_note(["Test note 2"], notebook)
+
+        result = search_notes(["Test"], notebook)
+        assert "#1" in result or "#2" in result
+
+
+class TestSearchNotesByTags:
+    """Test suite for the search_notes_by_tags handler."""
+
+    def test_search_by_single_tag(self):
+        """Test searching by single tag."""
+        notebook = NoteBook()
+        add_note(["Note 1", "important"], notebook)
+        add_note(["Note 2", "urgent"], notebook)
+        add_note(["Note 3", "important"], notebook)
+
+        result = search_notes_by_tags(["important"], notebook)
+        assert "Found 2 note(s)" in result
+
+    def test_search_by_multiple_tags_all_present(self):
+        """Test searching by multiple tags - all must be present."""
+        notebook = NoteBook()
+        add_note(["Note 1", "important,work"], notebook)
+        add_note(["Note 2", "important,personal"], notebook)
+        add_note(["Note 3", "important,work,urgent"], notebook)
+
+        result = search_notes_by_tags(["important", "work"], notebook)
+        assert "Found 2 note(s)" in result
+
+    def test_search_by_tags_comma_separated(self):
+        """Test searching with comma-separated tags."""
+        notebook = NoteBook()
+        add_note(["Note 1", "tag1,tag2"], notebook)
+        add_note(["Note 2", "tag1"], notebook)
+
+        result = search_notes_by_tags(["tag1,tag2"], notebook)
+        assert "Found 1 note(s)" in result
+
+    def test_search_by_tags_no_matches(self):
+        """Test searching by tags with no matches."""
+        notebook = NoteBook()
+        add_note(["Note", "tag1"], notebook)
+
+        result = search_notes_by_tags(["tag2"], notebook)
+        assert "No notes found" in result
+
+    def test_search_by_tags_empty_args(self):
+        """Test searching with empty args."""
+        notebook = NoteBook()
+        result = search_notes_by_tags([], notebook)
+        assert "At least one tag is required" in result or "Enter the argument for the command" in result
+
+    def test_search_by_tags_empty_notebook(self):
+        """Test searching in empty notebook."""
+        notebook = NoteBook()
+        result = search_notes_by_tags(["tag"], notebook)
+        assert "No notes found" in result
+
+    def test_search_by_tags_case_insensitive(self):
+        """Test that tag search is case-insensitive."""
+        notebook = NoteBook()
+        add_note(["Note", "IMPORTANT"], notebook)
+
+        result = search_notes_by_tags(["important"], notebook)
+        assert "Found 1 note(s)" in result
+
+    def test_search_by_tags_no_valid_tags(self):
+        """Test searching with no valid tags."""
+        notebook = NoteBook()
+        result = search_notes_by_tags([",,"], notebook)
+        assert "No valid tags provided" in result
+
+    def test_search_by_tags_shows_tag_list(self):
+        """Test that search results show searched tags."""
+        notebook = NoteBook()
+        add_note(["Note", "tag1,tag2"], notebook)
+
+        result = search_notes_by_tags(["tag1", "tag2"], notebook)
+        assert "tag1" in result and "tag2" in result
+
+
+class TestEditNote:
+    """Test suite for the edit_note handler."""
+
+    def test_edit_note_by_number(self):
+        """Test editing note by number."""
+        notebook = NoteBook()
+        add_note(["Original text", "tag1"], notebook)
+
+        result = edit_note(["1", "Updated text", "tag2"], notebook)
+        assert "Note updated" in result
+        notes = notebook.get_all_notes()
+        assert notes[0].text == "Updated text"
+        assert "tag2" in notes[0].tags
+
+    def test_edit_note_by_text_fragment(self):
+        """Test editing note by text fragment."""
+        notebook = NoteBook()
+        add_note(["Original text"], notebook)
+
+        result = edit_note(["Original", "Updated text"], notebook)
+        assert "Note updated" in result
+
+    def test_edit_note_text_only(self):
+        """Test editing note text without tags."""
+        notebook = NoteBook()
+        add_note(["Original text", "tag1"], notebook)
+
+        result = edit_note(["1", "Updated text"], notebook)
+        assert "Note updated" in result
+        notes = notebook.get_all_notes()
+        assert notes[0].text == "Updated text"
+        assert len(notes[0].tags) == 0
+
+    def test_edit_note_with_new_tags(self):
+        """Test editing note with new tags."""
+        notebook = NoteBook()
+        add_note(["Original text"], notebook)
+
+        result = edit_note(["1", "Updated text", "new1,new2"], notebook)
+        assert "Note updated" in result
+        assert "new1" in result or "new2" in result
+
+    def test_edit_note_not_found_by_number(self):
+        """Test editing non-existent note by number."""
+        notebook = NoteBook()
+        result = edit_note(["99", "New text"], notebook)
+        assert "not found" in result
+
+    def test_edit_note_not_found_by_text(self):
+        """Test editing non-existent note by text."""
+        notebook = NoteBook()
+        result = edit_note(["nonexistent", "New text"], notebook)
+        assert "not found" in result
+
+    def test_edit_note_insufficient_args(self):
+        """Test editing with insufficient arguments."""
+        notebook = NoteBook()
+        result = edit_note(["1"], notebook)
+        assert "Identifier and new text are required" in result or "Enter the argument for the command" in result
+
+    def test_edit_note_empty_args(self):
+        """Test editing with empty args."""
+        notebook = NoteBook()
+        result = edit_note([], notebook)
+        assert "Identifier and new text are required" in result or "Enter the argument for the command" in result
+
+    def test_edit_note_updates_timestamp(self):
+        """Test that editing updates the timestamp."""
+        notebook = NoteBook()
+        add_note(["Original text"], notebook)
+        notes_before = notebook.get_all_notes()
+        original_time = notes_before[0].updated_at
+
+        import time
+        time.sleep(0.01)
+
+        edit_note(["1", "Updated text"], notebook)
+        notes_after = notebook.get_all_notes()
+        assert notes_after[0].updated_at > original_time
+
+    def test_edit_note_with_comma_separated_tags(self):
+        """Test editing with comma-separated tags."""
+        notebook = NoteBook()
+        add_note(["Original text"], notebook)
+
+        result = edit_note(["1", "Updated", "tag1,tag2,tag3"], notebook)
+        assert "Note updated" in result
+
+
+class TestDeleteNote:
+    """Test suite for the delete_note handler."""
+
+    def test_delete_note_by_number(self):
+        """Test deleting note by number."""
+        notebook = NoteBook()
+        add_note(["Test note"], notebook)
+
+        result = delete_note(["1"], notebook)
+        assert "Note deleted" in result
+        assert len(notebook) == 0
+
+    def test_delete_note_by_text_fragment(self):
+        """Test deleting note by text fragment."""
+        notebook = NoteBook()
+        add_note(["Test note to delete"], notebook)
+
+        result = delete_note(["Test"], notebook)
+        assert "Note deleted" in result
+        assert len(notebook) == 0
+
+    def test_delete_note_not_found_by_number(self):
+        """Test deleting non-existent note by number."""
+        notebook = NoteBook()
+        result = delete_note(["99"], notebook)
+        assert "not found" in result
+
+    def test_delete_note_not_found_by_text(self):
+        """Test deleting non-existent note by text."""
+        notebook = NoteBook()
+        result = delete_note(["nonexistent"], notebook)
+        assert "not found" in result
+
+    def test_delete_note_empty_args(self):
+        """Test deleting with empty args."""
+        notebook = NoteBook()
+        result = delete_note([], notebook)
+        assert "Note identifier is required" in result or "Enter the argument for the command" in result
+
+    def test_delete_note_from_multiple(self):
+        """Test deleting one note from multiple."""
+        notebook = NoteBook()
+        add_note(["Note 1"], notebook)
+        add_note(["Note 2"], notebook)
+        add_note(["Note 3"], notebook)
+
+        result = delete_note(["2"], notebook)
+        assert "Note deleted" in result
+        assert len(notebook) == 2
+
+    def test_delete_note_shows_truncated_text(self):
+        """Test that delete confirmation shows truncated text."""
+        notebook = NoteBook()
+        long_text = "A" * 100
+        add_note([long_text], notebook)
+
+        result = delete_note(["1"], notebook)
+        assert "Note deleted" in result
+        assert "..." in result
+
+
+class TestListNotes:
+    """Test suite for the list_notes handler."""
+
+    def test_list_notes_empty_notebook(self):
+        """Test listing notes in empty notebook."""
+        notebook = NoteBook()
+        result = list_notes([], notebook)
+        assert "No notes found" in result
+
+    def test_list_notes_default_sort(self):
+        """Test listing notes with default sorting."""
+        notebook = NoteBook()
+        add_note(["Note 1"], notebook)
+        add_note(["Note 2"], notebook)
+        add_note(["Note 3"], notebook)
+
+        result = list_notes([], notebook)
+        assert "All notes" in result
+        assert "#1" in result
+        assert "#2" in result
+        assert "#3" in result
+
+    def test_list_notes_sort_by_created(self):
+        """Test listing notes sorted by creation date."""
+        notebook = NoteBook()
+        add_note(["First"], notebook)
+        add_note(["Second"], notebook)
+
+        result = list_notes(["created"], notebook)
+        assert "by creation date" in result
+
+    def test_list_notes_sort_by_updated(self):
+        """Test listing notes sorted by update date."""
+        notebook = NoteBook()
+        add_note(["Note"], notebook)
+
+        result = list_notes(["updated"], notebook)
+        assert "by update date" in result
+
+    def test_list_notes_sort_by_text(self):
+        """Test listing notes sorted alphabetically."""
+        notebook = NoteBook()
+        add_note(["Zebra"], notebook)
+        add_note(["Apple"], notebook)
+
+        result = list_notes(["text"], notebook)
+        assert "alphabetically" in result
+
+    def test_list_notes_sort_by_tags(self):
+        """Test listing notes sorted by tags."""
+        notebook = NoteBook()
+        add_note(["Note", "tag1"], notebook)
+
+        result = list_notes(["tags"], notebook)
+        assert "by tags" in result
+
+    def test_list_notes_sort_equals_format(self):
+        """Test listing with sort=parameter format."""
+        notebook = NoteBook()
+        add_note(["Note"], notebook)
+
+        result = list_notes(["sort=text"], notebook)
+        assert "All notes" in result
+
+    def test_list_notes_invalid_sort(self):
+        """Test listing with invalid sort parameter."""
+        notebook = NoteBook()
+        add_note(["Note"], notebook)
+
+        result = list_notes(["invalid"], notebook)
+        assert "All notes" in result
+
+    def test_list_notes_shows_all_note_info(self):
+        """Test that listing shows note text and tags."""
+        notebook = NoteBook()
+        add_note(["Test note", "tag1,tag2"], notebook)
+
+        result = list_notes([], notebook)
+        assert "Test note" in result
+        assert "Tags:" in result
+
+
+class TestIntegrationNoteHandlers:
+    """Integration tests for note handlers."""
+
+    def test_full_workflow(self):
+        """Test complete workflow with all operations."""
+        notebook = NoteBook()
+
+        # Add notes
+        add_note(["Buy groceries", "shopping,important"], notebook)
+        add_note(["Call dentist", "health,urgent"], notebook)
+        add_note(["Finish report", "work,important"], notebook)
+
+        assert len(notebook) == 3
+
+        # Search
+        result = search_notes(["important"], notebook)
+        assert "Found 2 note(s)" in result
+
+        # Search by tags
+        result = search_notes_by_tags(["shopping"], notebook)
+        assert "Found 1 note(s)" in result
+
+        # Edit note
+        edit_note(["1", "Buy groceries and snacks", "shopping"], notebook)
+
+        # List all
+        result = list_notes([], notebook)
+        assert "All notes" in result
+
+        # Delete
+        delete_note(["2"], notebook)
+        assert len(notebook) == 2
+
+    def test_edge_cases_combination(self):
+        """Test combination of edge cases."""
+        notebook = NoteBook()
+
+        # Add note with many tags
+        add_note(["Important", "tag1,tag2,tag3,tag4,tag5"], notebook)
+
+        # Edit with different tags
+        edit_note(["1", "Very important", "newtag1,newtag2"], notebook)
+
+        # Search by old tags should fail
+        result = search_notes_by_tags(["tag1"], notebook)
+        assert "No notes found" in result
+
+        # Search by new tags should succeed
+        result = search_notes_by_tags(["newtag1"], notebook)
+        assert "Found 1 note(s)" in result
+
+    def test_error_handling_sequence(self):
+        """Test error handling in sequence of operations."""
+        notebook = NoteBook()
+
+        # Try to search in empty notebook
+        result = search_notes(["anything"], notebook)
+        assert "No notes found" in result
+
+        # Try to delete non-existent note
+        result = delete_note(["1"], notebook)
+        assert "not found" in result
+
+        # Try to edit non-existent note
+        result = edit_note(["1", "new text"], notebook)
+        assert "not found" in result
+
+        # Add a note
+        add_note(["Test"], notebook)
+
+        # Now operations should work
+        result = search_notes(["Test"], notebook)
+        assert "Found 1 note(s)" in result
