@@ -1,52 +1,71 @@
 """
 Tests for the main module.
 
-This module contains tests for the parse_input function and main functionality.
+This module contains tests for the main functionality and get_output_by_command.
 """
 
-from main import parse_input
+from main import get_output_by_command
+from core.commands import Command
+from models.AddressBook import AddressBook
 
 
-class TestParseInput:
-    """Test suite for the parse_input function."""
+class TestGetOutputByCommand:
+    """Test suite for the get_output_by_command function."""
 
-    def test_parse_simple_command(self):
-        """Test parsing a simple command."""
-        cmd, *args = parse_input("hello")
-        assert cmd == "hello"
-        assert not args
+    def test_exit_command_exit_1(self):
+        """Test exit command with EXIT_1."""
+        book = AddressBook()
+        output, is_exit = get_output_by_command(Command.EXIT_1, [], book)
+        assert is_exit is True
+        assert output == "Good bye!"
 
-    def test_parse_command_with_args(self):
-        """Test parsing a command with arguments."""
-        cmd, *args = parse_input("add John 1234567890")
-        assert cmd == "add"
-        assert args == ["John", "1234567890"]
+    def test_exit_command_exit_2(self):
+        """Test exit command with EXIT_2."""
+        book = AddressBook()
+        output, is_exit = get_output_by_command(Command.EXIT_2, [], book)
+        assert is_exit is True
+        assert output == "Good bye!"
 
-    def test_parse_command_lowercase(self):
-        """Test that command is converted to lowercase."""
-        cmd, *_ = parse_input("HELLO")
-        assert cmd == "hello"
+    def test_hello_command(self):
+        """Test hello command."""
+        book = AddressBook()
+        output, is_exit = get_output_by_command(Command.HELLO, [], book)
+        assert is_exit is False
+        assert output == "How can I help you?"
 
-    def test_parse_command_with_multiple_args(self):
-        """Test parsing command with multiple arguments."""
-        cmd, *args = parse_input("change John 1234567890 9876543210")
-        assert cmd == "change"
-        assert len(args) == 3
+    def test_add_contact_command(self):
+        """Test add contact command."""
+        book = AddressBook()
+        output, is_exit = get_output_by_command(Command.ADD_CONTACT, ["John", "1234567890"], book)
+        assert is_exit is False
+        assert "added successfully" in output.lower() or "updated successfully" in output.lower()
 
-    def test_parse_command_with_spaces(self):
-        """Test parsing command with extra spaces."""
-        cmd, *args = parse_input("  add   John  Doe   1234567890  ")
-        assert cmd == "add"
-        assert len(args) >= 2
+    def test_show_all_contacts_command(self):
+        """Test show all contacts command."""
+        book = AddressBook()
+        output, is_exit = get_output_by_command(Command.SHOW_ALL_CONTACTS, [], book)
+        assert is_exit is False
+        assert "No contacts found" in output or "Contact name" in output
 
-    def test_parse_command_with_tabs(self):
-        """Test parsing command with tab separators."""
-        cmd, *args = parse_input("add\tJohn\t1234567890")
-        assert cmd == "add"
-        assert args == ["John", "1234567890"]
+    def test_unknown_command(self):
+        """Test unknown command."""
+        book = AddressBook()
+        output, is_exit = get_output_by_command("unknown_command", [], book)
+        assert is_exit is False
+        assert output == "Unknown command. Please try again."
 
-    def test_parse_unicode_command(self):
-        """Test parsing command with unicode characters."""
-        cmd, *args = parse_input("add Степан 1234567890")
-        assert cmd == "add"
-        assert args[0] == "Степан"
+    def test_help_command(self):
+        """Test help command."""
+        book = AddressBook()
+        output, is_exit = get_output_by_command(Command.HELP, [], book)
+        assert is_exit is False
+        assert "Available commands" in output
+        assert Command.HELLO in output
+        assert Command.ADD_CONTACT in output
+
+    def test_help_alt_command(self):
+        """Test help alternative command."""
+        book = AddressBook()
+        output, is_exit = get_output_by_command(Command.HELP_ALT, [], book)
+        assert is_exit is False
+        assert "Available commands" in output

@@ -4,7 +4,7 @@ Phone field class for the address book.
 This module provides the Phone class for storing and validating
 phone numbers in the address book system.
 """
-
+import re
 from .Field import Field
 
 
@@ -17,6 +17,8 @@ class Phone(Field):
     Attributes:
         value (str): The validated phone number
     """
+    PHONE_LEN = 10
+    EMPTY_PHONE = ""
 
     def __init__(self, value):
         """
@@ -28,6 +30,13 @@ class Phone(Field):
         Raises:
             ValueError: If phone number is not 10 digits or contains non-numeric characters
         """
-        if not (value.isdigit() and len(value) == 10):
-            raise ValueError("Phone number must be 10 digits and contain only numbers")
-        super().__init__(value)
+        # Clean the phone number (remove all non-digit characters)
+        phone = re.sub(r"\D", "", value)
+        if phone == Phone.EMPTY_PHONE:
+            raise ValueError("Phone number cannot be empty")
+
+        if not (phone.isdigit() and len(phone) == Phone.PHONE_LEN):
+            raise ValueError(f"""Phone number must be {Phone.PHONE_LEN} digits
+                             and contain only digits""")
+
+        super().__init__(phone)

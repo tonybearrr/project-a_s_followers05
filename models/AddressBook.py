@@ -7,6 +7,7 @@ for birthday management.
 """
 
 from collections import UserDict
+from models.Birthday import Birthday
 from datetime import datetime, timedelta
 
 
@@ -70,7 +71,8 @@ class AddressBook(UserDict):
         including today. Weekend birthdays are moved to the following Monday.
 
         Returns:
-            list: List of tuples (name, congratulation_date) for upcoming birthdays
+            list: List of tuples (name, congratulation_date) for upcoming
+            birthdays
         """
         today = datetime.today().date()
         result = []
@@ -92,5 +94,5 @@ class AddressBook(UserDict):
                         congratulation_date = birthday_this_year + timedelta(days=days_until_monday)
 
                     result.append((record.name.value,
-                                   congratulation_date.strftime("%d.%m.%Y")))
+                                   congratulation_date.strftime(Birthday.DATE_FORMAT)))
         return result
