@@ -10,7 +10,7 @@ from models.phone import Phone
 from core.commands import Command
 from core.handlers import (
     add_contact, update_contact, get_all_contacts, get_one_contact,
-    delete_contact, add_birthday, show_birthday, birthdays,
+    delete_contact, add_birthday, show_birthday, show_upcoming_birthdays,
     add_note, list_notes, search_notes, search_notes_by_tags,
     edit_note, delete_note, add_email, delete_email, show_email
 )
@@ -47,7 +47,7 @@ def get_output_by_command(command, args, book, notebook):
     elif command == Command.SHOW_BIRTHDAY:
         command_output = show_birthday(args, book)
     elif command == Command.SHOW_UPCOMING_BIRTHDAYS:
-        command_output = birthdays(book)
+        command_output = show_upcoming_birthdays(args, book)
     elif command == Command.ADD_EMAIL:
         command_output = add_email(args, book)
     elif command == Command.DELETE_EMAIL:
@@ -68,7 +68,9 @@ def get_output_by_command(command, args, book, notebook):
         command_output = delete_note(args, notebook)
     elif command in [Command.HELP, Command.HELP_ALT]:
         command_output = (
+            "\n"
             "Available commands:\n"
+            "\n"
             f"{Command.HELLO} - Greet the bot\n"
             f"{Command.ADD_CONTACT} <name> <phone> - Add a new contact. "
             f"Expected phone length is {Phone.PHONE_LEN} digits.\n"
@@ -77,19 +79,24 @@ def get_output_by_command(command, args, book, notebook):
             f"Expected phone length is {Phone.PHONE_LEN} digits.\n"
             f"{Command.SHOW_CONTACT} <name> - Show the phone number of a contact\n"
             f"{Command.SHOW_ALL_CONTACTS} - Show all contacts\n"
+            "\n"
             f"{Command.ADD_BIRTHDAY} <name> <{Birthday.DATE_FORMAT_DISPLAY}> - "
             f"Add birthday to a contact\n"
             f"{Command.SHOW_BIRTHDAY} <name> - Show birthday of a contact\n"
-            f"{Command.SHOW_UPCOMING_BIRTHDAYS} - Show contacts with upcoming birthdays\n"
+            f"{Command.SHOW_UPCOMING_BIRTHDAYS} [days_ahead_number]- Show contacts for upcoming birthdays."
+            f" [days_ahead_number] parameter is optional, default is 7.\n"
+            "\n"
             f"{Command.ADD_EMAIL} <name> <email> - Add or update email address for a contact\n"
             f"{Command.DELETE_EMAIL} <name> - Delete email address from a contact\n"
             f"{Command.SHOW_EMAIL} <name> - Show contact's email address\n"
+            "\n"
             f"{Command.ADD_NOTE} <text> [tags] - Add a new note with optional tags\n"
             f"{Command.LIST_NOTES} [sort] - List all notes (sort: created/updated/text/tags)\n"
             f"{Command.SEARCH_NOTES} <query> - Search notes by text or tags\n"
             f"{Command.SEARCH_TAGS} <tags> - Search notes by specific tags\n"
             f"{Command.EDIT_NOTE} <identifier> <text> [tags] - Edit a note\n"
             f"{Command.DELETE_NOTE} <identifier> - Delete a note\n"
+            "\n"
             f"{Command.EXIT_1}, {Command.EXIT_2} - Exit the program"
         )
     else:

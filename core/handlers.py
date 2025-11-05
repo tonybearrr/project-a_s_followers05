@@ -4,6 +4,7 @@ Handler functions for the address book bot.
 This module contains all the command handler functions that process
 user commands and interact with the AddressBook and Record classes.
 """
+
 from models.address_book import AddressBook
 from models.record import Record
 from models.notebook import NoteBook
@@ -53,8 +54,10 @@ def update_contact(args, book: AddressBook):
         str: Success message or error message
     """
     if len(args) < 3:
-        return (f"Error: [{Command.UPDATE_CONTACT}] command requires a name, "
-                f"old phone number and a new phone number.")
+        return (
+            f"Error: [{Command.UPDATE_CONTACT}] command requires a name, "
+            f"old phone number and a new phone number."
+        )
     name, old_phone, new_phone = args
     record = book.find(name)
     if not record:
@@ -131,15 +134,17 @@ def add_birthday(args, book: AddressBook):
         str: Success message or error message
     """
     if len(args) < 2:
-        return (f"Error: [{Command.ADD_BIRTHDAY}] command requires a name and "
-                f"a birthday ({Birthday.DATE_FORMAT_DISPLAY}).")
+        return (
+            f"Error: [{Command.ADD_BIRTHDAY}] command requires a name and "
+            f"a birthday ({Birthday.DATE_FORMAT_DISPLAY})."
+        )
 
-    name, bday, *_ = args
+    name, birthday, *_ = args
     record = book.find(name)
     if not record:
         return f"Contact '{name}' not found."
-    record.add_birthday(bday)
-    return f"Birthday added for {name}: {bday}"
+    record.add_birthday(birthday)
+    return f"Birthday added for {name}: {birthday}"
 
 
 @input_error
@@ -157,12 +162,14 @@ def show_birthday(args, book: AddressBook):
     if len(args) < 1:
         return f"Error: [{Command.SHOW_BIRTHDAY}] command requires a name."
     name = args[0]
-    record = book.find(name)
-    if not record:
+    if record := book.find(name):
+        return (
+            f"{name}'s birthday is {record.birthday}"
+            if record.birthday
+            else f"{name} has no birthday set."
+        )
+    else:
         return f"Contact '{name}' not found."
-    if record.birthday:
-        return f"{name}'s birthday is {record.birthday}"
-    return f"{name} has no birthday set."
 
 
 @input_error
@@ -238,20 +245,27 @@ def show_email(args, book: AddressBook):
     return f"{name}: {email}"
 
 
-def birthdays(book: AddressBook):
+def show_upcoming_birthdays(args, book: AddressBook):
     """
-    Get upcoming birthdays in the next 7 days.
+    Get upcoming birthdays in the next days_ahead days.
 
     Args:
         book (AddressBook): Address book instance
 
     Returns:
-        str: List of upcoming birthdays or "No birthdays in the next 7 days."
+        str: List of upcoming birthdays or "No birthdays in the next N days."
     """
-    upcoming = book.get_upcoming_birthdays()
+    days_ahead = 7
+    if len(args) > 0:
+        try:
+            days_ahead = int(args[0])
+        except ValueError, OverflowError:
+            return f"Please input valid number for '{Command.SHOW_UPCOMING_BIRTHDAYS}' command"
+
+    upcoming = book.get_upcoming_birthdays(days_ahead=days_ahead)
     if not upcoming:
-        return "No birthdays in the next 7 days."
-    lines = [f"{name}: {bday}" for name, bday in upcoming]
+        return f"No birthdays in the next {days_ahead} days."
+    lines = [f"{name}: {birthday}" for name, birthday in upcoming]
     return "\n".join(lines)
 
 
@@ -267,11 +281,11 @@ def parse_tags(tags_input):
     """
     if isinstance(tags_input, str):
         # Replace commas with spaces and split
-        tags = tags_input.replace(',', ' ').split()
+        tags = tags_input.replace(",", " ").split()
     elif isinstance(tags_input, list):
         # Join list items and parse again to handle mixed formats
-        tags_str = ' '.join(str(tag) for tag in tags_input)
-        tags = tags_str.replace(',', ' ').split()
+        tags_str = " ".join(str(tag) for tag in tags_input)
+        tags = tags_str.replace(",", " ").split()
     else:
         return []
 
@@ -371,13 +385,13 @@ def search_notes_by_tags(args, notebook: NoteBook):
     results = notebook.search_by_tags(tags)
 
     if not results:
-        tags_str = ', '.join(tags)
+        tags_str = ", ".join(tags)
         return f"No notes found with tags: {tags_str}."
 
     # Get all notes for numbering
     all_notes = notebook.get_all_notes(sort_by="created")
 
-    tags_str = ', '.join(tags)
+    tags_str = ", ".join(tags)
     lines = [f"Found {len(results)} note(s) with tags [{tags_str}]:"]
     for note in results:
         note_number = all_notes.index(note) + 1
@@ -419,7 +433,7 @@ def edit_note(args, notebook: NoteBook):
 
     # Update note
     note.text = new_text
-    note.updated_at = __import__('datetime').datetime.now()
+    note.updated_at = __import__("datetime").datetime.now()
     note.edit_tags(new_tags)
 
     tags_str = f" with tags: {', '.join(new_tags)}" if new_tags else " (no tags)"
@@ -495,11 +509,9 @@ def list_notes(args, notebook: NoteBook):
         "created": "by creation date",
         "updated": "by update date",
         "text": "alphabetically",
-        "tags": "by tags"
+        "tags": "by tags",
     }
 
     lines = [f"All notes (sorted {sort_labels.get(sort_by, sort_by)}):"]
-    for i, note in enumerate(notes, 1):
-        lines.append(f"#{i}: {note}")
-
+    lines.extend(f"#{i}: {note}" for i, note in enumerate(notes, 1))
     return "\n".join(lines)

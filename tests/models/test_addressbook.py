@@ -214,10 +214,10 @@ class TestAddressBook:
         )
 
         assert len(upcoming) == 4
-        assert any(name == "Maria" for name, birthday in upcoming)
-        assert any(name == "Alice" for name, birthday in upcoming)
-        assert any(name == "Bob" for name, birthday in upcoming)
-        assert any(name == "Anna" for name, birthday in upcoming)
+        assert any(name == "Maria" for name, _ in upcoming)
+        assert any(name == "Alice" for name, _ in upcoming)
+        assert any(name == "Bob" for name, _ in upcoming)
+        assert any(name == "Anna" for name, _ in upcoming)
 
     def add_record_to_book(self, name, birthday, book):
         """
