@@ -259,7 +259,7 @@ def show_upcoming_birthdays(args, book: AddressBook):
     if len(args) > 0:
         try:
             days_ahead = int(args[0])
-        except ValueError, OverflowError:
+        except ValueError:
             return f"Please input valid number for '{Command.SHOW_UPCOMING_BIRTHDAYS}' command"
 
     upcoming = book.get_upcoming_birthdays(days_ahead=days_ahead)
