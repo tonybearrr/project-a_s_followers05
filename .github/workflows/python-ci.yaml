@@ -31,7 +31,7 @@ jobs:
 
       - name: Lint code with flake8
         run: |
-          flake8 . --max-line-length=100 --ignore=E501,W503
+          flake8 . --max-line-length=120 --ignore=E501,W503
 
       - name: Run tests with pytest and coverage
         run: |

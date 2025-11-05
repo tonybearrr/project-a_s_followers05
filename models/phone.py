@@ -36,7 +36,6 @@ class Phone(Field):
             raise ValueError("Phone number cannot be empty")
 
         if not (phone.isdigit() and len(phone) == Phone.PHONE_LEN):
-            raise ValueError(f"""Phone number must be {Phone.PHONE_LEN} digits
-                             and contain only digits""")
+            raise ValueError(f"""Phone number must be {Phone.PHONE_LEN} digits and contain only digits""")
 
         super().__init__(phone)

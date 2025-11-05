@@ -2,23 +2,25 @@
 Record class for the address book.
 
 This module provides the Record class that represents a single contact
-with name, phone numbers, and birthday information.
+with name, phone numbers, email, and birthday information.
 """
 
 from .phone import Phone
 from .name import Name
 from .birthday import Birthday
+from .email import Email
 
 
 class Record:
     """
     A record representing a single contact in the address book.
 
-    Contains contact information including name, phone numbers, and birthday.
+    Contains contact information including name, phone numbers, email and birthday.
 
     Attributes:
         name (Name): Contact's name
         phones (list): List of Phone objects
+        email (Email, optional): Contact's email
         birthday (Birthday, optional): Contact's birthday
     """
 
@@ -31,6 +33,7 @@ class Record:
         """
         self.name = Name(name)
         self.phones = []
+        self.email = None
         self.birthday = None
 
     def __str__(self):
@@ -41,8 +44,9 @@ class Record:
             str: Formatted contact information
         """
         phones = "; ".join(p.value for p in self.phones) if self.phones else "no phones"
+        email = self.email if self.email else "no email"
         bday = self.birthday if self.birthday else "no birthday"
-        return f"Contact name: {self.name.value}, phones: {phones}, birthday: {bday}"
+        return f"Contact name: {self.name.value}, phones: {phones}, email: {email}, birthday: {bday}"
 
     def add_phone(self, phone):
         """
@@ -101,6 +105,24 @@ class Record:
             if phone_number.value == phone:
                 return phone_number
         return None
+
+    def add_email(self, email):
+        """
+        Add or update email for the contact.
+
+        Args:
+            email (str): Email to add or update
+
+        Raises:
+            ValueError: If email format is invalid
+        """
+        self.email = Email(email)
+
+    def delete_email(self):
+        """
+        Delete email from the contact.
+        """
+        self.email = None
 
     def add_birthday(self, birthday):
         """

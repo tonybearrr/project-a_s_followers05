@@ -15,12 +15,13 @@ class TestRecord:
         record = Record("John Doe")
         assert record.name.value == "John Doe"
         assert not record.phones
+        assert record.email is None
         assert record.birthday is None
 
     def test_str_representation_no_phones_no_birthday(self):
-        """Test string representation without phones and birthday."""
+        """Test string representation without phones, email and birthday."""
         record = Record("Test User")
-        expected = "Contact name: Test User, phones: no phones, birthday: no birthday"
+        expected = "Contact name: Test User, phones: no phones, email: no email, birthday: no birthday"
         assert str(record) == expected
 
     def test_str_representation_with_phones(self):
@@ -156,3 +157,55 @@ class TestRecord:
 
         assert len(record.phones) == 3
         assert record.birthday is not None
+
+    def test_add_email(self):
+        """Test adding an email address."""
+        record = Record("John Doe")
+        record.add_email("test@example.com")
+        assert record.email is not None
+        assert record.email.value == "test@example.com"
+
+    def test_update_email(self):
+        """Test updating email address (replacing existing)."""
+        record = Record("John Doe")
+        record.add_email("old@example.com")
+        assert record.email.value == "old@example.com"
+        record.add_email("new@example.com")
+        assert record.email.value == "new@example.com"
+
+    def test_delete_email(self):
+        """Test deleting email address."""
+        record = Record("John Doe")
+        record.add_email("test@example.com")
+        assert record.email is not None
+        record.delete_email()
+        assert record.email is None
+
+    def test_add_email_raises_error_on_invalid_email(self):
+        """Test that adding invalid email raises ValueError."""
+        record = Record("John Doe")
+        try:
+            record.add_email("invalid-email")
+            assert False, "Expected ValueError for invalid email"
+        except ValueError:
+            pass  # Expected
+
+    def test_str_representation_with_email(self):
+        """Test string representation with email."""
+        record = Record("Test User")
+        record.add_email("test@example.com")
+        assert "test@example.com" in str(record)
+
+    def test_record_with_phones_email_and_birthday(self):
+        """Test record with phones, email and birthday."""
+        record = Record("Complete User")
+        record.add_phone("1111111111")
+        record.add_email("user@example.com")
+        record.add_birthday("01.01.2000")
+
+        assert len(record.phones) == 1
+        assert record.email is not None
+        assert record.birthday is not None
+        assert "1111111111" in str(record)
+        assert "user@example.com" in str(record)
+        assert "01.01.2000" in str(record)
