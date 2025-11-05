@@ -5,9 +5,9 @@ This module provides the main entry point for the address book bot,
 which allows users to add, update, delete, and view contacts with
 phone numbers and birthdays.
 """
-from core.commands import Command
 from models.birthday import Birthday
 from models.phone import Phone
+from core.commands import Command
 from core.handlers import (
     add_contact, update_contact, get_all_contacts, get_one_contact,
     delete_contact, add_birthday, show_birthday, birthdays,
@@ -15,8 +15,8 @@ from core.handlers import (
     edit_note, delete_note, add_email, delete_email, show_email
 )
 from utils.parsers import parse_input
-from storage.file_storage import load_data, save_data
-from storage.file_storage import load_notes, save_notes
+from storage.file_storage import load_data, save_data, load_notes, save_notes
+
 
 
 def get_output_by_command(command, args, book, notebook):
@@ -71,15 +71,15 @@ def get_output_by_command(command, args, book, notebook):
         output = (
             "Available commands:\n"
             f"{Command.HELLO} - Greet the bot\n"
-            f"""{Command.ADD_CONTACT} <name> <phone> - Add a new contact.
-            Expected phone lenght is {Phone.PHONE_LEN} digits.\n"""
-            f"""{Command.UPDATE_CONTACT} <name> <old_phone> <new_phone> -
-            Change an existing contact's phone number. Expected phone lenght
-             is {Phone.PHONE_LEN} digits.\n"""
+            f"{Command.ADD_CONTACT} <name> <phone> - Add a new contact. "
+            f"Expected phone length is {Phone.PHONE_LEN} digits.\n"
+            f"{Command.UPDATE_CONTACT} <name> <old_phone> <new_phone> - "
+            f"Change an existing contact's phone number. "
+            f"Expected phone length is {Phone.PHONE_LEN} digits.\n"
             f"{Command.SHOW_CONTACT} <name> - Show the phone number of a contact\n"
             f"{Command.SHOW_ALL_CONTACTS} - Show all contacts\n"
-            f"""{Command.ADD_BIRTHDAY} <name> <{Birthday.DATE_FORMAT_DISPLAY}> -
-            Add birthday to a contact\n"""
+            f"{Command.ADD_BIRTHDAY} <name> <{Birthday.DATE_FORMAT_DISPLAY}> - "
+            f"Add birthday to a contact\n"
             f"{Command.SHOW_BIRTHDAY} <name> - Show birthday of a contact\n"
             f"{Command.SHOW_UPCOMING_BIRTHDAYS} - Show contacts with upcoming birthdays\n"
             f"{Command.ADD_EMAIL} <name> <email> - Add or update email address for a contact\n"

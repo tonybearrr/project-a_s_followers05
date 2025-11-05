@@ -2,7 +2,7 @@
 Record class for the address book.
 
 This module provides the Record class that represents a single contact
-with name, phone numbers, email addresses, and birthday information.
+with name, phone numbers, email, and birthday information.
 """
 
 from .phone import Phone
@@ -15,12 +15,12 @@ class Record:
     """
     A record representing a single contact in the address book.
 
-    Contains contact information including name, phone numbers, email address, and birthday.
+    Contains contact information including name, phone numbers, email and birthday.
 
     Attributes:
         name (Name): Contact's name
         phones (list): List of Phone objects
-        email (Email, optional): Contact's email address
+        email (Email, optional): Contact's email
         birthday (Birthday, optional): Contact's birthday
     """
 
@@ -108,19 +108,19 @@ class Record:
 
     def add_email(self, email):
         """
-        Add or update email address for the contact.
+        Add or update email for the contact.
 
         Args:
-            email (str): Email address to add or update
+            email (str): Email to add or update
 
         Raises:
-            ValueError: If email address format is invalid
+            ValueError: If email format is invalid
         """
         self.email = Email(email)
 
     def delete_email(self):
         """
-        Delete email address from the contact.
+        Delete email from the contact.
         """
         self.email = None
 

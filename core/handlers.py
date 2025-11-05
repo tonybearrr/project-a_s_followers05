@@ -53,7 +53,8 @@ def update_contact(args, book: AddressBook):
         str: Success message or error message
     """
     if len(args) < 3:
-        return f"Error: [{Command.UPDATE_CONTACT}] command requires a name, old phone number and a new phone number."
+        return (f"Error: [{Command.UPDATE_CONTACT}] command requires a name, "
+                f"old phone number and a new phone number.")
     name, old_phone, new_phone = args
     record = book.find(name)
     if not record:
@@ -130,7 +131,8 @@ def add_birthday(args, book: AddressBook):
         str: Success message or error message
     """
     if len(args) < 2:
-        return f"Error: [{Command.ADD_BIRTHDAY}] command requires a name and a birthday ({Birthday.DATE_FORMAT_DISPLAY})."
+        return (f"Error: [{Command.ADD_BIRTHDAY}] command requires a name and "
+                f"a birthday ({Birthday.DATE_FORMAT_DISPLAY}).")
 
     name, bday, *_ = args
     record = book.find(name)
