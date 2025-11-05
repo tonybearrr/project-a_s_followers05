@@ -189,3 +189,40 @@ class TestAddressBook:
 
         # Verify deletion
         assert book.find("Jane Smith") is None
+
+    def test_get_upcoming_birthdays_multiple(self):
+        """
+        Test for AddressBook.get_upcoming_birthdays.
+        Sets up an AddressBook with 6 Records and their birthdays
+        Uses a fixed "now" date of 2025-10-31 and calls get_upcoming_birthdays with non-default parameters.
+        Expected behavior:
+        - Only birthdays that fall within the next 8 days (inclusive) from the provided now_date are returned.
+        """
+        book = AddressBook()
+        test_now_date = date(2025, 10, 30)
+        next_days = 8
+        self.add_record_to_book("Maria", "30.10.1985", book)  # Today, upcoming
+        self.add_record_to_book("Alice", "1.11.1990", book)  # Saturday, upcoming
+        self.add_record_to_book("Bob", "4.11.1985", book)  # Tuesday, upcoming
+        self.add_record_to_book(
+            "Anna", "7.11.1985", book
+        )  # Friday, upcoming (last 8th upcoming day)
+        self.add_record_to_book("Charlie", "25.12.1992", book)  # Not in upcoming days
+        self.add_record_to_book("Adam", "25.01.1992", book)  # Past
+        upcoming = book.get_upcoming_birthdays(
+            days_ahead=next_days, now_date=test_now_date
+        )
+
+        assert len(upcoming) == 4
+        assert any(name == "Maria" for name, birthday in upcoming)
+        assert any(name == "Alice" for name, birthday in upcoming)
+        assert any(name == "Bob" for name, birthday in upcoming)
+        assert any(name == "Anna" for name, birthday in upcoming)
+
+    def add_record_to_book(self, name, birthday, book):
+        """
+        Create a new Record with the given name, set its birthday, and add it to an address book.
+        """
+        result = Record(name)
+        result.add_birthday(birthday)
+        book.add_record(result)
