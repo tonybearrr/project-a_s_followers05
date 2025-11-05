@@ -19,7 +19,7 @@ class TestGetOutputByCommand:
         notebook = NoteBook()
         output, is_exit = get_output_by_command(Command.EXIT_1, [], book, notebook)
         assert is_exit is True
-        assert output == "Good bye!"
+        assert output == "Goodbye!"
 
     def test_exit_command_exit_2(self):
         """Test exit command with EXIT_2."""
@@ -27,7 +27,7 @@ class TestGetOutputByCommand:
         notebook = NoteBook()
         output, is_exit = get_output_by_command(Command.EXIT_2, [], book, notebook)
         assert is_exit is True
-        assert output == "Good bye!"
+        assert output == "Goodbye!"
 
     def test_hello_command(self):
         """Test hello command."""

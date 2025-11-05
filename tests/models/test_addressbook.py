@@ -98,7 +98,7 @@ class TestAddressBook:
         """Test getting upcoming birthdays from empty book."""
         book = AddressBook()
         birthdays = book.get_upcoming_birthdays()
-        assert birthdays == []
+        assert not birthdays
 
     def test_get_upcoming_birthdays_no_birthdays(self):
         """Test getting upcoming birthdays when contacts have no birthdays."""
@@ -108,7 +108,7 @@ class TestAddressBook:
         book.add_record(record)
 
         birthdays = book.get_upcoming_birthdays()
-        assert birthdays == []
+        assert not birthdays
 
     def test_get_upcoming_birthdays_today(self):
         """Test getting birthdays for today."""
