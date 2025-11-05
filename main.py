@@ -18,7 +18,6 @@ from utils.parsers import parse_input
 from storage.file_storage import load_data, save_data, load_notes, save_notes
 
 
-
 def get_output_by_command(command, args, book, notebook):
     """
     Main function that runs the address book bot.
