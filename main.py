@@ -12,7 +12,8 @@ from core.handlers import (
     add_contact, update_contact, get_all_contacts, get_one_contact,
     delete_contact, add_birthday, show_birthday, show_upcoming_birthdays,
     add_note, list_notes, search_notes, search_notes_by_tags,
-    edit_note, delete_note, add_email, delete_email, show_email
+    edit_note, delete_note, add_email, delete_email, show_email,
+    add_address, edit_address, remove_address
 )
 from utils.parsers import parse_input
 from storage.file_storage import load_data, save_data, load_notes, save_notes
@@ -66,6 +67,12 @@ def get_output_by_command(command, args, book, notebook):
         command_output = edit_note(args, notebook)
     elif command == Command.DELETE_NOTE:
         command_output = delete_note(args, notebook)
+    elif command == Command.ADD_ADDRESS:
+        command_output = add_address(args, notebook)
+    elif command == Command.CHANGE_ADDRESS:
+        command_output = edit_address(args, notebook)
+    elif command == Command.REMOVE_ADDRESS:
+        command_output = remove_address(args, notebook)
     elif command in [Command.HELP, Command.HELP_ALT]:
         command_output = (
             "\n"

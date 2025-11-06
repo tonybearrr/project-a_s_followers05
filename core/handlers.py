@@ -12,6 +12,7 @@ from models.note import Note
 from models.birthday import Birthday
 from .decorators import input_error
 from .commands import Command
+from models.address import Address
 
 
 @input_error
@@ -90,7 +91,7 @@ def get_one_contact(args, book: AddressBook):
         book (AddressBook): Address book instance
 
     Returns:
-        str: Contact name and phone numbers or error message
+        str: Contact name, phone numbers and address or error message
     """
     if len(args) < 1:
         return f"Error: [{Command.SHOW_CONTACT}] command requires a name."
@@ -99,7 +100,7 @@ def get_one_contact(args, book: AddressBook):
     if not record:
         return f"Contact '{name}' not found."
     phones = "; ".join(p.value for p in record.phones) if record.phones else "no phones"
-    return f"{name}: {phones}"
+    return f"{name}: {phones}, {record.address}"
 
 
 @input_error
@@ -268,6 +269,73 @@ def show_upcoming_birthdays(args, book: AddressBook):
     lines = [f"{name}: {birthday}" for name, birthday in upcoming]
     return "\n".join(lines)
 
+@input_error
+def add_address(args, book: AddressBook):
+    """
+    Add address for a contact.
+
+    Args:
+        args (list): Command arguments [name, address]
+        book (AddressBook): Address book instance
+
+    Returns:
+        str: Success message or error message
+    """
+    if len(args) < 2:
+        return f"Error: [{Command.ADD_ADDRESS}] command requires a name and an address."
+    name, *address_parts = args
+    address = " ".join(address_parts)
+    record = book.find(name)
+    if not record:
+        return f"Contact '{name}' not found."
+    record.add_address(address)
+    return f"Email '{address}' for contact '{name}'."
+
+@input_error
+def edit_address(args, book: AddressBook):
+    """
+    Update address for a contact.
+
+    Args:
+        args (list): Command arguments [name, address]
+        book (AddressBook): Address book instance
+
+    Returns:
+        str: Success message or error message
+    """
+    if len(args) < 2:
+        return f"Error: [{Command.CHANGE_ADDRESS}] command requires a name and a new address."
+    name, *address_parts = args
+    address = " ".join(address_parts)
+    record = book.find(name)
+    if not record:
+        return f"Contact '{name}' not found."
+    old_address = record.address.value if record.address else None
+    record.edit_address(address)
+    status = "updated" if old_address else "added"
+    return f"Email '{address}' {status} for contact '{name}'."
+
+@input_error
+def remove_address(args, book: AddressBook):
+    """
+    Delete address from a contact.
+
+    Args:
+        args (list): Command arguments [name]
+        book (AddressBook): Address book instance
+
+    Returns:
+        str: Success message or error message
+    """
+    if len(args) < 1:
+        return f"Error: [{Command.REMOVE_ADDRESS}] command requires a name."
+    name = args[0]
+    record = book.find(name)
+    if not record:
+        return f"Contact '{name}' not found."
+    record.remove_address()
+    return f"Email removed for contact '{name}'."
+    
 
 def parse_tags(tags_input):
     """

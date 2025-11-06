@@ -9,7 +9,7 @@ from .phone import Phone
 from .name import Name
 from .birthday import Birthday
 from .email import Email
-
+from .address import Address
 
 class Record:
     """
@@ -22,6 +22,7 @@ class Record:
         phones (list): List of Phone objects
         email (Email, optional): Contact's email
         birthday (Birthday, optional): Contact's birthday
+        address (Address, optional): Contact's address
     """
 
     def __init__(self, name):
@@ -35,6 +36,7 @@ class Record:
         self.phones = []
         self.email = None
         self.birthday = None
+        self.address = None
 
     def __str__(self):
         """
@@ -46,7 +48,9 @@ class Record:
         phones = "; ".join(p.value for p in self.phones) if self.phones else "no phones"
         email = self.email if self.email else "no email"
         bday = self.birthday if self.birthday else "no birthday"
-        return f"Contact name: {self.name.value}, phones: {phones}, email: {email}, birthday: {bday}"
+        addr = self.address if self.address else "no address"
+        return f"Contact name: {self.name.value}, phones: {phones}, email: {email}, birthday: {bday}\
+            address: {addr}"
 
     def add_phone(self, phone):
         """
@@ -135,3 +139,33 @@ class Record:
             ValueError: If birthday format is invalid
         """
         self.birthday = Birthday(birthday)
+
+    def add_address(self, address):
+        """
+        Add address for the contact.
+
+        Args:
+            address (str): Address to add or update
+
+        Raises:
+            ValueError: If address is empty or contains only whitespace
+        """
+        self.address = Address(address)
+
+    def edit_address(self, new_address):
+        """
+        Edit the existing address for the contact.
+
+        Args:
+            new_address (str): New address to set
+
+        Raises:
+            ValueError: If new address is empty or contains only whitespace
+        """
+        self.address = Address(new_address)
+
+    def remove_addres(self):
+        """
+        Remove address from the contact.
+        """
+        self.address = None

@@ -25,3 +25,6 @@ class Command(StrEnum):
     EDIT_NOTE = "edit-note"
     DELETE_NOTE = "delete-note"
     SEARCH_TAGS = "search-tags"
+    ADD_ADDRESS = "add-address"
+    CHANGE_ADDRESS = "change-address"
+    REMOVE_ADDRESS = "remove-address"
