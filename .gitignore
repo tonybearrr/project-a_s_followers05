@@ -143,6 +143,7 @@ venv/
 ENV/
 env.bak/
 venv.bak/
+env_address_book/
 
 # Spyder project settings
 .spyderproject

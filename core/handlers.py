@@ -11,6 +11,8 @@ from models.note import Note
 from models.birthday import Birthday
 from .decorators import input_error
 from .commands import Command
+from colorama import init, Fore, Style, Back
+import re
 
 
 @input_error
@@ -98,6 +100,7 @@ def get_one_contact(args, book: AddressBook):
     phones = "; ".join(p.value for p in record.phones) if record.phones else "no phones"
     return f"{name}: {phones}"
 
+
 def search_contacts(args, book: AddressBook):
     """
     Search the contacts from the address book.
@@ -118,14 +121,49 @@ def search_contacts(args, book: AddressBook):
         search_by_phone = book.search_contacts_by_phone(value)
         search_by_email = book.search_contacts_by_email(value)
         # search_by_address = book.search_contacts_by_address(value)
-        
+
         searchable_contacts = search_by_name.union(search_by_phone).union(search_by_email)
-        
+
         if not searchable_contacts:
             return "No contacts found."
-        return "\n".join(str(record) for record in searchable_contacts)
 
-    
+        display_contacts = display_search_contacts(searchable_contacts, value)
+
+        return display_contacts
+
+
+def display_search_contacts(contacts, value):
+    """
+    Display searched contacts.
+
+    Args:
+        contacts (set): The searches contacts (records)
+        value (str): Searched value
+
+    Returns:
+        str: Formatted contact information
+    """
+    init()
+    result_record_str = ""
+    value_hightligted = Fore.RED + Style.BRIGHT + Back.YELLOW + value + Style.RESET_ALL
+
+    for record in contacts:
+        str_record = str(record)
+        match = re.search(value, str_record)
+        if match:
+            # Get position index of value in the record string
+            value_position = match.span()
+
+            # Cut the record string before value and after value
+            part1 = Style.BRIGHT + str_record[:value_position[0]] + Style.RESET_ALL
+            part2 = Style.BRIGHT + str_record[value_position[1]:] + Style.RESET_ALL
+
+            # Combine all parts in one result string, adding hightligted part
+            result_record_str += "\n" + part1 + value_hightligted + part2
+
+    return result_record_str
+
+
 @input_error
 def delete_contact(args, book: AddressBook):
     """

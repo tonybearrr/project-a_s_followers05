@@ -8,8 +8,6 @@ for birthday management.
 
 from collections import UserDict
 from models.birthday import Birthday
-from models.email import Email
-from models.phone import Phone
 from datetime import datetime, timedelta
 import re
 
@@ -82,9 +80,9 @@ class AddressBook(UserDict):
             match = re.search(name_lower, record.name.value.lower())
             if match:
                 searched_records.append(record)
-        
+
         return set(searched_records)
-        
+
     def search_contacts_by_phone(self, phone):
         """
         Find a contact by phone.
@@ -95,17 +93,16 @@ class AddressBook(UserDict):
         Returns:
             List of the records or None: List of the Contacts if found, None otherwise
         """
-        # obj_phone = Phone(phone)
+
         searched_records = []
 
         for record in self.data.values():
             for r in record.phones:
                 match = re.search(phone, r.value)
                 if match:
-                # if phone == p.value:
                     searched_records.append(record)
         return set(searched_records)
-    
+
     def search_contacts_by_email(self, email):
         """
         Find a contact by email.
@@ -121,12 +118,12 @@ class AddressBook(UserDict):
         email_lower = email.lower()
 
         for record in self.data.values():
-            if record.email != None:
+            if record.email is not None:
                 match = re.search(email_lower, record.email.value.lower())
                 if match:
                     searched_records.append(record)
         return set(searched_records)
-    
+
     def search_contacts_by_address(self, address):
         """
         Find a contact by address.
@@ -144,7 +141,7 @@ class AddressBook(UserDict):
         # for record in self.data.values():
         #     if record.address != None:
         #         match = re.search(address_lower, record.address.value.lower())
-        #         if match: 
+        #         if match:
         #             searched_records.append(record)
         # return set(searched_records)
 
