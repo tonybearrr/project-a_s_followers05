@@ -9,7 +9,6 @@ for birthday management.
 from collections import UserDict
 from datetime import date, datetime, timedelta
 from models.birthday import Birthday
-from datetime import datetime, timedelta
 import re
 
 
@@ -144,7 +143,6 @@ class AddressBook(UserDict):
         #         if match:
         #             searched_records.append(record)
         # return set(searched_records)
-
 
     def get_upcoming_birthdays(
         self, days_ahead: int = 7, now_date: date = datetime.now().date()
