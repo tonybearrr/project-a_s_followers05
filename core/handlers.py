@@ -98,7 +98,34 @@ def get_one_contact(args, book: AddressBook):
     phones = "; ".join(p.value for p in record.phones) if record.phones else "no phones"
     return f"{name}: {phones}"
 
+def search_contacts(args, book: AddressBook):
+    """
+    Search the contacts from the address book.
 
+    Args:
+        book (AddressBook): Address book instance
+
+    Returns:
+        str: Formatted list of all contacts or "No contacts found."
+    """
+    if len(args) < 1:
+        return f"Error: [{Command.DELETE_CONTACT}] command requires a value."
+    else:
+        searchable_contacts = set()
+        value = args[0]
+
+        search_by_name = book.search_contacts_by_name(value)
+        search_by_phone = book.search_contacts_by_phone(value)
+        search_by_email = book.search_contacts_by_email(value)
+        # search_by_address = book.search_contacts_by_address(value)
+        
+        searchable_contacts = search_by_name.union(search_by_phone).union(search_by_email)
+        
+        if not searchable_contacts:
+            return "No contacts found."
+        return "\n".join(str(record) for record in searchable_contacts)
+
+    
 @input_error
 def delete_contact(args, book: AddressBook):
     """

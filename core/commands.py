@@ -7,6 +7,7 @@ class Command(StrEnum):
     UPDATE_CONTACT = "change"
     SHOW_CONTACT = "phone"
     SHOW_ALL_CONTACTS = "all"
+    SEARCH_CONTACTS = "search"
     ADD_BIRTHDAY = "add-birthday"
     SHOW_BIRTHDAY = "show-birthday"
     SHOW_UPCOMING_BIRTHDAYS = "birthdays"
