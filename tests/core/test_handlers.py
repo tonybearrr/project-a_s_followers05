@@ -3,6 +3,9 @@ Tests for the handlers module.
 
 This module contains tests for all handler functions in the address book bot.
 """
+
+from datetime import date, timedelta
+import time
 from core.handlers import (
     add_contact,
     update_contact,
@@ -11,7 +14,7 @@ from core.handlers import (
     delete_contact,
     add_birthday,
     show_birthday,
-    birthdays,
+    show_upcoming_birthdays,
     parse_tags,
     add_note,
     search_notes,
@@ -21,7 +24,7 @@ from core.handlers import (
     list_notes,
     add_email,
     delete_email,
-    show_email
+    show_email,
 )
 from models.address_book import AddressBook
 from models.notebook import NoteBook
@@ -169,7 +172,10 @@ class TestAddBirthday:
         book.add_record(record)
         result = add_birthday(["John Doe", "1990-03-15"], book)
         # Decoration catches the error and returns a generic message
-        assert "Enter the argument for the command" in result or "Invalid date format" in result
+        assert (
+            "Enter the argument for the command" in result
+            or "Invalid date format" in result
+        )
 
 
 class TestShowBirthday:
@@ -197,23 +203,35 @@ class TestShowBirthday:
 class TestBirthdays:
     """Test suite for the birthdays handler."""
 
+    def test_no_upcoming_by_default(self):
+        """Test birthdays when the contacts book is empty."""
+        book = AddressBook()
+        result = show_upcoming_birthdays([], book)
+        assert result == "No birthdays in the next 7 days."
+
     def test_birthdays_no_upcoming(self):
         """Test birthdays when no upcoming birthdays."""
         book = AddressBook()
-        result = birthdays(book)
-        assert "No birthdays in the next 7 days" in result
+        result = show_upcoming_birthdays(["8"], book)
+        assert "No birthdays in the next 8 days" in result
 
-    def test_birthdays_with_upcoming(self):
-        """Test birthdays with upcoming birthdays."""
+    def test_custom_days_argument_finds_upcoming(self):
+        """Test birthdays for specific days ahead."""
         book = AddressBook()
-        from datetime import date, timedelta
         today = date.today()
         future_birthday = (today + timedelta(days=3)).strftime("%d.%m.%Y")
         record = Record("John Doe")
         record.add_birthday(future_birthday)
         book.add_record(record)
-        result = birthdays(book)
+
+        result = show_upcoming_birthdays(["5"], book)
         assert "John Doe" in result
+
+    def test_invalid_days_argument_returns_error_message(self):
+        """Test birthdays when specific days ahead is not a number."""
+        book = AddressBook()
+        result = show_upcoming_birthdays(["not_a_number"], book)
+        assert "Please input valid number" in result
 
 
 class TestParseTags:
@@ -257,17 +275,17 @@ class TestParseTags:
     def test_parse_tags_empty_string(self):
         """Test parsing empty string."""
         result = parse_tags("")
-        assert result == []
+        assert not result
 
     def test_parse_tags_empty_list(self):
         """Test parsing empty list."""
         result = parse_tags([])
-        assert result == []
+        assert not result
 
     def test_parse_tags_whitespace_only(self):
         """Test parsing whitespace-only string."""
         result = parse_tags("   ,  ,  ")
-        assert result == []
+        assert not result
 
     def test_parse_tags_with_extra_whitespace(self):
         """Test parsing with extra whitespace."""
@@ -277,12 +295,12 @@ class TestParseTags:
     def test_parse_tags_invalid_type(self):
         """Test parsing with invalid type returns empty list."""
         result = parse_tags(123)
-        assert result == []
+        assert not result
 
     def test_parse_tags_none(self):
         """Test parsing None returns empty list."""
         result = parse_tags(None)
-        assert result == []
+        assert not result
 
     def test_parse_tags_with_numbers(self):
         """Test parsing list with numbers."""
@@ -330,19 +348,28 @@ class TestAddNote:
         """Test adding note with empty args raises error."""
         notebook = NoteBook()
         result = add_note([], notebook)
-        assert "Note text is required" in result or "Enter the argument for the command" in result
+        assert (
+            "Note text is required" in result
+            or "Enter the argument for the command" in result
+        )
 
     def test_add_note_empty_text(self):
         """Test adding note with empty text."""
         notebook = NoteBook()
         result = add_note([""], notebook)
-        assert "Note text cannot be empty" in result or "Enter the argument for the command" in result
+        assert (
+            "Note text cannot be empty" in result
+            or "Enter the argument for the command" in result
+        )
 
     def test_add_note_whitespace_only_text(self):
         """Test adding note with whitespace-only text."""
         notebook = NoteBook()
         result = add_note(["   "], notebook)
-        assert "Note text cannot be empty" in result or "Enter the argument for the command" in result
+        assert (
+            "Note text cannot be empty" in result
+            or "Enter the argument for the command" in result
+        )
 
     def test_add_multiple_notes(self):
         """Test adding multiple notes."""
@@ -409,7 +436,10 @@ class TestSearchNotes:
         """Test searching with empty query."""
         notebook = NoteBook()
         result = search_notes([], notebook)
-        assert "Search query is required" in result or "Enter the argument for the command" in result
+        assert (
+            "Search query is required" in result
+            or "Enter the argument for the command" in result
+        )
 
     def test_search_notes_case_insensitive(self):
         """Test that search is case-insensitive."""
@@ -481,7 +511,10 @@ class TestSearchNotesByTags:
         """Test searching with empty args."""
         notebook = NoteBook()
         result = search_notes_by_tags([], notebook)
-        assert "At least one tag is required" in result or "Enter the argument for the command" in result
+        assert (
+            "At least one tag is required" in result
+            or "Enter the argument for the command" in result
+        )
 
     def test_search_by_tags_empty_notebook(self):
         """Test searching in empty notebook."""
@@ -570,13 +603,19 @@ class TestEditNote:
         """Test editing with insufficient arguments."""
         notebook = NoteBook()
         result = edit_note(["1"], notebook)
-        assert "Identifier and new text are required" in result or "Enter the argument for the command" in result
+        assert (
+            "Identifier and new text are required" in result
+            or "Enter the argument for the command" in result
+        )
 
     def test_edit_note_empty_args(self):
         """Test editing with empty args."""
         notebook = NoteBook()
         result = edit_note([], notebook)
-        assert "Identifier and new text are required" in result or "Enter the argument for the command" in result
+        assert (
+            "Identifier and new text are required" in result
+            or "Enter the argument for the command" in result
+        )
 
     def test_edit_note_updates_timestamp(self):
         """Test that editing updates the timestamp."""
@@ -585,7 +624,6 @@ class TestEditNote:
         notes_before = notebook.get_all_notes()
         original_time = notes_before[0].updated_at
 
-        import time
         time.sleep(0.01)
 
         edit_note(["1", "Updated text"], notebook)
@@ -638,7 +676,10 @@ class TestDeleteNote:
         """Test deleting with empty args."""
         notebook = NoteBook()
         result = delete_note([], notebook)
-        assert "Note identifier is required" in result or "Enter the argument for the command" in result
+        assert (
+            "Note identifier is required" in result
+            or "Enter the argument for the command" in result
+        )
 
     def test_delete_note_from_multiple(self):
         """Test deleting one note from multiple."""
@@ -828,7 +869,7 @@ class TestAddEmail:
         record = Record("John Doe")
         book.add_record(record)
         result = add_email(["John Doe", "test@example.com"], book)
-        assert ("added" in result.lower() or "updated" in result.lower())
+        assert "added" in result.lower() or "updated" in result.lower()
         assert record.email is not None
         assert record.email.value == "test@example.com"
 

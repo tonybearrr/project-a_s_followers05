@@ -10,7 +10,7 @@ from models.phone import Phone
 from core.commands import Command
 from core.handlers import (
     add_contact, update_contact, get_all_contacts, search_contacts, get_one_contact,
-    delete_contact, add_birthday, show_birthday, birthdays,
+    delete_contact, add_birthday, show_birthday, show_upcoming_birthdays,
     add_note, list_notes, search_notes, search_notes_by_tags,
     edit_note, delete_note, add_email, delete_email, show_email
 )
@@ -25,52 +25,54 @@ def get_output_by_command(command, args, book, notebook):
     Creates an AddressBook and NoteBook instances and runs the main command loop,
     processing user commands until 'close' or 'exit' is entered.
     """
-    is_exit = False
+    is_break_main_loop = False
+    command_output = None
     if command in (Command.EXIT_1, Command.EXIT_2):
-        is_exit = True
-        output = "Good bye!"
+        is_break_main_loop = True
+        command_output = "Goodbye!"
     elif command == Command.HELLO:
-        output = "How can I help you?"
+        command_output = "How can I help you?"
     elif command == Command.ADD_CONTACT:
-        output = add_contact(args, book)
+        command_output = add_contact(args, book)
     elif command == Command.UPDATE_CONTACT:
-        output = update_contact(args, book)
+        command_output = update_contact(args, book)
     elif command == Command.SHOW_ALL_CONTACTS:
-        output = get_all_contacts(book)
+        command_output = get_all_contacts(book)
     elif command == Command.SEARCH_CONTACTS:
-        output = search_contacts(args, book)
+        command_output = search_contacts(args, book)
     elif command == Command.SHOW_CONTACT:
-        output = get_one_contact(args, book)
+        command_output = get_one_contact(args, book)
     elif command == Command.DELETE_CONTACT:
-        output = delete_contact(args, book)
+        command_output = delete_contact(args, book)
     elif command == Command.ADD_BIRTHDAY:
-        output = add_birthday(args, book)
+        command_output = add_birthday(args, book)
     elif command == Command.SHOW_BIRTHDAY:
-        output = show_birthday(args, book)
+        command_output = show_birthday(args, book)
     elif command == Command.SHOW_UPCOMING_BIRTHDAYS:
-        output = birthdays(book)
+        command_output = show_upcoming_birthdays(args, book)
     elif command == Command.ADD_EMAIL:
-        output = add_email(args, book)
+        command_output = add_email(args, book)
     elif command == Command.DELETE_EMAIL:
-        output = delete_email(args, book)
+        command_output = delete_email(args, book)
     elif command == Command.SHOW_EMAIL:
-        output = show_email(args, book)
-    # Note commands
+        command_output = show_email(args, book)
     elif command == Command.ADD_NOTE:
-        output = add_note(args, notebook)
+        command_output = add_note(args, notebook)
     elif command == Command.LIST_NOTES:
-        output = list_notes(args, notebook)
+        command_output = list_notes(args, notebook)
     elif command == Command.SEARCH_NOTES:
-        output = search_notes(args, notebook)
+        command_output = search_notes(args, notebook)
     elif command == Command.SEARCH_TAGS:
-        output = search_notes_by_tags(args, notebook)
+        command_output = search_notes_by_tags(args, notebook)
     elif command == Command.EDIT_NOTE:
-        output = edit_note(args, notebook)
+        command_output = edit_note(args, notebook)
     elif command == Command.DELETE_NOTE:
-        output = delete_note(args, notebook)
-    elif command == Command.HELP or command == Command.HELP_ALT:
-        output = (
+        command_output = delete_note(args, notebook)
+    elif command in [Command.HELP, Command.HELP_ALT]:
+        command_output = (
+            "\n"
             "Available commands:\n"
+            "\n"
             f"{Command.HELLO} - Greet the bot\n"
             f"{Command.ADD_CONTACT} <name> <phone> - Add a new contact. "
             f"Expected phone length is {Phone.PHONE_LEN} digits.\n"
@@ -80,24 +82,29 @@ def get_output_by_command(command, args, book, notebook):
             f"{Command.SHOW_CONTACT} <name> - Show the phone number of a contact\n"
             f"{Command.SHOW_ALL_CONTACTS} - Show all contacts\n"
             f"{Command.SEARCH_CONTACTS} <value> - Search contacts by name, phone, email, or address\n"
+            "\n"
             f"{Command.ADD_BIRTHDAY} <name> <{Birthday.DATE_FORMAT_DISPLAY}> - "
             f"Add birthday to a contact\n"
             f"{Command.SHOW_BIRTHDAY} <name> - Show birthday of a contact\n"
-            f"{Command.SHOW_UPCOMING_BIRTHDAYS} - Show contacts with upcoming birthdays\n"
+            f"{Command.SHOW_UPCOMING_BIRTHDAYS} [days_ahead_number]- Show contacts for upcoming birthdays."
+            f" [days_ahead_number] parameter is optional, default is 7.\n"
+            "\n"
             f"{Command.ADD_EMAIL} <name> <email> - Add or update email address for a contact\n"
             f"{Command.DELETE_EMAIL} <name> - Delete email address from a contact\n"
             f"{Command.SHOW_EMAIL} <name> - Show contact's email address\n"
+            "\n"
             f"{Command.ADD_NOTE} <text> [tags] - Add a new note with optional tags\n"
             f"{Command.LIST_NOTES} [sort] - List all notes (sort: created/updated/text/tags)\n"
             f"{Command.SEARCH_NOTES} <query> - Search notes by text or tags\n"
             f"{Command.SEARCH_TAGS} <tags> - Search notes by specific tags\n"
             f"{Command.EDIT_NOTE} <identifier> <text> [tags] - Edit a note\n"
             f"{Command.DELETE_NOTE} <identifier> - Delete a note\n"
+            "\n"
             f"{Command.EXIT_1}, {Command.EXIT_2} - Exit the program"
         )
     else:
-        output = "Unknown command. Please try again."
-    return output, is_exit
+        command_output = "Unknown command. Please try again."
+    return command_output, is_break_main_loop
 
 
 if __name__ == "__main__":
