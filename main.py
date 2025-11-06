@@ -104,6 +104,11 @@ def get_output_by_command(command, args, book, notebook):
             f"{Command.EDIT_NOTE} <identifier> <text> [tags] - Edit a note\n"
             f"{Command.DELETE_NOTE} <identifier> - Delete a note\n"
             "\n"
+            "\n"
+            f"{Command.ADD_ADDRESS} <name> [address] - Add an address for a contact\n"
+            f"{Command.CHANGE_ADDRESS} <name> [address] - Change an address for a contact\n"
+            f"{Command.REMOVE_ADDRESS} <name> - Remove an address for a contact\n"
+            "\n"
             f"{Command.EXIT_1}, {Command.EXIT_2} - Exit the program"
         )
     else:
