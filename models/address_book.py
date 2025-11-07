@@ -9,6 +9,7 @@ for birthday management.
 from collections import UserDict
 from datetime import date, datetime, timedelta
 from models.birthday import Birthday
+import re
 
 
 class AddressBook(UserDict):
@@ -61,6 +62,87 @@ class AddressBook(UserDict):
             Record or None: Contact record if found, None otherwise
         """
         return self.data[name] if name in self.data else None
+
+    def search_contacts_by_name(self, name):
+        """
+        Find a contact by name.
+
+        Args:
+            name (str): Name of the contact to find
+
+        Returns:
+            List of Records or None: Contact record if found, None otherwise
+        """
+        searched_records = []
+        name_lower = name.lower()
+        for record in self.data.values():
+            match = re.search(name_lower, record.name.value.lower())
+            if match:
+                searched_records.append(record)
+
+        return set(searched_records)
+
+    def search_contacts_by_phone(self, phone):
+        """
+        Find a contact by phone.
+
+        Args:
+            phone (str): Phone in the contact to find
+
+        Returns:
+            List of the records or None: List of the Contacts if found, None otherwise
+        """
+
+        searched_records = []
+
+        for record in self.data.values():
+            for r in record.phones:
+                match = re.search(phone, r.value)
+                if match:
+                    searched_records.append(record)
+        return set(searched_records)
+
+    def search_contacts_by_email(self, email):
+        """
+        Find a contact by email.
+
+        Args:
+            email (str): Email of the contact to find
+
+        Returns:
+            List of the records or None: List of the Contacts if found, None otherwise
+        """
+
+        searched_records = []
+        email_lower = email.lower()
+
+        for record in self.data.values():
+            if record.email is not None:
+                match = re.search(email_lower, record.email.value.lower())
+                if match:
+                    searched_records.append(record)
+        return set(searched_records)
+
+    def search_contacts_by_address(self, address):
+        """
+        Find a contact by address.
+
+        Args:
+            address (str): Address of the contact to find
+
+        Returns:
+            List of the records or None: List of the Contacts if found, None otherwise
+        """
+        pass
+        # searched_records = []
+        # address_lower = address.lower()
+
+        # for record in self.data.values():
+        #     if record.address != None:
+        #         match = re.search(address_lower, record.address.value.lower())
+        #         if match:
+        #             searched_records.append(record)
+        # return set(searched_records)
 
     def get_upcoming_birthdays(
         self, days_ahead: int = 7, now_date: date = datetime.now().date()

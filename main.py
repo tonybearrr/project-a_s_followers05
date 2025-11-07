@@ -9,7 +9,7 @@ from models.birthday import Birthday
 from models.phone import Phone
 from core.commands import Command
 from core.handlers import (
-    add_contact, update_contact, get_all_contacts, get_one_contact,
+    add_contact, update_contact, get_all_contacts, search_contacts, get_one_contact,
     delete_contact, add_birthday, show_birthday, show_upcoming_birthdays,
     add_note, list_notes, search_notes, search_notes_by_tags,
     edit_note, delete_note, add_email, delete_email, show_email
@@ -38,6 +38,8 @@ def get_output_by_command(command, args, book, notebook):
         command_output = update_contact(args, book)
     elif command == Command.SHOW_ALL_CONTACTS:
         command_output = get_all_contacts(book)
+    elif command == Command.SEARCH_CONTACTS:
+        command_output = search_contacts(args, book)
     elif command == Command.SHOW_CONTACT:
         command_output = get_one_contact(args, book)
     elif command == Command.DELETE_CONTACT:
@@ -79,6 +81,7 @@ def get_output_by_command(command, args, book, notebook):
             f"Expected phone length is {Phone.PHONE_LEN} digits.\n"
             f"{Command.SHOW_CONTACT} <name> - Show the phone number of a contact\n"
             f"{Command.SHOW_ALL_CONTACTS} - Show all contacts\n"
+            f"{Command.SEARCH_CONTACTS} <value> - Search contacts by name, phone, email, or address\n"
             "\n"
             f"{Command.ADD_BIRTHDAY} <name> <{Birthday.DATE_FORMAT_DISPLAY}> - "
             f"Add birthday to a contact\n"
