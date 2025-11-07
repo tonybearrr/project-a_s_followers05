@@ -573,7 +573,7 @@ def list_notes(args, notebook: NoteBook):
     """
     # Parse sort parameter
     sort_by = "created"  # default
-    reverse = True  # default to descending (newest first)
+    reverse = None
 
     if args:
         # Parse sort column
@@ -607,7 +607,17 @@ def list_notes(args, notebook: NoteBook):
         "tags": "by tags",
     }
 
-    sort_direction = "descending" if reverse else "ascending"
+    # Determine sort direction for display
+    if reverse is None:
+        # Auto-determined: use defaults based on sort_by
+        if sort_by in ["text", "tags"]:
+            actual_reverse = False  # A-Z for text/tags
+        else:
+            actual_reverse = True  # newest first for created/updated
+    else:
+        actual_reverse = reverse
+
+    sort_direction = "descending" if actual_reverse else "ascending"
     sort_info = f"{sort_labels.get(sort_by, sort_by)} ({sort_direction})"
     header = (
         f"{Fore.CYAN}{'─'*70}{Style.RESET_ALL}\n"
@@ -615,5 +625,5 @@ def list_notes(args, notebook: NoteBook):
         f"{Fore.YELLOW}(sorted {sort_info}){Style.RESET_ALL}\n"
         f"{Fore.CYAN}{'─'*70}{Style.RESET_ALL}\n"
     )
-    table = format_notes_table(notes, sort_by=sort_by, reverse=reverse)
+    table = format_notes_table(notes, sort_by=sort_by, reverse=actual_reverse)
     return header + table

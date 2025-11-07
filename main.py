@@ -5,8 +5,7 @@ This module provides the main entry point for the address book bot,
 which allows users to add, update, delete, and view contacts with
 phone numbers and birthdays.
 """
-from models.birthday import Birthday
-from models.phone import Phone
+
 from core.commands import Command
 from core.handlers import (
     add_contact, update_contact, get_all_contacts, search_contacts, get_one_contact,
@@ -100,7 +99,7 @@ def get_output_by_command(command, args, book, notebook):
                         f"{Fore.CYAN}{'═'*70}{Style.RESET_ALL}"
                     )
             else:
-            # Повний help (без аргументів)
+                # Повний help (без аргументів)
                 command_output = format_help_full()
         except Exception:
             command_output = format_help_full()

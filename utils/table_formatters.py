@@ -38,12 +38,14 @@ def format_contact_table(records):
     return tabulate(table_data, headers=headers, tablefmt="rounded_outline")
 
 
-def format_notes_table(notes):
+def format_notes_table(notes, sort_by=None, reverse=True):
     """
     Format notes as a simple table.
     
     Args:
         notes: List of Note objects
+        sort_by: Optional sort column name (created, updated, text, tags)
+        reverse: Sort direction (True for descending ↓, False for ascending ↑)
         
     Returns:
         str: Formatted table string
@@ -51,13 +53,25 @@ def format_notes_table(notes):
     if not notes:
         return f"{Fore.YELLOW}No notes found.{Style.RESET_ALL}"
 
-    headers = [
-        f"{Fore.GREEN}#{Style.RESET_ALL}",
-        f"{Fore.WHITE}Text{Style.RESET_ALL}",
-        f"{Fore.CYAN}Tags{Style.RESET_ALL}",
-        f"{Fore.BLUE}Created{Style.RESET_ALL}",
-        f"{Fore.MAGENTA}Updated{Style.RESET_ALL}"
+    # Define column headers with colors
+    column_configs = [
+        {"name": "#", "color": Fore.GREEN},
+        {"name": "Text", "color": Fore.WHITE, "sort_key": "text"},
+        {"name": "Tags", "color": Fore.CYAN, "sort_key": "tags"},
+        {"name": "Created", "color": Fore.BLUE, "sort_key": "created"},
+        {"name": "Updated", "color": Fore.MAGENTA, "sort_key": "updated"},
     ]
+
+    # Build headers with sort indicator
+    # Use bold Unicode characters for better visibility
+    sort_indicator = "⏷" if reverse else "⏶"  # ⬇ and ⬆ are bolder than ↓ and ↑
+    headers = []
+    for col in column_configs:
+        if col.get("sort_key") == sort_by:
+            header = f"{col['color']}{col['name']}{Style.RESET_ALL} {Fore.YELLOW}{Style.BRIGHT}{sort_indicator}{Style.RESET_ALL}"
+        else:
+            header = f"{col['color']}{col['name']}{Style.RESET_ALL}"
+        headers.append(header)
     table_data = []
 
     for i, note in enumerate(notes, 1):
