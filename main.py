@@ -15,7 +15,13 @@ from core.handlers import (
     edit_note, delete_note, add_email, delete_email, show_email
 )
 from utils.parsers import parse_input
+from utils.help_formatter import (
+    format_help_full,
+    format_help_short,
+    format_help_category
+)
 from storage.file_storage import load_data, save_data, load_notes, save_notes
+from colorama import Fore, Style
 
 
 def get_output_by_command(command, args, book, notebook):
@@ -29,7 +35,11 @@ def get_output_by_command(command, args, book, notebook):
     command_output = None
     if command in (Command.EXIT_1, Command.EXIT_2):
         is_break_main_loop = True
-        command_output = "Goodbye!"
+        command_output = (
+            f"{Fore.CYAN}{'═'*70}{Style.RESET_ALL}\n"
+            f"{Fore.GREEN}{Style.BRIGHT}👋 Goodbye!{Style.RESET_ALL} {Fore.CYAN}Thank you for using the assistant bot!{Style.RESET_ALL}\n"
+            f"{Fore.CYAN}{'═'*70}{Style.RESET_ALL}"
+        )
     elif command == Command.HELLO:
         command_output = "How can I help you?"
     elif command == Command.ADD_CONTACT:
@@ -69,39 +79,31 @@ def get_output_by_command(command, args, book, notebook):
     elif command == Command.DELETE_NOTE:
         command_output = delete_note(args, notebook)
     elif command in [Command.HELP, Command.HELP_ALT]:
-        command_output = (
-            "\n"
-            "Available commands:\n"
-            "\n"
-            f"{Command.HELLO} - Greet the bot\n"
-            f"{Command.ADD_CONTACT} <name> <phone> - Add a new contact. "
-            f"Expected phone length is {Phone.PHONE_LEN} digits.\n"
-            f"{Command.UPDATE_CONTACT} <name> <old_phone> <new_phone> - "
-            f"Change an existing contact's phone number. "
-            f"Expected phone length is {Phone.PHONE_LEN} digits.\n"
-            f"{Command.SHOW_CONTACT} <name> - Show the phone number of a contact\n"
-            f"{Command.SHOW_ALL_CONTACTS} - Show all contacts\n"
-            f"{Command.SEARCH_CONTACTS} <value> - Search contacts by name, phone, email, or address\n"
-            "\n"
-            f"{Command.ADD_BIRTHDAY} <name> <{Birthday.DATE_FORMAT_DISPLAY}> - "
-            f"Add birthday to a contact\n"
-            f"{Command.SHOW_BIRTHDAY} <name> - Show birthday of a contact\n"
-            f"{Command.SHOW_UPCOMING_BIRTHDAYS} [days_ahead_number]- Show contacts for upcoming birthdays."
-            f" [days_ahead_number] parameter is optional, default is 7.\n"
-            "\n"
-            f"{Command.ADD_EMAIL} <name> <email> - Add or update email address for a contact\n"
-            f"{Command.DELETE_EMAIL} <name> - Delete email address from a contact\n"
-            f"{Command.SHOW_EMAIL} <name> - Show contact's email address\n"
-            "\n"
-            f"{Command.ADD_NOTE} <text> [tags] - Add a new note with optional tags\n"
-            f"{Command.LIST_NOTES} [sort] - List all notes (sort: created/updated/text/tags)\n"
-            f"{Command.SEARCH_NOTES} <query> - Search notes by text or tags\n"
-            f"{Command.SEARCH_TAGS} <tags> - Search notes by specific tags\n"
-            f"{Command.EDIT_NOTE} <identifier> <text> [tags] - Edit a note\n"
-            f"{Command.DELETE_NOTE} <identifier> - Delete a note\n"
-            "\n"
-            f"{Command.EXIT_1}, {Command.EXIT_2} - Exit the program"
-        )
+        try:
+            if args and len(args) > 0:
+                first_arg = args[0].lower()
+
+            # Короткий help
+                if first_arg in ["short", "s", "quick"]:
+                    command_output = format_help_short()
+                # Help по категорії
+                elif first_arg in ["contacts", "notes", "birthdays", "email"]:
+                    command_output = format_help_category(first_arg)
+                else:
+                    # Невідома категорія
+                    command_output = (
+                        f"{Fore.CYAN}{'═'*70}{Style.RESET_ALL}\n"
+                        f"Unknown help category: {Fore.MAGENTA}'{args[0]}'{Style.RESET_ALL}\n"
+                        f"Available categories: {Fore.BLUE}contacts{Style.RESET_ALL}, {Fore.BLUE}notes{Style.RESET_ALL}, {Fore.BLUE}birthdays{Style.RESET_ALL}, {Fore.BLUE}email{Style.RESET_ALL}\n"
+                        f"Use {Fore.CYAN}'{Command.HELP} short'{Style.RESET_ALL} for quick reference\n"
+                        f"Use {Fore.CYAN}'{Command.HELP}'{Style.RESET_ALL} for full help\n"
+                        f"{Fore.CYAN}{'═'*70}{Style.RESET_ALL}"
+                    )
+            else:
+            # Повний help (без аргументів)
+                command_output = format_help_full()
+        except Exception:
+            command_output = format_help_full()
     else:
         command_output = "Unknown command. Please try again."
     return command_output, is_break_main_loop
@@ -110,9 +112,11 @@ def get_output_by_command(command, args, book, notebook):
 if __name__ == "__main__":
     book = load_data()
     notebook = load_notes()
-    print("Welcome to the assistant bot!")
+    print(f"{Fore.CYAN}{'═'*70}{Style.RESET_ALL}")
+    print(f"{Fore.CYAN}{' '*20}{Style.BRIGHT}🤖 Welcome to the assistant bot!{Style.RESET_ALL}")
+    print(f"{Fore.CYAN}{'═'*70}{Style.RESET_ALL}\n")
     while True:
-        user_input = input("Enter a command: ")
+        user_input = input(f"{Fore.GREEN}{Style.BRIGHT}➜{Style.RESET_ALL} {Fore.LIGHTYELLOW_EX}Enter a command:{Style.RESET_ALL} ")
         command, *args = parse_input(user_input)
         output, is_exit = get_output_by_command(command, args, book, notebook)
         print(output)

@@ -5,15 +5,17 @@ This module contains all the command handler functions that process
 user commands and interact with the AddressBook and Record classes.
 """
 
+import re
+from colorama import init, Fore, Style, Back
 from models.address_book import AddressBook
 from models.record import Record
 from models.notebook import NoteBook
 from models.note import Note
 from models.birthday import Birthday
+from utils.table_formatters import format_contact_table, format_notes_table
+from utils.confirmations import confirm_delete
 from .decorators import input_error
 from .commands import Command
-from colorama import init, Fore, Style, Back
-import re
 
 
 @input_error
@@ -80,7 +82,7 @@ def get_all_contacts(book: AddressBook):
     """
     if not book.data:
         return "No contacts found."
-    return "\n".join(str(record) for record in book.data.values())
+    return format_contact_table(book.data.values())
 
 
 @input_error
@@ -181,7 +183,16 @@ def delete_contact(args, book: AddressBook):
     """
     if len(args) < 1:
         return f"Error: [{Command.DELETE_CONTACT}] command requires a name."
+
     name = args[0]
+    record = book.find(name)
+
+    if not record:
+        return f"Contact '{name}' not found."
+
+    if not confirm_delete("contact", name):
+        return "Deletion cancelled."
+
     book.delete(name)
     return f"Contact '{name}' deleted."
 
@@ -537,6 +548,9 @@ def delete_note(args, notebook: NoteBook):
     if not note or not note_id:
         return f"Note '{identifier}' not found."
 
+    if not confirm_delete("note", identifier):
+        return "Deletion cancelled."
+
     # Delete note
     deleted = notebook.delete_note(note_id)
 
@@ -559,16 +573,32 @@ def list_notes(args, notebook: NoteBook):
     """
     # Parse sort parameter
     sort_by = "created"  # default
+    reverse = True  # default to descending (newest first)
+
     if args:
+        # Parse sort column
         if args[0].startswith("sort="):
             sort_by = args[0].split("=", 1)[1]
         elif args[0] in ["created", "updated", "text", "tags"]:
             sort_by = args[0]
 
-    notes = notebook.get_all_notes(sort_by=sort_by)
+        # Parse sort direction (a=asc, d=desc)
+        if len(args) > 1:
+            if args[1].lower() in ["a", "asc", "ascending"]:
+                reverse = False
+            elif args[1].lower() in ["d", "desc", "descending"]:
+                reverse = True
+        elif len(args) == 1 and args[0].lower() in ["a", "asc", "ascending", "d", "desc", "descending"]:
+            # If only direction is provided, use default sort_by
+            if args[0].lower() in ["a", "asc", "ascending"]:
+                reverse = False
+            elif args[0].lower() in ["d", "desc", "descending"]:
+                reverse = True
+
+    notes = notebook.get_all_notes(sort_by=sort_by, reverse=reverse)
 
     if not notes:
-        return "No notes found."
+        return f"{Fore.YELLOW}No notes found.{Style.RESET_ALL}"
 
     sort_labels = {
         "created": "by creation date",
@@ -577,6 +607,13 @@ def list_notes(args, notebook: NoteBook):
         "tags": "by tags",
     }
 
-    lines = [f"All notes (sorted {sort_labels.get(sort_by, sort_by)}):"]
-    lines.extend(f"#{i}: {note}" for i, note in enumerate(notes, 1))
-    return "\n".join(lines)
+    sort_direction = "descending" if reverse else "ascending"
+    sort_info = f"{sort_labels.get(sort_by, sort_by)} ({sort_direction})"
+    header = (
+        f"{Fore.CYAN}{'─'*70}{Style.RESET_ALL}\n"
+        f"{Fore.CYAN}{Style.BRIGHT}All notes{Style.RESET_ALL} "
+        f"{Fore.YELLOW}(sorted {sort_info}){Style.RESET_ALL}\n"
+        f"{Fore.CYAN}{'─'*70}{Style.RESET_ALL}\n"
+    )
+    table = format_notes_table(notes, sort_by=sort_by, reverse=reverse)
+    return header + table

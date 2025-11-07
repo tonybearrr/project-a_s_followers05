@@ -1,8 +1,11 @@
+"""Notebook model for managing notes with tags and search functionality."""
+
 from typing import Optional
 from models.note import Note
 
 
 class NoteBook:
+    """Notebook class for managing notes with tags and search functionality."""
     def __init__(self):
         """
         Initializes a new notebook.
@@ -51,12 +54,13 @@ class NoteBook:
             return True
         return False
 
-    def get_all_notes(self, sort_by: str = "created") -> list[Note]:
+    def get_all_notes(self, sort_by: str = "created", reverse: bool = True) -> list[Note]:
         """
         Gets all notes with sorting.
 
         Args:
             sort_by (str): Sorting method - "created", "updated", "text", or "tags"
+            reverse (bool): Sort in reverse order (True for descending, False for ascending)
 
         Returns:
             list[Note]: Sorted list of all notes
@@ -64,22 +68,18 @@ class NoteBook:
         notes_list = list(self.notes.values())
 
         if sort_by == "created":
-            # Newer notes first
-            return sorted(notes_list, key=lambda n: n.created_at, reverse=True)
+            return sorted(notes_list, key=lambda n: n.created_at, reverse=reverse)
         elif sort_by == "updated":
-            # Recently updated notes first
-            return sorted(notes_list, key=lambda n: n.updated_at, reverse=True)
+            return sorted(notes_list, key=lambda n: n.updated_at, reverse=reverse)
         elif sort_by == "text":
-            # Alphabetically by text
-            return sorted(notes_list, key=lambda n: n.text.lower())
+            return sorted(notes_list, key=lambda n: n.text.lower(), reverse=reverse)
         elif sort_by == "tags":
-            # Alphabetically by first tag (notes without tags go last)
             return sorted(notes_list, key=lambda n: (
                 n.tags[0].lower() if n.tags else "\uffff"
-            ))
+            ), reverse=reverse)
         else:
             # Default to created
-            return sorted(notes_list, key=lambda n: n.created_at, reverse=True)
+            return sorted(notes_list, key=lambda n: n.created_at, reverse=reverse)
 
     def get_note_by_number(self, number: int, sort_by: str = "created") -> Optional[Note]:
         """
