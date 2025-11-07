@@ -115,7 +115,7 @@ def search_contacts(args, book: AddressBook):
         str: Formatted list of all contacts or "No contacts found."
     """
     if len(args) < 1:
-        return f"Error: [{Command.DELETE_CONTACT}] command requires a value."
+        return f"Error: [{Command.SEARCH_CONTACTS}] command requires a value."
     else:
         searchable_contacts = set()
         value = args[0]
