@@ -56,6 +56,15 @@ class TestAddContact:
         book = AddressBook()
         result = add_contact(["John Doe", "123"], book)
         assert "Phone number must be 10 digits" in result
+    
+    def test_add_contact_duplicate_phone(self):
+        """Test adding duplicate phone number to existing contact."""
+        book = AddressBook()
+        record = Record("John Doe")
+        record.add_phone("1234567890")
+        book.add_record(record)
+        result = add_contact(["John Doe", "1234567890"], book)
+        assert "already exists" in result.lower()
 
 
 class TestUpdateContact:
