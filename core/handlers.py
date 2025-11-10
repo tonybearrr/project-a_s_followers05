@@ -140,10 +140,10 @@ def search_contacts(args, book: AddressBook):
         if not searchable_contacts:
             return "No contacts found."
 
-        display_contacts = display_search_contacts(searchable_contacts, value)
+        # display_contacts = display_search_contacts(searchable_contacts, value)
 
-        return display_contacts
-
+        # return display_contacts
+        return format_contact_table(searchable_contacts)
 
 def display_search_contacts(contacts, value):
     """
