@@ -44,6 +44,10 @@ def add_contact(args, book: AddressBook):
     if is_not_found:
         record = Record(name)
         book.add_record(record)
+
+    if record.find_phone(phone):
+        return f"Phone number '{phone}' already exists for contact '{name}'."
+
     record.add_phone(phone)
     status = "added" if is_not_found else "updated"
     return f"Contact '{name}' with phone '{phone}' {status} successfully."

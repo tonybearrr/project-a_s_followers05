@@ -111,6 +111,14 @@ class TestRecord:
         phone = record.find_phone("9999999999")
         assert phone is None
 
+    def test_find_phone_with_different_formats(self):
+        """Test finding phone number with different formats."""
+        record = Record("John Doe")
+        record.add_phone("099-4777-528")
+        phone = record.find_phone("(099)-4777-528")
+        assert phone is not None
+        assert phone.value == "0994777528"
+
     def test_add_birthday(self):
         """Test adding a birthday."""
         record = Record("John Doe")
