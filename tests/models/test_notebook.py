@@ -278,7 +278,7 @@ def test_get_all_notes_sort_by_text():
     notebook.add_note(note2)
     notebook.add_note(note3)
 
-    notes = notebook.get_all_notes(sort_by="text")
+    notes = notebook.get_all_notes(sort_by="text", reverse=False)
 
     assert notes[0] == note2  # Apple
     assert notes[1] == note3  # Mango
@@ -296,7 +296,7 @@ def test_get_all_notes_sort_by_text_case_insensitive():
     notebook.add_note(note2)
     notebook.add_note(note3)
 
-    notes = notebook.get_all_notes(sort_by="text")
+    notes = notebook.get_all_notes(sort_by="text", reverse=False)
 
     assert notes[0].text == "Apple"
     assert notes[1].text == "banana"
@@ -314,7 +314,7 @@ def test_get_all_notes_sort_by_tags():
     notebook.add_note(note2)
     notebook.add_note(note3)
 
-    notes = notebook.get_all_notes(sort_by="tags")
+    notes = notebook.get_all_notes(sort_by="tags", reverse=False)
 
     assert notes[0] == note2  # apple
     assert notes[1] == note3  # mango
@@ -332,7 +332,7 @@ def test_get_all_notes_sort_by_tags_with_no_tags():
     notebook.add_note(note2)
     notebook.add_note(note3)
 
-    notes = notebook.get_all_notes(sort_by="tags")
+    notes = notebook.get_all_notes(sort_by="tags", reverse=False)
 
     # Notes with tags come first, sorted alphabetically
     # Notes without tags come last

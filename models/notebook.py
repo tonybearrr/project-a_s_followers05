@@ -1,8 +1,11 @@
+"""Notebook model for managing notes with tags and search functionality."""
+
 from typing import Optional
 from models.note import Note
 
 
 class NoteBook:
+    """Notebook class for managing notes with tags and search functionality."""
     def __init__(self):
         """
         Initializes a new notebook.
@@ -51,65 +54,82 @@ class NoteBook:
             return True
         return False
 
-    def get_all_notes(self, sort_by: str = "created") -> list[Note]:
+    def get_all_notes(self, sort_by: str = "created", reverse: bool = None) -> list[Note]:
         """
         Gets all notes with sorting.
 
         Args:
             sort_by (str): Sorting method - "created", "updated", "text", or "tags"
+            reverse (bool): Sort in reverse order (True for descending, False for ascending)
+                Default: None (auto-determined based on sort_by)
+                - created/updated: True (newest first)
+                - text/tags: False (A-Z first)
 
         Returns:
             list[Note]: Sorted list of all notes
         """
         notes_list = list(self.notes.values())
 
+        # Set default reverse based on sort_by if not explicitly provided
+        if reverse is None:
+            if sort_by in ["text", "tags"]:
+                reverse = False  # Default to ascending (A-Z) for text/tags
+            else:
+                reverse = True  # Default to descending (newest first) for created/updated
+
         if sort_by == "created":
-            # Newer notes first
-            return sorted(notes_list, key=lambda n: n.created_at, reverse=True)
+            return sorted(notes_list, key=lambda n: n.created_at, reverse=reverse)
         elif sort_by == "updated":
-            # Recently updated notes first
-            return sorted(notes_list, key=lambda n: n.updated_at, reverse=True)
+            return sorted(notes_list, key=lambda n: n.updated_at, reverse=reverse)
         elif sort_by == "text":
-            # Alphabetically by text
-            return sorted(notes_list, key=lambda n: n.text.lower())
+            return sorted(notes_list, key=lambda n: n.text.lower(), reverse=reverse)
         elif sort_by == "tags":
-            # Alphabetically by first tag (notes without tags go last)
             return sorted(notes_list, key=lambda n: (
                 n.tags[0].lower() if n.tags else "\uffff"
-            ))
+            ), reverse=reverse)
         else:
             # Default to created
-            return sorted(notes_list, key=lambda n: n.created_at, reverse=True)
+            return sorted(notes_list, key=lambda n: n.created_at, reverse=reverse)
 
-    def get_note_by_number(self, number: int, sort_by: str = "created") -> Optional[Note]:
+    def get_note_by_number(self, number: int, sort_by: str = "created", reverse: bool = None) -> Optional[Note]:
         """
         Gets a note by its number in the sorted list.
 
         Args:
             number (int): Position in the list (1-based index)
             sort_by (str): Sorting method
+            reverse (bool): Sort in reverse order (True for descending, False for ascending)
+                Default: True for created/updated, False for text/tags
 
         Returns:
             Optional[Note]: Note at the given position or None if out of range
         """
-        notes_list = self.get_all_notes(sort_by)
+        # Set default reverse based on sort_by if not explicitly provided
+        if reverse is None:
+            if sort_by in ["text", "tags"]:
+                reverse = False  # Default to ascending (A-Z) for text/tags
+            else:
+                reverse = True  # Default to descending (newest first) for created/updated
+        notes_list = self.get_all_notes(sort_by, reverse=reverse)
 
         if 1 <= number <= len(notes_list):
             return notes_list[number - 1]
         return None
 
-    def get_note_id_by_number(self, number: int, sort_by: str = "created") -> Optional[str]:
+    def get_note_id_by_number(self, number: int, sort_by: str = "created", reverse: bool = None) -> Optional[str]:
         """
         Gets a note ID by its number in the sorted list.
 
         Args:
             number (int): Position in the list (1-based index)
             sort_by (str): Sorting method
+            reverse (bool): Sort in reverse order (True for descending, False for ascending)
+                Default: True for created/updated, False for text/tags
 
         Returns:
             Optional[str]: Note UUID at the given position or None if out of range
         """
-        note = self.get_note_by_number(number, sort_by)
+        note = self.get_note_by_number(number, sort_by, reverse=reverse)
         return note._uuid if note else None
 
     # Search Methods
