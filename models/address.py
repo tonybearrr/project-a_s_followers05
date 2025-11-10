@@ -26,7 +26,7 @@ class Address:
             ValueError: If address is empty or contains only whitespace
         """
           
-        if not value:
+        if not value or not value.strip():
             raise ValueError("Address cannot be empty")
         self.value = value.strip()
 

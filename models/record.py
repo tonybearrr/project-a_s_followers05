@@ -49,8 +49,7 @@ class Record:
         email = self.email if self.email else "no email"
         bday = self.birthday if self.birthday else "no birthday"
         addr = self.address if self.address else "no address"
-        return f"Contact name: {self.name.value}, phones: {phones}, email: {email}, birthday: {bday}\
-            address: {addr}"
+        return f"Contact name: {self.name.value}, phones: {phones}, email: {email}, birthday: {bday}, address: {addr}"
 
     def add_phone(self, phone):
         """
