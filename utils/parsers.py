@@ -36,7 +36,7 @@ def detect_command(user_command):
         if cmd.value == user_command:
             is_command_found = True
             break
-    
+
     if is_command_found:
         return (user_command, True)
 
