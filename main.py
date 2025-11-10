@@ -105,12 +105,14 @@ def get_help_output(args):
             elif first_arg in ["contacts", "notes", "birthdays", "email"]:   # Help by category
                 command_output = format_help_category(first_arg)
             else:  # Unknown category
-                command_output = (f"{Fore.CYAN}{'═'*70}{Style.RESET_ALL}\n"
-                        f"Unknown help category: {Fore.MAGENTA}'{args[0]}'{Style.RESET_ALL}\n"
-                        f"Available categories: {Fore.BLUE}contacts{Style.RESET_ALL}, {Fore.BLUE}notes{Style.RESET_ALL}, {Fore.BLUE}birthdays{Style.RESET_ALL}, {Fore.BLUE}email{Style.RESET_ALL}\n"
-                        f"Use {Fore.CYAN}'{Command.HELP} short'{Style.RESET_ALL} for quick reference\n"
-                        f"Use {Fore.CYAN}'{Command.HELP}'{Style.RESET_ALL} for full help\n"
-                        f"{Fore.CYAN}{'═'*70}{Style.RESET_ALL}")
+                command_output = (
+                    f"{Fore.CYAN}{'═'*70}{Style.RESET_ALL}\n"
+                    f"Unknown help category: {Fore.MAGENTA}'{args[0]}'{Style.RESET_ALL}\n"
+                    f"Available categories: {Fore.BLUE}contacts{Style.RESET_ALL}, {Fore.BLUE}notes{Style.RESET_ALL}, {Fore.BLUE}birthdays{Style.RESET_ALL}, {Fore.BLUE}email{Style.RESET_ALL}\n"
+                    f"Use {Fore.CYAN}'{Command.HELP} short'{Style.RESET_ALL} for quick reference\n"
+                    f"Use {Fore.CYAN}'{Command.HELP}'{Style.RESET_ALL} for full help\n"
+                    f"{Fore.CYAN}{'═'*70}{Style.RESET_ALL}"
+                )
         else:
             command_output = format_help_full()
     except Exception:
