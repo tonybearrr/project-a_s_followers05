@@ -17,6 +17,10 @@ from utils.confirmations import confirm_delete
 from .decorators import input_error
 from .commands import Command
 
+# Sort direction constants
+ASCENDING_KEYWORDS = ["a", "asc", "ascending"]
+DESCENDING_KEYWORDS = ["d", "desc", "descending"]
+
 
 @input_error
 def add_contact(args, book: AddressBook):
@@ -584,15 +588,15 @@ def list_notes(args, notebook: NoteBook):
 
         # Parse sort direction (a=asc, d=desc)
         if len(args) > 1:
-            if args[1].lower() in ["a", "asc", "ascending"]:
+            if args[1].lower() in ASCENDING_KEYWORDS:
                 reverse = False
-            elif args[1].lower() in ["d", "desc", "descending"]:
+            elif args[1].lower() in DESCENDING_KEYWORDS:
                 reverse = True
-        elif len(args) == 1 and args[0].lower() in ["a", "asc", "ascending", "d", "desc", "descending"]:
+        elif len(args) == 1 and args[0].lower() in ASCENDING_KEYWORDS + DESCENDING_KEYWORDS:
             # If only direction is provided, use default sort_by
-            if args[0].lower() in ["a", "asc", "ascending"]:
+            if args[0].lower() in ASCENDING_KEYWORDS:
                 reverse = False
-            elif args[0].lower() in ["d", "desc", "descending"]:
+            elif args[0].lower() in DESCENDING_KEYWORDS:
                 reverse = True
 
     notes = notebook.get_all_notes(sort_by=sort_by, reverse=reverse)

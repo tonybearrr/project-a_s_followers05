@@ -9,6 +9,21 @@ from models.birthday import Birthday
 
 init(autoreset=True)
 
+# Formatting constants
+LINE_WIDTH = 70
+DOUBLE_LINE = "═" * LINE_WIDTH
+SINGLE_LINE = "─" * LINE_WIDTH
+
+
+def _header_line(color=Fore.CYAN, char="═"):
+    """Generate a header line with specified color and character."""
+    return f"{color}{char * LINE_WIDTH}{Style.RESET_ALL}"
+
+
+def _section_line(color=Fore.YELLOW, char="─"):
+    """Generate a section separator line with specified color and character."""
+    return f"{color}{char * LINE_WIDTH}{Style.RESET_ALL}"
+
 
 def format_help_full():
     """
@@ -20,14 +35,14 @@ def format_help_full():
     help_text = []
 
     # Header
-    help_text.append(f"{Fore.CYAN}{'═'*70}{Style.RESET_ALL}")
+    help_text.append(_header_line())
     help_text.append(f"{Fore.CYAN}{' '*20}{Style.BRIGHT}📚 COMMAND REFERENCE{Style.RESET_ALL}")
-    help_text.append(f"{Fore.CYAN}{'═'*70}{Style.RESET_ALL}\n")
+    help_text.append(_header_line() + "\n")
 
     # Basic Commands
-    help_text.append(f"{Fore.YELLOW}{'─'*70}{Style.RESET_ALL}")
+    help_text.append(_section_line())
     help_text.append(f"{Fore.YELLOW}{Style.BRIGHT}BASIC COMMANDS{Style.RESET_ALL}")
-    help_text.append(f"{Fore.YELLOW}{'─'*70}{Style.RESET_ALL}\n")
+    help_text.append(_section_line() + "\n")
 
     help_text.append(f"  {Fore.GREEN}{Command.HELLO}{Style.RESET_ALL}")
     help_text.append("    Greet the bot\n")
@@ -40,9 +55,9 @@ def format_help_full():
     help_text.append("    Exit the program\n")
 
     # Contact Commands
-    help_text.append(f"{Fore.YELLOW}{'─'*70}{Style.RESET_ALL}")
+    help_text.append(_section_line())
     help_text.append(f"{Fore.YELLOW}{Style.BRIGHT}CONTACT COMMANDS{Style.RESET_ALL}")
-    help_text.append(f"{Fore.YELLOW}{'─'*70}{Style.RESET_ALL}\n")
+    help_text.append(_section_line() + "\n")
 
     help_text.append(f"  {Fore.GREEN}{Command.ADD_CONTACT}{Style.RESET_ALL} {Fore.MAGENTA}<name>{Style.RESET_ALL} {Fore.MAGENTA}<phone>{Style.RESET_ALL}")
     help_text.append("    Add a new contact or update existing")
@@ -69,9 +84,9 @@ def format_help_full():
     help_text.append(f"    {Fore.YELLOW}Example:{Style.RESET_ALL} {Fore.GREEN}{Command.DELETE_CONTACT}{Style.RESET_ALL} {Fore.MAGENTA}\"John Doe\"{Style.RESET_ALL}\n")
 
     # Birthday Commands
-    help_text.append(f"{Fore.YELLOW}{'─'*70}{Style.RESET_ALL}")
+    help_text.append(_section_line())
     help_text.append(f"{Fore.YELLOW}{Style.BRIGHT}BIRTHDAY COMMANDS{Style.RESET_ALL}")
-    help_text.append(f"{Fore.YELLOW}{'─'*70}{Style.RESET_ALL}\n")
+    help_text.append(_section_line() + "\n")
 
     help_text.append(f"  {Fore.GREEN}{Command.ADD_BIRTHDAY}{Style.RESET_ALL} {Fore.MAGENTA}<name>{Style.RESET_ALL} {Fore.MAGENTA}<{Birthday.DATE_FORMAT_DISPLAY}>{Style.RESET_ALL}")
     help_text.append("    Add or update contact's birthday")
@@ -87,9 +102,9 @@ def format_help_full():
     help_text.append(f"    {Fore.CYAN}Note:{Style.RESET_ALL} Default is 7 days if not specified\n")
 
     # Email Commands
-    help_text.append(f"{Fore.YELLOW}{'─'*70}{Style.RESET_ALL}")
+    help_text.append(_section_line())
     help_text.append(f"{Fore.YELLOW}{Style.BRIGHT}EMAIL COMMANDS{Style.RESET_ALL}")
-    help_text.append(f"{Fore.YELLOW}{'─'*70}{Style.RESET_ALL}\n")
+    help_text.append(_section_line() + "\n")
 
     help_text.append(f"  {Fore.GREEN}{Command.ADD_EMAIL}{Style.RESET_ALL} {Fore.MAGENTA}<name>{Style.RESET_ALL} {Fore.MAGENTA}<email>{Style.RESET_ALL}")
     help_text.append("    Add or update contact's email")
@@ -104,9 +119,9 @@ def format_help_full():
     help_text.append(f"    {Fore.YELLOW}Example:{Style.RESET_ALL} {Fore.GREEN}{Command.DELETE_EMAIL}{Style.RESET_ALL} {Fore.MAGENTA}\"John Doe\"{Style.RESET_ALL}\n")
 
     # Note Commands
-    help_text.append(f"{Fore.YELLOW}{'─'*70}{Style.RESET_ALL}")
+    help_text.append(_section_line())
     help_text.append(f"{Fore.YELLOW}{Style.BRIGHT}NOTE COMMANDS{Style.RESET_ALL}")
-    help_text.append(f"{Fore.YELLOW}{'─'*70}{Style.RESET_ALL}\n")
+    help_text.append(_section_line() + "\n")
 
     help_text.append(f"  {Fore.GREEN}{Command.ADD_NOTE}{Style.RESET_ALL} {Fore.MAGENTA}<text>{Style.RESET_ALL} {Fore.BLUE}[tags]{Style.RESET_ALL}")
     help_text.append("    Add a new note with optional tags")
@@ -134,9 +149,9 @@ def format_help_full():
     help_text.append(f"    {Fore.YELLOW}Example:{Style.RESET_ALL} {Fore.GREEN}{Command.DELETE_NOTE}{Style.RESET_ALL} {Fore.MAGENTA}1{Style.RESET_ALL}\n")
 
     # Tips
-    help_text.append(f"{Fore.YELLOW}{'─'*70}{Style.RESET_ALL}")
+    help_text.append(_section_line())
     help_text.append(f"{Fore.YELLOW}{Style.BRIGHT}💡 TIPS{Style.RESET_ALL}")
-    help_text.append(f"{Fore.YELLOW}{'─'*70}{Style.RESET_ALL}\n")
+    help_text.append(_section_line() + "\n")
 
     help_text.append(f"  • Use {Fore.CYAN}{Style.BRIGHT}quotes{Style.RESET_ALL} for names with spaces: {Command.ADD_CONTACT} {Fore.CYAN}\"John Doe\"{Style.RESET_ALL} 1234567890")
     help_text.append(f"  • Phone numbers must be exactly {Fore.YELLOW}{Style.BRIGHT}{Phone.PHONE_LEN} digits{Style.RESET_ALL}")
@@ -146,7 +161,7 @@ def format_help_full():
     help_text.append(f"  • Use {Fore.CYAN}{Command.HELP}{Style.RESET_ALL} {Fore.MAGENTA}<category>{Style.RESET_ALL} for category-specific help")
     help_text.append(f"    Available categories: {Fore.BLUE}contacts{Style.RESET_ALL}, {Fore.BLUE}notes{Style.RESET_ALL}, {Fore.BLUE}birthdays{Style.RESET_ALL}, {Fore.BLUE}email{Style.RESET_ALL}")
 
-    help_text.append(f"\n{Fore.CYAN}{'═'*70}{Style.RESET_ALL}\n")
+    help_text.append(f"\n{_header_line()}\n")
 
     return "\n".join(help_text)
 
@@ -159,9 +174,9 @@ def format_help_short():
         str: Short help text
     """
     help_text = []
-    help_text.append(f"{Fore.CYAN}{'═'*70}{Style.RESET_ALL}")
+    help_text.append(_header_line())
     help_text.append(f"{Fore.CYAN}{Style.BRIGHT}Quick Reference{Style.RESET_ALL}")
-    help_text.append(f"{Fore.CYAN}{'═'*70}{Style.RESET_ALL}\n")
+    help_text.append(_header_line() + "\n")
 
     help_text.append(f"{Fore.YELLOW}{Style.BRIGHT}Contacts:{Style.RESET_ALL}")
     help_text.append(f"  {Command.ADD_CONTACT}, {Command.SHOW_CONTACT}, {Command.SHOW_ALL_CONTACTS}")
@@ -180,10 +195,10 @@ def format_help_short():
     help_text.append(f"\n{Fore.YELLOW}{Style.BRIGHT}System:{Style.RESET_ALL}")
     help_text.append(f"  {Command.HELLO}, {Command.HELP}, {Command.EXIT_1}, {Command.EXIT_2}")
 
-    help_text.append(f"\n{Fore.CYAN}{'═'*70}{Style.RESET_ALL}")
+    help_text.append(f"\n{_header_line()}")
     help_text.append(f"{Fore.CYAN}Type '{Command.HELP}' for detailed information{Style.RESET_ALL}")
     help_text.append(f"{Fore.CYAN}Type '{Command.HELP} <category>' for category help{Style.RESET_ALL}")
-    help_text.append(f"{Fore.CYAN}{'═'*70}{Style.RESET_ALL}\n")
+    help_text.append(f"{_header_line()}\n")
 
     return "\n".join(help_text)
 
@@ -218,9 +233,9 @@ def format_help_category(category):
 def format_contacts_help():
     """Format contacts-specific help."""
     help_text = []
-    help_text.append(f"{Fore.CYAN}{'═'*70}{Style.RESET_ALL}")
+    help_text.append(_header_line())
     help_text.append(f"{Fore.CYAN}{Style.BRIGHT}CONTACT COMMANDS{Style.RESET_ALL}")
-    help_text.append(f"{Fore.CYAN}{'═'*70}{Style.RESET_ALL}\n")
+    help_text.append(_header_line() + "\n")
 
     help_text.append(f"  {Fore.GREEN}{Command.ADD_CONTACT}{Style.RESET_ALL} {Fore.MAGENTA}<name>{Style.RESET_ALL} {Fore.MAGENTA}<phone>{Style.RESET_ALL}")
     help_text.append("    Add a new contact or update existing contact with phone number")
@@ -250,7 +265,7 @@ def format_contacts_help():
     help_text.append(f"    {Fore.YELLOW}Example:{Style.RESET_ALL} {Fore.GREEN}{Command.DELETE_CONTACT}{Style.RESET_ALL} {Fore.MAGENTA}\"John Doe\"{Style.RESET_ALL}")
     help_text.append(f"    {Fore.CYAN}Note:{Style.RESET_ALL} Requires confirmation before deletion\n")
 
-    help_text.append(f"{Fore.CYAN}{'═'*70}{Style.RESET_ALL}\n")
+    help_text.append(f"{_header_line()}\n")
 
     return "\n".join(help_text)
 
@@ -258,9 +273,9 @@ def format_contacts_help():
 def format_notes_help():
     """Format notes-specific help."""
     help_text = []
-    help_text.append(f"{Fore.CYAN}{'═'*70}{Style.RESET_ALL}")
+    help_text.append(_header_line())
     help_text.append(f"{Fore.CYAN}{Style.BRIGHT}NOTE COMMANDS{Style.RESET_ALL}")
-    help_text.append(f"{Fore.CYAN}{'═'*70}{Style.RESET_ALL}\n")
+    help_text.append(f"{_header_line()}\n")
 
     help_text.append(f"  {Fore.GREEN}{Command.ADD_NOTE}{Style.RESET_ALL} {Fore.MAGENTA}<text>{Style.RESET_ALL} {Fore.BLUE}[tags]{Style.RESET_ALL}")
     help_text.append("    Add a new note with optional tags")
@@ -302,7 +317,7 @@ def format_notes_help():
     help_text.append(f"    {Fore.YELLOW}Example:{Style.RESET_ALL} {Fore.GREEN}{Command.DELETE_NOTE}{Style.RESET_ALL} {Fore.MAGENTA}abc123{Style.RESET_ALL}")
     help_text.append(f"    {Fore.CYAN}Note:{Style.RESET_ALL} Use note number from {Command.LIST_NOTES} or full UUID\n")
 
-    help_text.append(f"{Fore.CYAN}{'═'*70}{Style.RESET_ALL}\n")
+    help_text.append(f"{_header_line()}\n")
 
     return "\n".join(help_text)
 
@@ -310,9 +325,9 @@ def format_notes_help():
 def format_birthdays_help():
     """Format birthdays-specific help."""
     help_text = []
-    help_text.append(f"{Fore.CYAN}{'═'*70}{Style.RESET_ALL}")
+    help_text.append(_header_line())
     help_text.append(f"{Fore.CYAN}{Style.BRIGHT}BIRTHDAY COMMANDS{Style.RESET_ALL}")
-    help_text.append(f"{Fore.CYAN}{'═'*70}{Style.RESET_ALL}\n")
+    help_text.append(f"{_header_line()}\n")
 
     help_text.append(f"  {Fore.GREEN}{Command.ADD_BIRTHDAY}{Style.RESET_ALL} {Fore.MAGENTA}<name>{Style.RESET_ALL} {Fore.MAGENTA}<{Birthday.DATE_FORMAT_DISPLAY}>{Style.RESET_ALL}")
     help_text.append("    Add or update contact's birthday")
@@ -334,7 +349,7 @@ def format_birthdays_help():
     help_text.append(f"    {Fore.CYAN}Note:{Style.RESET_ALL} Default is 7 days if not specified")
     help_text.append(f"    {Fore.CYAN}Note:{Style.RESET_ALL} Shows birthdays within the next N days\n")
 
-    help_text.append(f"{Fore.CYAN}{'═'*70}{Style.RESET_ALL}\n")
+    help_text.append(f"{_header_line()}\n")
 
     return "\n".join(help_text)
 
@@ -342,9 +357,9 @@ def format_birthdays_help():
 def format_email_help():
     """Format email-specific help."""
     help_text = []
-    help_text.append(f"{Fore.CYAN}{'═'*70}{Style.RESET_ALL}")
+    help_text.append(_header_line())
     help_text.append(f"{Fore.CYAN}{Style.BRIGHT}EMAIL COMMANDS{Style.RESET_ALL}")
-    help_text.append(f"{Fore.CYAN}{'═'*70}{Style.RESET_ALL}\n")
+    help_text.append(f"{_header_line()}\n")
 
     help_text.append(f"  {Fore.GREEN}{Command.ADD_EMAIL}{Style.RESET_ALL} {Fore.MAGENTA}<name>{Style.RESET_ALL} {Fore.MAGENTA}<email>{Style.RESET_ALL}")
     help_text.append("    Add or update contact's email address")
@@ -364,6 +379,6 @@ def format_email_help():
     help_text.append(f"    {Fore.YELLOW}Example:{Style.RESET_ALL} {Fore.GREEN}{Command.DELETE_EMAIL}{Style.RESET_ALL} {Fore.MAGENTA}\"John Doe\"{Style.RESET_ALL}")
     help_text.append(f"    {Fore.CYAN}Note:{Style.RESET_ALL} Removes email from contact (contact remains)\n")
 
-    help_text.append(f"{Fore.CYAN}{'═'*70}{Style.RESET_ALL}\n")
+    help_text.append(f"{_header_line()}\n")
 
     return "\n".join(help_text)
