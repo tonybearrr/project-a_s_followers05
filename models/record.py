@@ -101,8 +101,11 @@ class Record:
         Returns:
             Phone or None: Phone object if found, None otherwise
         """
+        
+        phone_to_search = Phone(phone)
+        
         for phone_number in self.phones:
-            if phone_number.value == phone:
+            if phone_number.value == phone_to_search.value:
                 return phone_number
         return None
 
