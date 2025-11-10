@@ -1,8 +1,10 @@
+"""Command definitions for the address book application."""
 
 from enum import StrEnum
 
 
 class Command(StrEnum):
+    """Enumeration of all available commands in the application."""
     ADD_CONTACT = "add"
     UPDATE_CONTACT = "change"
     SHOW_CONTACT = "phone"
