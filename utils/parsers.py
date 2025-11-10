@@ -31,7 +31,13 @@ def detect_command(user_command):
     with auto-correction.
     """
 
-    if user_command in Command:
+    is_command_found = False
+    for cmd in Command:
+        if cmd.value == user_command:
+            is_command_found = True
+            break
+    
+    if is_command_found:
         return (user_command, True)
 
     if suggestions := get_close_matches(user_command, Command, n=3, cutoff=0.6):
