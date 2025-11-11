@@ -9,6 +9,7 @@ from .phone import Phone
 from .name import Name
 from .birthday import Birthday
 from .email import Email
+from .address import Address
 
 
 class Record:

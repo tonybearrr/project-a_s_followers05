@@ -78,4 +78,4 @@ class TestAddress:
         """Test address removing"""
         address = Address("456 Oak Avenue")
         address.value = None
-        assert address.value == None
+        assert address.value is None

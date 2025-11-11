@@ -12,7 +12,7 @@ from core.handlers import (
     add_contact, update_contact, get_all_contacts, search_contacts, get_one_contact,
     delete_contact, add_birthday, show_birthday, show_upcoming_birthdays,
     add_note, list_notes, search_notes, search_notes_by_tags,
-    edit_note, delete_note, add_email, delete_email, show_email, show_statistics
+    edit_note, delete_note, add_email, delete_email, show_email, show_statistics, add_address, edit_address, remove_address
 )
 from utils.parsers import parse_input, detect_command
 from utils.help_formatter import (
@@ -107,7 +107,7 @@ def get_help_output(args):
     try:
         if args and len(args) > 0:
             first_arg = args[0].lower()
-            command_output=first_arg
+            command_output = first_arg
             if first_arg in ["short", "s", "quick"]:   # short help
                 command_output = format_help_short()
             elif first_arg in ["contacts", "notes", "birthdays", "email", "address"]:   # Help by category

@@ -204,12 +204,6 @@ class TestRecord:
         record.add_email("test@example.com")
         assert "test@example.com" in str(record)
 
-    def test_str_representation_with_email(self):
-        """Test string representation with email."""
-        record = Record("Test User")
-        record.add_email("test@example.com")
-        assert "test@example.com" in str(record)
-
     def test_record_with_phones_email_and_birthday(self):
         """Test record with phones, email and birthday."""
         record = Record("Complete User")
@@ -223,7 +217,7 @@ class TestRecord:
         assert "1111111111" in str(record)
         assert "user@example.com" in str(record)
         assert "01.01.2000" in str(record)
-        
+
     def test_add_address(self):
         """Test adding an address."""
         record = Record("John Doe")
