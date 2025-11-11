@@ -21,7 +21,7 @@ class TestRecord:
     def test_str_representation_no_phones_no_birthday(self):
         """Test string representation without phones, email and birthday."""
         record = Record("Test User")
-        expected = "Contact name: Test User, phones: no phones, email: no email, birthday: no birthday"
+        expected = "Contact name: Test User, phones: no phones, email: no email, birthday: no birthday, address: no address"
         assert str(record) == expected
 
     def test_str_representation_with_phones(self):

@@ -36,6 +36,7 @@ class Record:
         self.phones = []
         self.email = None
         self.birthday = None
+        self.address = None
 
     def __str__(self):
         """
@@ -47,7 +48,8 @@ class Record:
         phones = "; ".join(p.value for p in self.phones) if self.phones else "no phones"
         email = self.email if self.email else "no email"
         bday = self.birthday if self.birthday else "no birthday"
-        return f"Contact name: {self.name.value}, phones: {phones}, email: {email}, birthday: {bday}"
+        addr = self.address if self.address else "no address"
+        return f"Contact name: {self.name.value}, phones: {phones}, email: {email}, birthday: {bday}, address: {addr}"
 
     def add_phone(self, phone):
         """
