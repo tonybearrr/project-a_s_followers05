@@ -2,11 +2,12 @@
 Simple table formatters using tabulate.
 """
 # flake8: noqa: E501
+import re
 from tabulate import tabulate
-from colorama import Fore, Style
+from colorama import Fore, Style, Back
 
 
-def format_contact_table(records):
+def format_contact_table(records, value=None):
     """
     Format contacts as a simple table.
     
@@ -19,6 +20,9 @@ def format_contact_table(records):
     if not records:
         return f"{Fore.YELLOW}No contacts found.{Style.RESET_ALL}"
 
+    pattern = r"(\d{3})(\d{3})(\d{4})"
+    replacement = r"(\1)\2-\3"
+    # formatted_phone = re.sub(pattern, replacement, phone)
     headers = [
         f"{Fore.CYAN}Name{Style.RESET_ALL}",
         f"{Fore.GREEN}Phones{Style.RESET_ALL}",
@@ -28,10 +32,46 @@ def format_contact_table(records):
     table_data = []
 
     for record in records:
-        name = f"{Fore.CYAN}{record.name.value}{Style.RESET_ALL}"
-        phones = f"{Fore.GREEN}{'; '.join(p.value for p in record.phones)}{Style.RESET_ALL}" if record.phones else f"{Fore.WHITE}-{Style.RESET_ALL}"
-        email = f"{Fore.YELLOW}{record.email.value}{Style.RESET_ALL}" if record.email else f"{Fore.WHITE}-{Style.RESET_ALL}"
-        birthday = f"{Fore.MAGENTA}{str(record.birthday)}{Style.RESET_ALL}" if record.birthday else f"{Fore.WHITE}-{Style.RESET_ALL}"
+        if value:
+            if value in record.name.value:
+                match = re.search(value.lower(), record.name.value.lower())
+                if match:
+                    value_position = match.span()
+                    part1 = f"{Fore.CYAN}{record.name.value[:value_position[0]]}{Style.RESET_ALL}"
+                    part2 = f"{Fore.CYAN}{record.name.value[value_position[1]:]}{Style.RESET_ALL}"
+                    value_hightligted = f"{Style.RESET_ALL}{Style.BRIGHT}{Fore.BLUE}{Back.LIGHTWHITE_EX}{value}{Style.RESET_ALL}"
+                    
+                    name = part1 + value_hightligted + part2
+            else:
+                name = f"{Fore.CYAN}{record.name.value}{Style.RESET_ALL}"
+
+            phones = f"{Fore.GREEN}{' | '.join((re.sub(pattern, replacement, p.value)) for p in record.phones)}{Style.RESET_ALL}" if record.phones else f"{Fore.WHITE}-{Style.RESET_ALL}"
+            # phones = f"{Fore.GREEN}{' | '.join(p.value for p in record.phones)}{Style.RESET_ALL}" if record.phones else f"{Fore.WHITE}-{Style.RESET_ALL}"
+
+            if record.email: 
+                if value in record.email.value:
+                    match = re.search(value.lower(), record.email.value.lower())
+                    if match:
+                        value_position = match.span()
+                        part1 = f"{Fore.YELLOW}{record.email.value[:value_position[0]]}{Style.RESET_ALL}"
+                        part2 = f"{Fore.YELLOW}{record.email.value[value_position[1]:]}{Style.RESET_ALL}"
+                        value_hightligted = f"{Style.RESET_ALL}{Style.BRIGHT}{Fore.YELLOW}{Back.LIGHTWHITE_EX}{value}{Style.RESET_ALL}"
+
+                        email = part1 + value_hightligted + part2
+                else:
+                    email = f"{Fore.YELLOW}{record.email.value}{Style.RESET_ALL}"
+                        
+            else:
+                email = f"{Fore.WHITE}-{Style.RESET_ALL}"
+
+            birthday = f"{Fore.MAGENTA}{str(record.birthday)}{Style.RESET_ALL}" if record.birthday else f"{Fore.WHITE}-{Style.RESET_ALL}"
+
+        else:
+            name = f"{Fore.CYAN}{record.name.value}{Style.RESET_ALL}"
+            phones = f"{Fore.GREEN}{' | '.join((re.sub(pattern, replacement, p.value)) for p in record.phones)}{Style.RESET_ALL}" if record.phones else f"{Fore.WHITE}-{Style.RESET_ALL}"
+            # phones = f"{Fore.GREEN}{' | '.join(p.value for p in record.phones)}{Style.RESET_ALL}" if record.phones else f"{Fore.WHITE}-{Style.RESET_ALL}"
+            email = f"{Fore.YELLOW}{record.email.value}{Style.RESET_ALL}" if record.email else f"{Fore.WHITE}-{Style.RESET_ALL}"
+            birthday = f"{Fore.MAGENTA}{str(record.birthday)}{Style.RESET_ALL}" if record.birthday else f"{Fore.WHITE}-{Style.RESET_ALL}"
 
         table_data.append([name, phones, email, birthday])
 

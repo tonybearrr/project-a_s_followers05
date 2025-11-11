@@ -110,8 +110,12 @@ def get_one_contact(args, book: AddressBook):
     record = book.find(name)
     if not record:
         return f"Contact '{name}' not found."
-    phones = "; ".join(p.value for p in record.phones) if record.phones else "no phones"
-    return f"{name}: {phones}"
+    
+    pattern = r"(\d{3})(\d{3})(\d{4})"
+    replacement = r"(\1)\2-\3"
+
+    phones = "; ".join((re.sub(pattern, replacement, p.value)) for p in record.phones) if record.phones else "no phones"
+    return f"{record.name}: {phones}"
 
 
 def search_contacts(args, book: AddressBook):
@@ -143,38 +147,38 @@ def search_contacts(args, book: AddressBook):
         # display_contacts = display_search_contacts(searchable_contacts, value)
 
         # return display_contacts
-        return format_contact_table(searchable_contacts)
+        return format_contact_table(searchable_contacts, value)
 
-def display_search_contacts(contacts, value):
-    """
-    Display searched contacts.
+# def display_search_contacts(contacts, value):
+#     """
+#     Display searched contacts.
 
-    Args:
-        contacts (set): The searches contacts (records)
-        value (str): Searched value
+#     Args:
+#         contacts (set): The searches contacts (records)
+#         value (str): Searched value
 
-    Returns:
-        str: Formatted contact information
-    """
-    init()
-    result_record_str = ""
-    value_hightligted = Fore.RED + Style.BRIGHT + Back.YELLOW + value + Style.RESET_ALL
+#     Returns:
+#         str: Formatted contact information
+#     """
+#     init()
+#     result_record_str = ""
+#     value_hightligted = Fore.RED + Style.BRIGHT + Back.YELLOW + value + Style.RESET_ALL
 
-    for record in contacts:
-        str_record = str(record)
-        match = re.search(value, str_record)
-        if match:
-            # Get position index of value in the record string
-            value_position = match.span()
+#     for record in contacts:
+#         str_record = str(record)
+#         match = re.search(value, str_record)
+#         if match:
+#             # Get position index of value in the record string
+#             value_position = match.span()
 
-            # Cut the record string before value and after value
-            part1 = Style.BRIGHT + str_record[:value_position[0]] + Style.RESET_ALL
-            part2 = Style.BRIGHT + str_record[value_position[1]:] + Style.RESET_ALL
+#             # Cut the record string before value and after value
+#             part1 = Style.BRIGHT + str_record[:value_position[0]] + Style.RESET_ALL
+#             part2 = Style.BRIGHT + str_record[value_position[1]:] + Style.RESET_ALL
 
-            # Combine all parts in one result string, adding hightligted part
-            result_record_str += "\n" + part1 + value_hightligted + part2
+#             # Combine all parts in one result string, adding hightligted part
+#             result_record_str += "\n" + part1 + value_hightligted + part2
 
-    return result_record_str
+#     return result_record_str
 
 
 @input_error

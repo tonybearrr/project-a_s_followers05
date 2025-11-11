@@ -61,7 +61,12 @@ class AddressBook(UserDict):
         Returns:
             Record or None: Contact record if found, None otherwise
         """
-        return self.data[name] if name in self.data else None
+        for record in self.data.values():
+            if name.lower() in record.name.value.lower():
+                return record
+        
+        # return self.data[name] if name in self.data else None
+        # return self.data[name] if name in self.data else None
 
     def search_contacts_by_name(self, name):
         """
@@ -93,12 +98,16 @@ class AddressBook(UserDict):
             List of the records or None: List of the Contacts if found, None otherwise
         """
 
+        phone = re.sub(r"\D", "", phone)
+        
         searched_records = []
 
         for record in self.data.values():
             for r in record.phones:
-                match = re.search(phone, r.value)
-                if match:
+                # no_format_phone = re.sub(r"\D", "", r.value)
+                # match = re.search(phone, no_format_phone)
+                # if match:
+                if phone == r.value:
                     searched_records.append(record)
         return set(searched_records)
 

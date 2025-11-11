@@ -32,10 +32,15 @@ class Phone(Field):
         """
         # Clean the phone number (remove all non-digit characters)
         phone = re.sub(r"\D", "", value)
+
         if phone == Phone.EMPTY_PHONE:
             raise ValueError("Phone number cannot be empty")
 
         if not (phone.isdigit() and len(phone) == Phone.PHONE_LEN):
             raise ValueError(f"""Phone number must be {Phone.PHONE_LEN} digits and contain only digits""")
+
+        # pattern = r"(\d{3})(\d{3})(\d{4})"
+        # replacement = r"(\1)\2-\3"
+        # formatted_phone = re.sub(pattern, replacement, phone)
 
         super().__init__(phone)
