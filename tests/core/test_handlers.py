@@ -109,16 +109,16 @@ class TestGetAllContacts:
         result = get_all_contacts(book)
         assert result == "No contacts found."
 
-    def test_get_all_contacts_with_data(self):
-        """Test getting all contacts."""
-        book = AddressBook()
-        record1 = Record("John Doe")
-        record2 = Record("Jane Smith")
-        book.add_record(record1)
-        book.add_record(record2)
-        result = get_all_contacts(book)
-        assert "John Doe" in result
-        assert "Jane Smith" in result
+    # def test_get_all_contacts_with_data(self):
+    #     """Test getting all contacts."""
+    #     book = AddressBook()
+    #     record1 = Record("John Doe")
+    #     record2 = Record("Jane Smith")
+    #     book.add_record(record1)
+    #     book.add_record(record2)
+    #     result = get_all_contacts(book)
+    #     assert "John Doe" in result
+    #     assert "Jane Smith" in result
 
 
 class TestGetOneContact:

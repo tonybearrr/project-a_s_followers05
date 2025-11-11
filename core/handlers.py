@@ -358,6 +358,72 @@ def show_upcoming_birthdays(args, book: AddressBook):
     lines = [f"{name}: {birthday}" for name, birthday in upcoming]
     return "\n".join(lines)
 
+@input_error
+def add_address(args, book: AddressBook):
+    """
+    Add address for a contact.
+
+    Args:
+        args (list): Command arguments [name, address]
+        book (AddressBook): Address book instance
+
+    Returns:
+        str: Success message or error message
+    """
+    if len(args) < 2:
+        return f"Error: [{Command.ADD_ADDRESS}] command requires a name and an address."
+    name, *address_parts = args
+    address = " ".join(address_parts)
+    record = book.find(name)
+    if not record:
+        return f"Contact '{name}' not found."
+    record.add_address(address)
+    return f"Email '{address}' for contact '{name}' added successfully."
+
+@input_error
+def edit_address(args, book: AddressBook):
+    """
+    Update address for a contact.
+
+    Args:
+        args (list): Command arguments [name, address]
+        book (AddressBook): Address book instance
+
+    Returns:
+        str: Success message or error message
+    """
+    if len(args) < 2:
+        return f"Error: [{Command.CHANGE_ADDRESS}] command requires a name and a new address."
+    name, *address_parts = args
+    address = " ".join(address_parts)
+    record = book.find(name)
+    if not record:
+        return f"Contact '{name}' not found."
+    record.edit_address(address)
+    return f"Email '{address}' for contact '{name}' changed successfully."
+
+@input_error
+def remove_address(args, book: AddressBook):
+    """
+    Delete address from a contact.
+
+    Args:
+        args (list): Command arguments [name]
+        book (AddressBook): Address book instance
+
+    Returns:
+        str: Success message or error message
+    """
+    if len(args) < 1:
+        return f"Error: [{Command.REMOVE_ADDRESS}] command requires a name."
+    name = args[0]
+    record = book.find(name)
+    if not record:
+        print(f"error {name}")
+        return f"Contact '{name}' not found."
+    record.remove_address()
+    return f"Email successfully removed for contact '{name}'."
+    
 
 def parse_tags(tags_input):
     """
