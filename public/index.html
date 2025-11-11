@@ -1,0 +1,2711 @@
+<!DOCTYPE html>
+<html lang="uk">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Address Book Assistant - CLI Application</title>
+    <style>
+      @import url("https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700&display=swap");
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      html {
+        scroll-behavior: smooth;
+      }
+
+      body {
+        font-family: "JetBrains Mono", "Courier New", monospace;
+        background: #0d1117;
+        color: #c9d1d9;
+        line-height: 1.6;
+        overflow-x: auto;
+        overflow-y: hidden;
+      }
+
+      /* Slides Container */
+      .slides-container {
+        display: flex;
+        width: 100vw;
+        height: 100vh;
+        overflow-x: auto;
+        overflow-y: hidden;
+        scroll-snap-type: x mandatory;
+        scrollbar-width: thin;
+        scrollbar-color: #30363d #0d1117;
+      }
+
+      .slides-container::-webkit-scrollbar {
+        height: 8px;
+      }
+
+      .slides-container::-webkit-scrollbar-track {
+        background: #0d1117;
+      }
+
+      .slides-container::-webkit-scrollbar-thumb {
+        background: #30363d;
+        border-radius: 4px;
+      }
+
+      .slides-container::-webkit-scrollbar-thumb:hover {
+        background: #58a6ff;
+      }
+
+      /* Individual Slide */
+      .slide {
+        min-width: 100vw;
+        width: 100vw;
+        height: 100vh;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        padding: 2rem;
+        scroll-snap-align: start;
+        position: relative;
+        background: linear-gradient(135deg, #0d1117 0%, #161b22 100%);
+      }
+
+      .slide::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: radial-gradient(
+            circle at 20% 80%,
+            rgba(120, 119, 198, 0.1) 0%,
+            transparent 50%
+          ),
+          radial-gradient(
+            circle at 80% 20%,
+            rgba(255, 119, 198, 0.1) 0%,
+            transparent 50%
+          ),
+          radial-gradient(
+            circle at 40% 40%,
+            rgba(120, 219, 255, 0.05) 0%,
+            transparent 50%
+          );
+        pointer-events: none;
+        z-index: 1;
+      }
+
+      .slide-content {
+        max-width: 1200px;
+        width: 100%;
+        position: relative;
+        z-index: 2;
+        overflow-y: auto;
+        max-height: 100vh;
+        padding: 2rem;
+      }
+
+      .slide-content::-webkit-scrollbar {
+        width: 8px;
+      }
+
+      .slide-content::-webkit-scrollbar-track {
+        background: #0d1117;
+      }
+
+      .slide-content::-webkit-scrollbar-thumb {
+        background: #30363d;
+        border-radius: 4px;
+      }
+
+      .slide-content::-webkit-scrollbar-thumb:hover {
+        background: #58a6ff;
+      }
+
+      /* Header */
+      .header {
+        text-align: center;
+        margin-bottom: 3rem;
+        padding: 2rem 0;
+        border-bottom: 1px solid #30363d;
+      }
+
+      .logo {
+        font-size: 2.5rem;
+        font-weight: 700;
+        color: #58a6ff;
+        margin-bottom: 0.5rem;
+        text-shadow: 0 0 20px rgba(88, 166, 255, 0.3);
+      }
+
+      /* Team Logo Section */
+      .team-logo-section {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        min-height: 60vh;
+        text-align: center;
+      }
+
+      .team-logo {
+        width: 200px;
+        height: 200px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #58a6ff, #7c3aed);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 6rem;
+        margin-bottom: 2rem;
+        border: 4px solid #30363d;
+        box-shadow: 0 0 40px rgba(88, 166, 255, 0.3);
+        transition: all 0.3s ease;
+      }
+
+      .team-logo:hover {
+        transform: scale(1.1);
+        box-shadow: 0 0 60px rgba(88, 166, 255, 0.5);
+      }
+
+      .team-title {
+        font-size: 4rem;
+        font-weight: 700;
+        color: #58a6ff;
+        margin-bottom: 1rem;
+        text-shadow: 0 0 30px rgba(88, 166, 255, 0.4);
+      }
+
+      .team-subtitle {
+        font-size: 1.5rem;
+        color: #8b949e;
+        margin-bottom: 2rem;
+      }
+
+      .tagline {
+        font-size: 1.2rem;
+        color: #8b949e;
+        margin-bottom: 1rem;
+      }
+
+      .version {
+        display: inline-block;
+        background: #21262d;
+        color: #7c3aed;
+        padding: 0.3rem 0.8rem;
+        border-radius: 6px;
+        font-size: 0.9rem;
+        border: 1px solid #30363d;
+      }
+
+      /* Language Switcher */
+      .language-switcher {
+        position: fixed;
+        top: 2rem;
+        right: 2rem;
+        z-index: 1000;
+        background: #21262d;
+        border: 1px solid #30363d;
+        border-radius: 8px;
+        padding: 0.5rem;
+        display: flex;
+        gap: 0.5rem;
+      }
+
+      .lang-btn {
+        background: transparent;
+        border: 1px solid #30363d;
+        color: #8b949e;
+        padding: 0.4rem 0.8rem;
+        border-radius: 6px;
+        cursor: pointer;
+        font-family: "JetBrains Mono", monospace;
+        font-size: 0.9rem;
+        transition: all 0.3s ease;
+      }
+
+      .lang-btn:hover {
+        background: #30363d;
+        color: #c9d1d9;
+      }
+
+      .lang-btn.active {
+        background: #58a6ff;
+        color: #0d1117;
+        border-color: #58a6ff;
+      }
+
+      /* Terminal Window */
+      .terminal-window {
+        background: #0d1117;
+        border: 1px solid #30363d;
+        border-radius: 8px;
+        margin: 2rem 0;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        overflow: hidden;
+      }
+
+      .terminal-header {
+        background: #21262d;
+        padding: 0.8rem 1rem;
+        border-bottom: 1px solid #30363d;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+
+      .terminal-buttons {
+        display: flex;
+        gap: 0.5rem;
+      }
+
+      .terminal-button {
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+      }
+
+      .terminal-button.close {
+        background: #ff5f56;
+      }
+      .terminal-button.minimize {
+        background: #ffbd2e;
+      }
+      .terminal-button.maximize {
+        background: #27ca3f;
+      }
+
+      .terminal-title {
+        color: #8b949e;
+        font-size: 0.9rem;
+        margin-left: 1rem;
+      }
+
+      .terminal-body {
+        padding: 1.5rem;
+        font-size: 0.95rem;
+        line-height: 1.8;
+      }
+
+      .prompt {
+        color: #7c3aed;
+        font-weight: 600;
+      }
+
+      .command {
+        color: #58a6ff;
+        font-weight: 500;
+      }
+
+      .output {
+        color: #c9d1d9;
+        margin: 0.5rem 0;
+      }
+
+      .success {
+        color: #3fb950;
+      }
+
+      .error {
+        color: #f85149;
+      }
+
+      .warning {
+        color: #d29922;
+      }
+
+      .comment {
+        color: #8b949e;
+        font-style: italic;
+      }
+
+      .cyan {
+        color: #39c5cf;
+      }
+
+      .green {
+        color: #3fb950;
+      }
+
+      .yellow {
+        color: #d29922;
+      }
+
+      .magenta {
+        color: #d2a8ff;
+      }
+
+      .blue {
+        color: #58a6ff;
+      }
+
+      .white {
+        color: #c9d1d9;
+      }
+
+      /* Terminal Tables */
+      .terminal-table {
+        margin: 1rem 0;
+        font-family: "JetBrains Mono", monospace;
+        font-size: 0.85rem;
+        line-height: 1.4;
+        white-space: pre;
+        overflow-x: auto;
+        background: #0d1117;
+        padding: 0.5rem;
+        border-radius: 4px;
+      }
+
+      .terminal-table pre {
+        margin: 0;
+        font-family: "JetBrains Mono", monospace;
+        font-size: 0.85rem;
+        line-height: 1.4;
+        color: #c9d1d9;
+      }
+
+      /* Team Section */
+      .team {
+        display: flex;
+        flex-direction: column;
+        gap: 2rem;
+        margin: 2rem 0;
+        max-width: 1400px;
+        width: 100%;
+      }
+
+      .team-row {
+        display: flex;
+        gap: 2rem;
+        justify-content: center;
+        align-items: stretch;
+      }
+
+      .team-row:first-child {
+        /* First row: 3 cards */
+        justify-content: space-between;
+      }
+
+      .team-row:last-child {
+        /* Second row: 2 cards centered */
+        justify-content: center;
+      }
+
+      .team-member {
+        background: #21262d;
+        border: 1px solid #30363d;
+        border-radius: 12px;
+        padding: 2.5rem;
+        text-align: center;
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+        flex: 1;
+        max-width: 400px;
+        min-width: 250px;
+      }
+
+      .team-member::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: linear-gradient(90deg, #58a6ff, #7c3aed);
+        transform: scaleX(0);
+        transition: transform 0.3s ease;
+      }
+
+      .team-member:hover {
+        transform: translateY(-5px);
+        border-color: #58a6ff;
+        box-shadow: 0 10px 30px rgba(88, 166, 255, 0.2);
+      }
+
+      .team-member:hover::before {
+        transform: scaleX(1);
+      }
+
+      .team-avatar {
+        width: 120px;
+        height: 120px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #58a6ff, #7c3aed);
+        margin: 0 auto 1.5rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 8rem;
+        color: #fff;
+        border: 4px solid #30363d;
+        transition: all 0.3s ease;
+      }
+
+      .team-member:hover .team-avatar {
+        border-color: #58a6ff;
+        transform: scale(1.1);
+      }
+
+      .team-name {
+        font-size: 1.5rem;
+        font-weight: 600;
+        color: #58a6ff;
+        margin-bottom: 0.5rem;
+      }
+
+      .team-role {
+        font-size: 1rem;
+        color: #8b949e;
+        margin-bottom: 1rem;
+      }
+
+      .team-description {
+        font-size: 0.9rem;
+        color: #c9d1d9;
+        line-height: 1.6;
+      }
+
+      /* Features Grid */
+      .features {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+        gap: 2.5rem;
+        margin: 3rem 0;
+        padding: 1rem 0;
+      }
+
+      .feature-card {
+        background: linear-gradient(135deg, #161b22 0%, #0d1117 100%);
+        border: 2px solid #30363d;
+        border-radius: 16px;
+        padding: 2rem;
+        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        position: relative;
+        overflow: hidden;
+        cursor: pointer;
+      }
+
+      .feature-card::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: linear-gradient(90deg, #58a6ff, #7c3aed, #3fb950);
+        transform: scaleX(0);
+        transform-origin: left;
+        transition: transform 0.4s ease;
+      }
+
+      .feature-card::after {
+        content: "";
+        position: absolute;
+        top: -50%;
+        left: -50%;
+        width: 200%;
+        height: 200%;
+        background: radial-gradient(
+          circle,
+          rgba(88, 166, 255, 0.1) 0%,
+          transparent 70%
+        );
+        opacity: 0;
+        transition: opacity 0.4s ease;
+        pointer-events: none;
+      }
+
+      .feature-card:hover {
+        border-color: #58a6ff;
+        box-shadow: 0 8px 32px rgba(88, 166, 255, 0.2),
+          0 0 0 1px rgba(88, 166, 255, 0.1),
+          inset 0 1px 0 rgba(255, 255, 255, 0.05);
+        transform: translateY(-8px) scale(1.02);
+        background: linear-gradient(135deg, #1c2128 0%, #161b22 100%);
+      }
+
+      .feature-card:hover::before {
+        transform: scaleX(1);
+      }
+
+      .feature-card:hover::after {
+        opacity: 1;
+      }
+
+      .feature-icon {
+        font-size: 3.5rem;
+        margin-bottom: 1.5rem;
+        display: inline-block;
+        transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.3));
+        line-height: 1;
+      }
+
+      .feature-card:hover .feature-icon {
+        transform: scale(1.2) rotate(5deg);
+        filter: drop-shadow(0 8px 16px rgba(88, 166, 255, 0.4));
+      }
+
+      .feature-title {
+        font-size: 1.4rem;
+        font-weight: 700;
+        background: linear-gradient(135deg, #58a6ff 0%, #7c3aed 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        margin-bottom: 1rem;
+        transition: all 0.3s ease;
+        letter-spacing: -0.02em;
+      }
+
+      .feature-card:hover .feature-title {
+        background: linear-gradient(135deg, #7c3aed 0%, #58a6ff 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+      }
+
+      .feature-description {
+        color: #8b949e;
+        line-height: 1.8;
+        font-size: 0.95rem;
+        transition: color 0.3s ease;
+      }
+
+      .feature-card:hover .feature-description {
+        color: #c9d1d9;
+      }
+
+      /* Feature card specific colors */
+      .feature-card:nth-child(1) .feature-icon {
+        filter: drop-shadow(0 4px 8px rgba(88, 166, 255, 0.3));
+      }
+      .feature-card:nth-child(2) .feature-icon {
+        filter: drop-shadow(0 4px 8px rgba(88, 166, 255, 0.3));
+      }
+      .feature-card:nth-child(3) .feature-icon {
+        filter: drop-shadow(0 4px 8px rgba(255, 119, 198, 0.3));
+      }
+      .feature-card:nth-child(4) .feature-icon {
+        filter: drop-shadow(0 4px 8px rgba(79, 192, 80, 0.3));
+      }
+      .feature-card:nth-child(5) .feature-icon {
+        filter: drop-shadow(0 4px 8px rgba(88, 166, 255, 0.3));
+      }
+      .feature-card:nth-child(6) .feature-icon {
+        filter: drop-shadow(0 4px 8px rgba(210, 153, 34, 0.3));
+      }
+      .feature-card:nth-child(7) .feature-icon {
+        filter: drop-shadow(0 4px 8px rgba(248, 81, 73, 0.3));
+      }
+      .feature-card:nth-child(8) .feature-icon {
+        filter: drop-shadow(0 4px 8px rgba(124, 58, 237, 0.3));
+      }
+      .feature-card:nth-child(9) .feature-icon {
+        filter: drop-shadow(0 4px 8px rgba(79, 192, 80, 0.3));
+      }
+
+      .feature-card:nth-child(1):hover {
+        border-color: #58a6ff;
+      }
+      .feature-card:nth-child(2):hover {
+        border-color: #58a6ff;
+      }
+      .feature-card:nth-child(3):hover {
+        border-color: #ff77c6;
+      }
+      .feature-card:nth-child(4):hover {
+        border-color: #3fb950;
+      }
+      .feature-card:nth-child(5):hover {
+        border-color: #58a6ff;
+      }
+      .feature-card:nth-child(6):hover {
+        border-color: #d29922;
+      }
+      .feature-card:nth-child(7):hover {
+        border-color: #f85149;
+      }
+      .feature-card:nth-child(8):hover {
+        border-color: #7c3aed;
+      }
+      .feature-card:nth-child(9):hover {
+        border-color: #3fb950;
+      }
+
+      /* Animation on load */
+      @keyframes slideInUp {
+        from {
+          opacity: 0;
+          transform: translateY(30px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .feature-card {
+        animation: slideInUp 0.6s ease-out backwards;
+      }
+
+      .feature-card:nth-child(1) {
+        animation-delay: 0.1s;
+      }
+      .feature-card:nth-child(2) {
+        animation-delay: 0.2s;
+      }
+      .feature-card:nth-child(3) {
+        animation-delay: 0.3s;
+      }
+      .feature-card:nth-child(4) {
+        animation-delay: 0.4s;
+      }
+      .feature-card:nth-child(5) {
+        animation-delay: 0.5s;
+      }
+      .feature-card:nth-child(6) {
+        animation-delay: 0.6s;
+      }
+      .feature-card:nth-child(7) {
+        animation-delay: 0.7s;
+      }
+      .feature-card:nth-child(8) {
+        animation-delay: 0.8s;
+      }
+      .feature-card:nth-child(9) {
+        animation-delay: 0.9s;
+      }
+
+      /* Code Examples */
+      .code-section {
+        margin: 3rem 0;
+      }
+
+      .code-section h2 {
+        color: #58a6ff;
+        font-size: 1.8rem;
+        margin-bottom: 1.5rem;
+        text-align: center;
+      }
+
+      .code-block {
+        background: #0d1117;
+        border: 1px solid #30363d;
+        border-radius: 8px;
+        padding: 1.5rem;
+        margin: 1rem 0;
+        overflow-x: auto;
+        position: relative;
+      }
+
+      .code-block::before {
+        content: attr(data-lang);
+        position: absolute;
+        top: 0.5rem;
+        right: 1rem;
+        background: #21262d;
+        color: #8b949e;
+        padding: 0.2rem 0.5rem;
+        border-radius: 4px;
+        font-size: 0.8rem;
+      }
+
+      .code-block pre {
+        margin: 0;
+        font-family: "JetBrains Mono", monospace;
+        font-size: 0.9rem;
+        line-height: 1.6;
+      }
+
+      .keyword {
+        color: #ff7b72;
+      }
+      .string {
+        color: #a5d6ff;
+      }
+      .number {
+        color: #79c0ff;
+      }
+      .comment {
+        color: #8b949e;
+      }
+      .function {
+        color: #d2a8ff;
+      }
+
+      /* Installation */
+      .installation {
+        background: #161b22;
+        border: 1px solid #30363d;
+        border-radius: 8px;
+        padding: 2rem;
+        margin: 3rem 0;
+        text-align: center;
+      }
+
+      .installation h2 {
+        color: #58a6ff;
+        font-size: 1.8rem;
+        margin-bottom: 1.5rem;
+      }
+
+      .install-commands {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+        max-width: 600px;
+        margin: 0 auto;
+      }
+
+      .install-command {
+        background: #0d1117;
+        border: 1px solid #30363d;
+        border-radius: 6px;
+        padding: 1rem;
+        font-family: "JetBrains Mono", monospace;
+        color: #c9d1d9;
+        text-align: left;
+        position: relative;
+      }
+
+      .install-command::before {
+        content: "$";
+        color: #7c3aed;
+        font-weight: 600;
+        margin-right: 0.5rem;
+      }
+
+      /* Commands Table */
+      .commands-table {
+        background: #161b22;
+        border: 1px solid #30363d;
+        border-radius: 8px;
+        padding: 2rem;
+        margin: 3rem 0;
+        overflow-x: auto;
+      }
+
+      .commands-table h2 {
+        color: #58a6ff;
+        font-size: 1.8rem;
+        margin-bottom: 1.5rem;
+        text-align: center;
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 1rem;
+      }
+
+      th,
+      td {
+        padding: 1rem;
+        text-align: left;
+        border-bottom: 1px solid #30363d;
+      }
+
+      th {
+        background: #21262d;
+        color: #58a6ff;
+        font-weight: 600;
+      }
+
+      td {
+        color: #c9d1d9;
+      }
+
+      tr:hover {
+        background: #21262d;
+      }
+
+      .command-name {
+        color: #58a6ff;
+        font-weight: 600;
+        font-family: "JetBrains Mono", monospace;
+      }
+
+      /* Footer */
+      .footer {
+        text-align: center;
+        padding: 3rem 0;
+        border-top: 1px solid #30363d;
+        color: #8b949e;
+      }
+
+      .footer p {
+        margin-bottom: 0.5rem;
+      }
+
+      .footer a {
+        color: #58a6ff;
+        text-decoration: none;
+      }
+
+      .footer a:hover {
+        text-decoration: underline;
+      }
+
+      /* Navigation Dots */
+      .slide-nav {
+        position: fixed;
+        bottom: 2rem;
+        left: 50%;
+        transform: translateX(-50%);
+        z-index: 1000;
+        display: flex;
+        gap: 0.5rem;
+        background: rgba(33, 38, 45, 0.8);
+        padding: 0.8rem 1.2rem;
+        border-radius: 30px;
+        border: 1px solid #30363d;
+        backdrop-filter: blur(10px);
+      }
+
+      .nav-dot {
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        background: #30363d;
+        border: 2px solid #30363d;
+        cursor: pointer;
+        transition: all 0.3s ease;
+      }
+
+      .nav-dot:hover {
+        background: #58a6ff;
+        border-color: #58a6ff;
+        transform: scale(1.2);
+      }
+
+      .nav-dot.active {
+        background: #58a6ff;
+        border-color: #58a6ff;
+        box-shadow: 0 0 10px rgba(88, 166, 255, 0.5);
+      }
+
+      /* Slide Number Indicator */
+      .slide-number {
+        position: fixed;
+        top: 2rem;
+        left: 2rem;
+        z-index: 1000;
+        background: rgba(33, 38, 45, 0.8);
+        color: #8b949e;
+        padding: 0.5rem 1rem;
+        border-radius: 20px;
+        border: 1px solid #30363d;
+        font-size: 0.9rem;
+        backdrop-filter: blur(10px);
+      }
+
+      /* Scroll Hint */
+      .scroll-hint {
+        position: fixed;
+        bottom: 5rem;
+        right: 2rem;
+        z-index: 1000;
+        color: #8b949e;
+        font-size: 0.9rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        background: rgba(33, 38, 45, 0.8);
+        padding: 0.5rem 1rem;
+        border-radius: 20px;
+        border: 1px solid #30363d;
+        backdrop-filter: blur(10px);
+        animation: pulse 2s infinite;
+      }
+
+      @keyframes pulse {
+        0%,
+        100% {
+          opacity: 0.6;
+        }
+        50% {
+          opacity: 1;
+        }
+      }
+
+      /* Responsive */
+      @media (max-width: 768px) {
+        .slide {
+          padding: 1rem;
+        }
+
+        .slide-content {
+          padding: 1rem;
+        }
+
+        .logo {
+          font-size: 2rem;
+        }
+
+        .features {
+          grid-template-columns: 1fr;
+          gap: 1.5rem;
+        }
+
+        .feature-card {
+          padding: 1.5rem;
+          border-radius: 12px;
+        }
+
+        .feature-icon {
+          font-size: 2.5rem;
+          margin-bottom: 1rem;
+        }
+
+        .feature-title {
+          font-size: 1.2rem;
+        }
+
+        .feature-description {
+          font-size: 0.9rem;
+        }
+
+        .install-commands {
+          max-width: 100%;
+        }
+
+        .language-switcher {
+          top: 1rem;
+          right: 1rem;
+        }
+
+        .slide-number {
+          top: 1rem;
+          left: 1rem;
+        }
+
+        .scroll-hint {
+          bottom: 4rem;
+          right: 1rem;
+          font-size: 0.8rem;
+        }
+      }
+
+      /* Animations */
+      @keyframes blink {
+        0%,
+        50% {
+          opacity: 1;
+        }
+        51%,
+        100% {
+          opacity: 0;
+        }
+      }
+
+      .cursor {
+        animation: blink 1s infinite;
+      }
+
+      /* Mermaid Diagram Styles */
+      .mermaid {
+        background: #0d1117;
+        padding: 1.5rem;
+        border-radius: 8px;
+        border: 1px solid #30363d;
+        overflow-x: auto;
+        font-family: "JetBrains Mono", monospace;
+        transition: transform 0.3s ease;
+        will-change: transform;
+      }
+
+      .diagram-container {
+        background: #161b22;
+        border: 1px solid #30363d;
+        border-radius: 8px;
+        padding: 2rem;
+        margin: 2rem 0;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .diagram-wrapper {
+        position: relative;
+        overflow: auto;
+        max-height: 70vh;
+        cursor: grab;
+        background: #0d1117;
+        border-radius: 4px;
+      }
+
+      .diagram-wrapper:active {
+        cursor: grabbing;
+      }
+
+      .diagram-wrapper.dragging {
+        cursor: grabbing;
+      }
+
+      .diagram-zoom-controls {
+        position: absolute;
+        top: 1rem;
+        right: 1rem;
+        z-index: 10;
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+        background: rgba(33, 38, 45, 0.95);
+        border: 1px solid #30363d;
+        border-radius: 8px;
+        padding: 0.5rem;
+        backdrop-filter: blur(10px);
+      }
+
+      .zoom-btn {
+        background: #21262d;
+        border: 1px solid #30363d;
+        color: #c9d1d9;
+        width: 36px;
+        height: 36px;
+        border-radius: 6px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.2rem;
+        transition: all 0.3s ease;
+        user-select: none;
+      }
+
+      .zoom-btn:hover {
+        background: #30363d;
+        border-color: #58a6ff;
+        color: #58a6ff;
+        transform: scale(1.1);
+      }
+
+      .zoom-btn:active {
+        transform: scale(0.95);
+      }
+
+      .zoom-btn:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
+
+      .zoom-reset-btn {
+        background: #21262d;
+        border: 1px solid #30363d;
+        color: #c9d1d9;
+        padding: 0.4rem 0.8rem;
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: 0.85rem;
+        transition: all 0.3s ease;
+        user-select: none;
+        font-family: "JetBrains Mono", monospace;
+      }
+
+      .zoom-reset-btn:hover {
+        background: #30363d;
+        border-color: #58a6ff;
+        color: #58a6ff;
+      }
+
+      .zoom-level {
+        text-align: center;
+        color: #8b949e;
+        font-size: 0.75rem;
+        padding: 0.2rem 0;
+        font-family: "JetBrains Mono", monospace;
+      }
+
+      .zoom-hint {
+        position: absolute;
+        bottom: 1rem;
+        left: 1rem;
+        background: rgba(33, 38, 45, 0.9);
+        border: 1px solid #30363d;
+        border-radius: 6px;
+        padding: 0.5rem 1rem;
+        color: #8b949e;
+        font-size: 0.8rem;
+        font-family: "JetBrains Mono", monospace;
+        z-index: 5;
+        backdrop-filter: blur(10px);
+        transition: opacity 0.3s ease;
+      }
+
+      .zoom-hint span {
+        color: #58a6ff;
+      }
+
+      .zoom-hint .close-hint {
+        margin-left: 0.5rem;
+        cursor: pointer;
+        color: #8b949e;
+        font-size: 0.9rem;
+        transition: color 0.3s ease;
+      }
+
+      .zoom-hint .close-hint:hover {
+        color: #f85149;
+      }
+
+      .diagram-legend {
+        background: #21262d;
+        border: 1px solid #30363d;
+        border-radius: 8px;
+        padding: 1.5rem;
+        margin-top: 2rem;
+      }
+
+      .legend-item {
+        display: flex;
+        align-items: flex-start;
+        gap: 1rem;
+        margin: 0.5rem 0;
+        color: #c9d1d9;
+        font-size: 0.9rem;
+        padding: 1rem;
+        background: #161b22;
+        border: 1px solid #30363d;
+        border-radius: 6px;
+        transition: all 0.3s ease;
+      }
+
+      .legend-item:hover {
+        border-color: #58a6ff;
+        background: #21262d;
+        transform: translateX(5px);
+      }
+
+      .legend-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 1rem;
+      }
+    </style>
+    <!-- Mermaid.js for class diagrams -->
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+    <script>
+      mermaid.initialize({
+        startOnLoad: true,
+        theme: "dark",
+        themeVariables: {
+          primaryColor: "#58a6ff",
+          primaryTextColor: "#c9d1d9",
+          primaryBorderColor: "#30363d",
+          lineColor: "#58a6ff",
+          secondaryColor: "#21262d",
+          tertiaryColor: "#161b22",
+          background: "#0d1117",
+          textColor: "#c9d1d9",
+          border1: "#30363d",
+          border2: "#58a6ff",
+          noteBkgColor: "#21262d",
+          noteTextColor: "#c9d1d9",
+          noteBorderColor: "#30363d",
+          classText: "#c9d1d9",
+          classTitle: "#58a6ff",
+        },
+        flowchart: {
+          useMaxWidth: true,
+          htmlLabels: true,
+          curve: "basis",
+        },
+        graph: {
+          useMaxWidth: true,
+          htmlLabels: true,
+          curve: "basis",
+        },
+      });
+    </script>
+  </head>
+  <body>
+    <!-- Language Switcher -->
+    <div class="language-switcher">
+      <button class="lang-btn active" onclick="switchLanguage('uk')">
+        🇺🇦 UK
+      </button>
+      <button class="lang-btn" onclick="switchLanguage('en')">🇺🇸 EN</button>
+    </div>
+
+    <!-- Slide Number Indicator -->
+    <div class="slide-number">
+      <span id="current-slide">1</span> / <span id="total-slides">8</span>
+    </div>
+
+    <!-- Scroll Hint -->
+    <div class="scroll-hint" id="scroll-hint">
+      <span>←</span>
+      <span data-uk="Прокрутіть вправо" data-en="Scroll right"
+        >Прокрутіть вправо</span
+      >
+      <span>→</span>
+    </div>
+
+    <!-- Slides Container -->
+    <div class="slides-container" id="slides-container">
+      <!-- Slide 1: Team Logo -->
+      <div class="slide" id="slide-1">
+        <div class="slide-content">
+          <div class="team-logo-section">
+            <div class="team-logo">🚀</div>
+            <h1
+              class="team-title"
+              data-uk="Послідовники Степана Андрійовича"
+              data-en="Followers of Stepan Andriyovych"
+            >
+              Наша команда
+            </h1>
+            <p class="team-subtitle" style="position: relative">
+              <span
+                style="
+                  color: #4a465b;
+                  position: absolute;
+                  top: -6px;
+                  left: 1px;
+                  font-size: 12px;
+                "
+                data-uk="не дуже"
+                data-en="not very"
+                >Не дуже</span
+              ><span
+                data-uk="Професійна команда розробників"
+                data-en="Professional development team"
+                >Професійна команда розробників</span
+              >
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Slide 2: Team -->
+      <div class="slide" id="slide-2">
+        <div class="slide-content">
+          <h2
+            class="logo"
+            style="text-align: center; margin-bottom: 3rem"
+            data-uk="Наша команда"
+            data-en="Our Team"
+          >
+            Наша команда
+          </h2>
+          <div class="team">
+            <div class="team-row">
+              <div class="team-member">
+                <div class="team-avatar">🦹‍♀️</div>
+                <h3
+                  class="team-name"
+                  data-uk="Еліна Сітайло"
+                  data-en="Elina Sitailo"
+                >
+                  Еліна Сітайло
+                </h3>
+                <p class="team-role" data-uk="Розробник" data-en="Developer">
+                  Розробник
+                </p>
+                <!-- <p class="team-description" data-uk="Відповідає за архітектуру проекту, розробку основних функцій та координацію команди." data-en="Responsible for project architecture, core feature development, and team coordination.">Відповідає за архітектуру проекту, розробку основних функцій та координацію команди.</p> -->
+              </div>
+              <div class="team-member">
+                <div class="team-avatar">🦸‍♀️</div>
+                <h3
+                  class="team-name"
+                  data-uk="Наталя Дзюблюк"
+                  data-en="Natalya Dziubliuk"
+                >
+                  Наталя Дзюблюк
+                </h3>
+                <p
+                  class="team-role"
+                  data-uk="Scrum Master / Розробник"
+                  data-en="Scrum Master / Developer"
+                >
+                  Scrum Master / Розробник
+                </p>
+                <!-- <p class="team-description" data-uk="Розробляє інтерфейси користувача, інтегрує frontend та backend компоненти." data-en="Develops user interfaces and integrates frontend and backend components.">Розробляє інтерфейси користувача, інтегрує frontend та backend компоненти.</p> -->
+              </div>
+              <div class="team-member">
+                <div class="team-avatar">🧛‍♂️</div>
+                <h3
+                  class="team-name"
+                  data-uk="Тарас Сітайло"
+                  data-en="Taras Sitailo"
+                >
+                  Тарас Сітайло
+                </h3>
+                <p class="team-role" data-uk="Розробник" data-en="Developed">
+                  Розробник
+                </p>
+                <!-- <p class="team-description" data-uk="Створює та підтримує тести, забезпечує якість коду та функціональність." data-en="Creates and maintains tests, ensures code quality and functionality.">Створює та підтримує тести, забезпечує якість коду та функціональність.</p> -->
+              </div>
+            </div>
+            <div class="team-row">
+              <div class="team-member">
+                <div class="team-avatar">🥷🏼</div>
+                <h3
+                  class="team-name"
+                  data-uk="Богдан Кужель"
+                  data-en="Bohdan Kuzhel"
+                >
+                  Богдан Кужель
+                </h3>
+                <p class="team-role" data-uk="Розробник" data-en="Developer">
+                  Developer
+                </p>
+                <!-- <p class="team-description" data-uk="Проектує користувацький інтерфейс, створює дизайн системи та покращує UX." data-en="Designs user interface, creates design system and improves UX.">Проектує користувацький інтерфейс, створює дизайн системи та покращує UX.</p> -->
+              </div>
+              <div class="team-member">
+                <div class="team-avatar">🧟‍♂️</div>
+                <h3
+                  class="team-name"
+                  data-uk="Антон Булавенко"
+                  data-en="Anton Bulavenko"
+                >
+                  Антон Булавенко
+                </h3>
+                <p
+                  class="team-role"
+                  data-uk="Team Lead / Розробник"
+                  data-en="Team Lead / Developer"
+                >
+                  Team Lead / Розробник
+                </p>
+                <!-- <p class="team-description" data-uk="Пише документацію, створює інструкції та покращує читабельність коду." data-en="Writes documentation, creates instructions and improves code readability.">Пише документацію, створює інструкції та покращує читабельність коду.</p> -->
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Slide 3: Header -->
+      <div class="slide" id="slide-3">
+        <div class="slide-content">
+          <header class="header">
+            <h1
+              class="logo"
+              data-uk="Address Book Assistant"
+              data-en="Address Book Assistant"
+            >
+              Address Book Assistant
+            </h1>
+            <p
+              class="tagline"
+              data-uk="Персональний помічник з адресною книгою та нотатками"
+              data-en="Personal assistant with address book and notes"
+            >
+              Персональний помічник з адресною книгою та нотатками
+            </p>
+            <span class="version">v1.0.0</span>
+          </header>
+
+          <!-- Terminal Demo -->
+          <div class="terminal-window">
+            <div class="terminal-header">
+              <div class="terminal-buttons">
+                <div class="terminal-button close"></div>
+                <div class="terminal-button minimize"></div>
+                <div class="terminal-button maximize"></div>
+              </div>
+              <div class="terminal-title">address-book-assistant</div>
+            </div>
+            <div class="terminal-body">
+              <div class="output">
+                <span class="cyan">══════════════════════════════════════════════════════════════════════</span>
+              </div>
+              <div class="output">
+                <span class="cyan">                    </span><span class="green">🤖 Welcome to the assistant bot!</span>
+              </div>
+              <div class="output">
+                <span class="cyan">══════════════════════════════════════════════════════════════════════</span>
+              </div>
+              <div class="output">
+                <span class="comment"># Додавання контакту з телефоном</span>
+              </div>
+              <div class="output">
+                <span class="prompt">➜</span> <span class="yellow">Enter a command:</span> <span class="command">add "Alice Smith" 0501234567</span>
+              </div>
+              <div class="output success">Contact 'Alice Smith' with phone '0501234567' added successfully.</div>
+              <div class="output">
+                <span class="comment"># Додавання email</span>
+              </div>
+              <div class="output">
+                <span class="prompt">➜</span> <span class="yellow">Enter a command:</span> <span class="command">add-email "Alice Smith" alice@example.com</span>
+              </div>
+              <div class="output success">Email 'alice@example.com' added for contact 'Alice Smith'.</div>
+              <div class="output">
+                <span class="comment"># Додавання дня народження</span>
+              </div>
+              <div class="output">
+                <span class="prompt">➜</span> <span class="yellow">Enter a command:</span> <span class="command">add-birthday "Alice Smith" 20.05.1985</span>
+              </div>
+              <div class="output success">Birthday added for Alice Smith: 20.05.1985</div>
+              <div class="output">
+                <span class="comment"># Додавання адреси</span>
+              </div>
+              <div class="output">
+                <span class="prompt">➜</span> <span class="yellow">Enter a command:</span> <span class="command">add-address "Alice Smith" "123 Main Street, Kyiv"</span>
+              </div>
+              <div class="output success">Address added for Alice Smith: 123 Main Street, Kyiv</div>
+              <div class="output">
+                <span class="comment"># Додавання нотатки з тегами</span>
+              </div>
+              <div class="output">
+                <span class="prompt">➜</span> <span class="yellow">Enter a command:</span> <span class="command">add-note "Call Alice tomorrow" work urgent</span>
+              </div>
+              <div class="output success">Note added successfully.</div>
+              <div class="output">
+                <span class="comment"># Перегляд всіх контактів у форматі таблиці</span>
+              </div>
+              <div class="output">
+                <span class="prompt">➜</span> <span class="yellow">Enter a command:</span> <span class="command">all</span>
+              </div>
+              <div class="terminal-table">
+<pre>╭─────────────┬────────────┬──────────────────────┬────────────┬──────────────────────╮
+│ <span class="cyan">Name</span>        │     <span class="green">Phones</span> │ <span class="yellow">Email</span>                │ <span class="magenta">Birthday</span>   │ <span class="blue">Address</span>              │
+├─────────────┼────────────┼──────────────────────┼────────────┼──────────────────────┤
+│ <span class="cyan">Alice Smith</span> │ <span class="green">0501234567</span> │ <span class="yellow">alice@example.com</span>    │ <span class="magenta">20.05.1985</span> │ <span class="blue">123 Main St, Kyiv</span>    │
+╰─────────────┴────────────┴──────────────────────┴────────────┴──────────────────────╯</pre>
+              </div>
+              <div class="output">
+                <span class="comment"># Список нотаток з сортуванням</span>
+              </div>
+              <div class="output">
+                <span class="prompt">➜</span> <span class="yellow">Enter a command:</span> <span class="command">list-notes text a</span>
+              </div>
+              <div class="output">
+                <span class="cyan">──────────────────────────────────────────────────────────────────────</span>
+              </div>
+              <div class="output">
+                <span class="cyan">All notes</span> <span class="yellow">(sorted alphabetically (ascending))</span>
+              </div>
+              <div class="output">
+                <span class="cyan">──────────────────────────────────────────────────────────────────────</span>
+              </div>
+              <div class="terminal-table">
+<pre>╭─────┬──────────────────────┬─────────────────┬──────────────────┬──────────────────╮
+│   <span class="green">#</span> │ <span class="white">Text</span> <span class="yellow">⏶</span>               │ <span class="cyan">Tags</span>            │ <span class="cyan">Created</span>          │ <span class="magenta">Updated</span>          │
+├─────┼──────────────────────┼─────────────────┼──────────────────┼──────────────────┤
+│   <span class="green">1</span> │ <span class="white">Call Alice tomorrow</span>  │ <span class="cyan">work, urgent</span>    │ <span class="cyan">2025-11-10 20:34</span> │ <span class="magenta">2025-11-10 20:34</span> │
+╰─────┴──────────────────────┴─────────────────┴──────────────────┴──────────────────╯</pre>
+              </div>
+              <div class="output">
+                <span class="comment"># Сортування за текстом (алфавітно, a=ascending, d=descending)</span>
+              </div>
+              <div class="output">
+                <span class="comment"># Пошук контактів</span>
+              </div>
+              <div class="output">
+                <span class="prompt">➜</span> <span class="yellow">Enter a command:</span> <span class="command">search Alice</span>
+              </div>
+              <div class="output success">Found contacts matching 'Alice':</div>
+              <div class="terminal-table">
+<pre>╭─────────────┬────────────┬──────────────────────┬────────────┬──────────────────────╮
+│ <span class="cyan">Name</span>        │     <span class="green">Phones</span> │ <span class="yellow">Email</span>                │ <span class="magenta">Birthday</span>   │ <span class="blue">Address</span>              │
+├─────────────┼────────────┼──────────────────────┼────────────┼──────────────────────┤
+│ <span class="cyan">Alice Smith</span> │ <span class="green">0501234567</span> │ <span class="yellow">alice@example.com</span>    │ <span class="magenta">20.05.1985</span> │ <span class="blue">123 Main St, Kyiv</span>    │
+╰─────────────┴────────────┴──────────────────────┴────────────┴──────────────────────╯</pre>
+              </div>
+              <div class="output">
+                <span class="comment"># Майбутні дні народження</span>
+              </div>
+              <div class="output">
+                <span class="prompt">➜</span> <span class="yellow">Enter a command:</span> <span class="command">birthdays 7</span>
+              </div>
+              <div class="output success">Upcoming birthdays in the next 7 days: Alice Smith (20.05.1985)</div>
+              <div class="output">
+                <span class="comment"># Вихід з програми</span>
+              </div>
+              <div class="output">
+                <span class="prompt">➜</span> <span class="yellow">Enter a command:</span> <span class="command">close</span>
+              </div>
+              <div class="output">
+                <span class="cyan">══════════════════════════════════════════════════════════════════════</span>
+              </div>
+              <div class="output">
+                <span class="green">👋 Goodbye!</span> <span class="cyan">Thank you for using the assistant bot!</span>
+              </div>
+              <div class="output">
+                <span class="cyan">══════════════════════════════════════════════════════════════════════</span>
+              </div>
+              <div class="output">
+                <span class="prompt">user@address-book:~$</span><span class="cursor">_</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Slide 4: Features -->
+      <div class="slide" id="slide-4">
+        <div class="slide-content">
+          <div style="text-align: center; margin-bottom: 4rem">
+            <h2
+              class="logo"
+              style="margin-bottom: 1rem"
+              data-uk="Особливості"
+              data-en="Features"
+            >
+              Особливості
+            </h2>
+            <p
+              style="
+                color: #8b949e;
+                font-size: 1.1rem;
+                max-width: 600px;
+                margin: 0 auto;
+              "
+              data-uk="Потужні можливості для управління контактами та нотатками"
+              data-en="Powerful features for managing contacts and notes"
+            >
+              Потужні можливості для управління контактами та нотатками
+            </p>
+          </div>
+          <div class="features">
+            <div class="feature-card">
+              <div class="feature-icon">📞</div>
+              <h3
+                class="feature-title"
+                data-uk="Управління контактами"
+                data-en="Contact Management"
+              >
+                Управління контактами
+              </h3>
+              <p
+                class="feature-description"
+                data-uk="Додавайте, редагуйте та видаляйте контакти з номерами телефонів. Валідація номерів (10 цифр) та автоматичне форматування. Підтримка багатослівних імен."
+                data-en="Add, edit and delete contacts with phone numbers. Number validation (10 digits) and automatic formatting. Support for multi-word names."
+              >
+                Додавайте, редагуйте та видаляйте контакти з номерами телефонів.
+                Валідація номерів (10 цифр) та автоматичне форматування.
+                Підтримка багатослівних імен.
+              </p>
+            </div>
+            <div class="feature-card">
+              <div class="feature-icon">📧</div>
+              <h3 class="feature-title" data-uk="Email" data-en="Email">
+                Email
+              </h3>
+              <p
+                class="feature-description"
+                data-uk="Додавайте, переглядайте та видаляйте email адреси для контактів. Валідація формату email та підтримка одного email на контакт."
+                data-en="Add, view and delete email addresses for contacts. Email format validation and support for one email per contact."
+              >
+                Додавайте, переглядайте та видаляйте email адреси для контактів.
+                Валідація формату email та підтримка одного email на контакт.
+              </p>
+            </div>
+            <div class="feature-card">
+              <div class="feature-icon">🎂</div>
+              <h3
+                class="feature-title"
+                data-uk="Дні народження"
+                data-en="Birthdays"
+              >
+                Дні народження
+              </h3>
+              <p
+                class="feature-description"
+                data-uk="Зберігайте дати народження контактів та отримуйте нагадування про майбутні святкування. Формат: DD.MM.YYYY"
+                data-en="Store contact birth dates and get reminders about upcoming celebrations. Format: DD.MM.YYYY"
+              >
+                Зберігайте дати народження контактів та отримуйте нагадування
+                про майбутні святкування. Формат: DD.MM.YYYY
+              </p>
+            </div>
+            <div class="feature-card">
+              <div class="feature-icon">📍</div>
+              <h3 class="feature-title" data-uk="Адреси" data-en="Addresses">
+                Адреси
+              </h3>
+              <p
+                class="feature-description"
+                data-uk="Додавайте, редагуйте та видаляйте адреси контактів. Зберігайте повну адресну інформацію для кожного контакту."
+                data-en="Add, edit and delete contact addresses. Store complete address information for each contact."
+              >
+                Додавайте, редагуйте та видаляйте адреси контактів. Зберігайте
+                повну адресну інформацію для кожного контакту.
+              </p>
+            </div>
+            <div class="feature-card">
+              <div class="feature-icon">📝</div>
+              <h3 class="feature-title" data-uk="Нотатки" data-en="Notes">
+                Нотатки
+              </h3>
+              <p
+                class="feature-description"
+                data-uk="Додавайте нотатки з тегами, редагуйте та видаляйте їх. Сортування за датою створення, оновлення, текстом або тегами. Пошук за текстом або тегами."
+                data-en="Add notes with tags, edit and delete them. Sorting by creation date, update date, text or tags. Search by text or tags."
+              >
+                Додавайте нотатки з тегами, редагуйте та видаляйте їх.
+                Сортування за датою створення, оновлення, текстом або тегами.
+                Пошук за текстом або тегами.
+              </p>
+            </div>
+            <div class="feature-card">
+              <div class="feature-icon">🔍</div>
+              <h3 class="feature-title" data-uk="Пошук" data-en="Search">
+                Пошук
+              </h3>
+              <p
+                class="feature-description"
+                data-uk="Швидкий пошук контактів за ім'ям, телефоном, email або адресою. Пошук нотаток за текстом або тегами. Зручний інтерфейс командного рядка."
+                data-en="Quick search for contacts by name, phone, email or address. Search notes by text or tags. Convenient command line interface."
+              >
+                Швидкий пошук контактів за ім'ям, телефоном, email або адресою.
+                Пошук нотаток за текстом або тегами. Зручний інтерфейс
+                командного рядка.
+              </p>
+            </div>
+            <div class="feature-card">
+              <div class="feature-icon">💾</div>
+              <h3
+                class="feature-title"
+                data-uk="Збереження даних"
+                data-en="Data Persistence"
+              >
+                Збереження даних
+              </h3>
+              <p
+                class="feature-description"
+                data-uk="Автоматичне збереження всіх даних у файли (pickle). Ваша адресна книга та нотатки зберігаються між сесіями."
+                data-en="Automatic saving of all data to files (pickle). Your address book and notes persist between sessions."
+              >
+                Автоматичне збереження всіх даних у файли (pickle). Ваша адресна
+                книга та нотатки зберігаються між сесіями.
+              </p>
+            </div>
+            <div class="feature-card">
+              <div class="feature-icon">🎨</div>
+              <h3
+                class="feature-title"
+                data-uk="Кольоровий вивід"
+                data-en="Colored Output"
+              >
+                Кольоровий вивід
+              </h3>
+              <p
+                class="feature-description"
+                data-uk="Красивий кольоровий вивід з використанням colorama. Таблиці з форматуванням через tabulate. Підсвічування команд та результатів."
+                data-en="Beautiful colored output using colorama. Formatted tables via tabulate. Command and result highlighting."
+              >
+                Красивий кольоровий вивід з використанням colorama. Таблиці з
+                форматуванням через tabulate. Підсвічування команд та
+                результатів.
+              </p>
+            </div>
+            <div class="feature-card">
+              <div class="feature-icon">✅</div>
+              <h3 class="feature-title" data-uk="Тестування" data-en="Testing">
+                Тестування
+              </h3>
+              <p
+                class="feature-description"
+                data-uk="Повне покриття тестами (pytest). 400+ тестів для всіх функцій. Валідація даних та обробка помилок."
+                data-en="Full test coverage (pytest). 376+ tests for all functions. Data validation and error handling."
+              >
+                Повне покриття тестами (pytest). 376+ тестів для всіх функцій.
+                Валідація даних та обробка помилок.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Slide 5: Commands -->
+      <div class="slide" id="slide-5">
+        <div class="slide-content">
+          <div class="commands-table">
+            <h2 data-uk="Доступні команди" data-en="Available Commands">
+              Доступні команди
+            </h2>
+            <table>
+              <thead>
+                <tr>
+                  <th data-uk="Команда" data-en="Command">Команда</th>
+                  <th data-uk="Опис" data-en="Description">Опис</th>
+                  <th data-uk="Приклад" data-en="Example">Приклад</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><span class="command-name">add</span></td>
+                  <td data-uk="Додати контакт" data-en="Add contact">
+                    Додати контакт
+                  </td>
+                  <td><code>add "John Doe" 1234567890</code></td>
+                </tr>
+                <tr>
+                  <td><span class="command-name">change</span></td>
+                  <td data-uk="Оновити телефон" data-en="Update phone">
+                    Оновити телефон
+                  </td>
+                  <td><code>change "John Doe" 1234567890 0987654321</code></td>
+                </tr>
+                <tr>
+                  <td><span class="command-name">phone</span></td>
+                  <td data-uk="Показати телефон" data-en="Show phone">
+                    Показати телефон
+                  </td>
+                  <td><code>phone "John Doe"</code></td>
+                </tr>
+                <tr>
+                  <td><span class="command-name">all</span></td>
+                  <td
+                    data-uk="Показати всі контакти"
+                    data-en="Show all contacts"
+                  >
+                    Показати всі контакти
+                  </td>
+                  <td><code>all</code></td>
+                </tr>
+                <tr>
+                  <td><span class="command-name">search</span></td>
+                  <td data-uk="Пошук контактів" data-en="Search contacts">
+                    Пошук контактів
+                  </td>
+                  <td><code>search John</code></td>
+                </tr>
+                <tr>
+                  <td><span class="command-name">delete</span></td>
+                  <td data-uk="Видалити контакт" data-en="Delete contact">
+                    Видалити контакт
+                  </td>
+                  <td><code>delete "John Doe"</code></td>
+                </tr>
+                <tr>
+                  <td><span class="command-name">add-email</span></td>
+                  <td data-uk="Додати email" data-en="Add email">
+                    Додати email
+                  </td>
+                  <td><code>add-email "John Doe" john@example.com</code></td>
+                </tr>
+                <tr>
+                  <td><span class="command-name">show-email</span></td>
+                  <td data-uk="Показати email" data-en="Show email">
+                    Показати email
+                  </td>
+                  <td><code>show-email "John Doe"</code></td>
+                </tr>
+                <tr>
+                  <td><span class="command-name">delete-email</span></td>
+                  <td data-uk="Видалити email" data-en="Delete email">
+                    Видалити email
+                  </td>
+                  <td><code>delete-email "John Doe"</code></td>
+                </tr>
+                <tr>
+                  <td><span class="command-name">add-birthday</span></td>
+                  <td data-uk="Додати день народження" data-en="Add birthday">
+                    Додати день народження
+                  </td>
+                  <td><code>add-birthday "John Doe" 15.03.1990</code></td>
+                </tr>
+                <tr>
+                  <td><span class="command-name">show-birthday</span></td>
+                  <td
+                    data-uk="Показати день народження"
+                    data-en="Show birthday"
+                  >
+                    Показати день народження
+                  </td>
+                  <td><code>show-birthday "John Doe"</code></td>
+                </tr>
+                <tr>
+                  <td><span class="command-name">birthdays</span></td>
+                  <td
+                    data-uk="Майбутні дні народження"
+                    data-en="Upcoming birthdays"
+                  >
+                    Майбутні дні народження
+                  </td>
+                  <td><code>birthdays 7</code></td>
+                </tr>
+                <tr>
+                  <td><span class="command-name">add-address</span></td>
+                  <td data-uk="Додати адресу" data-en="Add address">
+                    Додати адресу
+                  </td>
+                  <td><code>add-address "John Doe" "123 Main St"</code></td>
+                </tr>
+                <tr>
+                  <td><span class="command-name">change-address</span></td>
+                  <td data-uk="Змінити адресу" data-en="Change address">
+                    Змінити адресу
+                  </td>
+                  <td><code>change-address "John Doe" "456 New Ave"</code></td>
+                </tr>
+                <tr>
+                  <td><span class="command-name">remove-address</span></td>
+                  <td data-uk="Видалити адресу" data-en="Remove address">
+                    Видалити адресу
+                  </td>
+                  <td><code>remove-address "John Doe"</code></td>
+                </tr>
+                <tr>
+                  <td><span class="command-name">add-note</span></td>
+                  <td data-uk="Додати нотатку" data-en="Add note">
+                    Додати нотатку
+                  </td>
+                  <td><code>add-note "Call John" work important</code></td>
+                </tr>
+                <tr>
+                  <td><span class="command-name">list-notes</span></td>
+                  <td data-uk="Список нотаток" data-en="List notes">
+                    Список нотаток
+                  </td>
+                  <td><code>list-notes created a</code></td>
+                </tr>
+                <tr>
+                  <td><span class="command-name">search-notes</span></td>
+                  <td data-uk="Пошук нотаток" data-en="Search notes">
+                    Пошук нотаток
+                  </td>
+                  <td><code>search-notes meeting</code></td>
+                </tr>
+                <tr>
+                  <td><span class="command-name">search-tags</span></td>
+                  <td data-uk="Пошук за тегами" data-en="Search by tags">
+                    Пошук за тегами
+                  </td>
+                  <td><code>search-tags work important</code></td>
+                </tr>
+                <tr>
+                  <td><span class="command-name">edit-note</span></td>
+                  <td data-uk="Редагувати нотатку" data-en="Edit note">
+                    Редагувати нотатку
+                  </td>
+                  <td><code>edit-note 1 "Updated text" new-tag</code></td>
+                </tr>
+                <tr>
+                  <td><span class="command-name">delete-note</span></td>
+                  <td data-uk="Видалити нотатку" data-en="Delete note">
+                    Видалити нотатку
+                  </td>
+                  <td><code>delete-note 1</code></td>
+                </tr>
+                <tr>
+                  <td><span class="command-name">help</span></td>
+                  <td data-uk="Допомога" data-en="Help">Допомога</td>
+                  <td><code>help</code> або <code>help contacts</code></td>
+                </tr>
+                <tr>
+                  <td><span class="command-name">exit/close</span></td>
+                  <td data-uk="Вихід" data-en="Exit">Вихід</td>
+                  <td><code>exit</code> або <code>close</code></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- Slide 6: Installation -->
+      <div class="slide" id="slide-6">
+        <div class="slide-content">
+          <div class="installation">
+            <h2 data-uk="Встановлення" data-en="Installation">Встановлення</h2>
+            <div class="install-commands">
+              <div class="install-command">
+                git clone
+                https://github.com/yourusername/project-a_s_followers05.git
+              </div>
+              <div class="install-command">cd project-a_s_followers05</div>
+              <div class="install-command">python3 -m venv .venv</div>
+              <div class="install-command">
+                source .venv/bin/activate # Linux/Mac
+              </div>
+              <div class="install-command">
+                # або .venv\Scripts\activate # Windows
+              </div>
+              <div class="install-command">pip install -r requirements.txt</div>
+              <div class="install-command">python main.py</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Slide 7: Architecture -->
+      <div class="slide" id="slide-7">
+        <div class="slide-content">
+          <h2
+            class="logo"
+            style="text-align: center; margin-bottom: 2rem"
+            data-uk="Архітектура застосунку"
+            data-en="Application Architecture"
+          >
+            Архітектура застосунку
+          </h2>
+
+          <div class="diagram-container">
+            <div class="diagram-zoom-controls">
+              <button
+                class="zoom-btn"
+                onclick="zoomDiagram('arch-diagram', 'in')"
+                title="Збільшити"
+              >
+                +
+              </button>
+              <button
+                class="zoom-btn"
+                onclick="zoomDiagram('arch-diagram', 'out')"
+                title="Зменшити"
+              >
+                −
+              </button>
+              <button
+                class="zoom-reset-btn"
+                onclick="resetDiagram('arch-diagram')"
+                title="Скинути"
+              >
+                <span data-uk="Скинути" data-en="Reset">Reset</span>
+              </button>
+              <div class="zoom-level">
+                <span id="arch-zoom-level">100%</span>
+              </div>
+            </div>
+            <div class="diagram-wrapper" id="arch-diagram">
+              <div class="zoom-hint" id="arch-hint">
+                <span data-uk="💡 Підказка:" data-en="💡 Tip:"
+                  >💡 Підказка:</span
+                >
+                <span
+                  data-uk="Ctrl+Колесо миші для збільшення, перетягніть для переміщення"
+                  data-en="Ctrl+Mouse wheel to zoom, drag to pan"
+                  >Ctrl+Колесо миші для збільшення, перетягніть для
+                  переміщення</span
+                >
+                <span
+                  class="close-hint"
+                  onclick="this.parentElement.style.display='none'"
+                  >×</span
+                >
+              </div>
+              <div class="mermaid" id="arch-mermaid">
+graph TB
+    subgraph UI["🖥️ User Interface Layer"]
+        MAIN[main.py<br/>Entry Point<br/>Command Loop]
+        CLI[CLI Interface<br/>User Input/Output]
+    end
+    
+    subgraph CORE["⚙️ Core Layer"]
+        CMD[commands.py<br/>Command Enum]
+        HAND[handlers.py<br/>Business Logic<br/>Command Handlers]
+        DEC[decorators.py<br/>Error Handling]
+    end
+    
+    subgraph MODELS["📦 Models Layer"]
+        AB[AddressBook<br/>Contact Storage]
+        NB[NoteBook<br/>Note Storage]
+        REC[Record<br/>Contact Entity]
+        NOTE[Note<br/>Note Entity]
+        FIELD[Field<br/>Base Field]
+        NAME[Name]
+        PHONE[Phone]
+        EMAIL[Email]
+        BDAY[Birthday]
+        ADDR[Address]
+    end
+    
+    subgraph UTILS["🛠️ Utils Layer"]
+        PARSE[parsers.py<br/>Input Parsing]
+        HELP[help_formatter.py<br/>Help System]
+        TABLE[table_formatters.py<br/>Table Display]
+        CONFIRM[confirmations.py<br/>User Confirmations]
+    end
+    
+    subgraph STORAGE["💾 Storage Layer"]
+        STORAGE_FILE[file_storage.py<br/>Persistence]
+        PKL1[addressbook.pkl]
+        PKL2[notes.pkl]
+    end
+    
+    MAIN --> CLI
+    CLI --> PARSE
+    PARSE --> CMD
+    CMD --> HAND
+    HAND --> DEC
+    HAND --> AB
+    HAND --> NB
+    HAND --> HELP
+    HAND --> TABLE
+    HAND --> CONFIRM
+    AB --> REC
+    NB --> NOTE
+    REC --> NAME
+    REC --> PHONE
+    REC --> EMAIL
+    REC --> BDAY
+    REC --> ADDR
+    NAME --> FIELD
+    PHONE --> FIELD
+    EMAIL --> FIELD
+    BDAY --> FIELD
+    ADDR --> FIELD
+    HAND --> STORAGE_FILE
+    STORAGE_FILE --> PKL1
+    STORAGE_FILE --> PKL2
+    
+    style UI fill:#161b22,stroke:#58a6ff,stroke-width:2px,color:#c9d1d9
+    style CORE fill:#161b22,stroke:#7c3aed,stroke-width:2px,color:#c9d1d9
+    style MODELS fill:#161b22,stroke:#3fb950,stroke-width:2px,color:#c9d1d9
+    style UTILS fill:#161b22,stroke:#d29922,stroke-width:2px,color:#c9d1d9
+    style STORAGE fill:#161b22,stroke:#f85149,stroke-width:2px,color:#c9d1d9
+    style MAIN fill:#21262d,stroke:#58a6ff,stroke-width:2px,color:#58a6ff
+    style HAND fill:#21262d,stroke:#7c3aed,stroke-width:2px,color:#7c3aed
+    style AB fill:#21262d,stroke:#3fb950,stroke-width:2px,color:#3fb950
+    style NB fill:#21262d,stroke:#3fb950,stroke-width:2px,color:#3fb950
+              </div>
+            </div>
+          </div>
+
+          <div class="diagram-legend">
+            <h3
+              style="color: #58a6ff; margin-bottom: 1rem; font-size: 1.2rem"
+              data-uk="Опис шарів"
+              data-en="Layer Description"
+            >
+              Опис шарів
+            </h3>
+            <div class="legend-grid">
+              <div class="legend-item">
+                <span style="color: #58a6ff; font-size: 1.2rem">🖥️</span>
+                <div>
+                  <strong
+                    style="color: #58a6ff"
+                    data-uk="User Interface Layer"
+                    data-en="User Interface Layer"
+                    >User Interface Layer</strong
+                  >
+                  <div
+                    style="color: #8b949e; font-size: 0.85rem"
+                    data-uk="Точка входу та інтерфейс користувача"
+                    data-en="Entry point and user interface"
+                  >
+                    Точка входу та інтерфейс користувача
+                  </div>
+                </div>
+              </div>
+              <div class="legend-item">
+                <span style="color: #7c3aed; font-size: 1.2rem">⚙️</span>
+                <div>
+                  <strong
+                    style="color: #7c3aed"
+                    data-uk="Core Layer"
+                    data-en="Core Layer"
+                    >Core Layer</strong
+                  >
+                  <div
+                    style="color: #8b949e; font-size: 0.85rem"
+                    data-uk="Бізнес-логіка та обробка команд"
+                    data-en="Business logic and command processing"
+                  >
+                    Бізнес-логіка та обробка команд
+                  </div>
+                </div>
+              </div>
+              <div class="legend-item">
+                <span style="color: #3fb950; font-size: 1.2rem">📦</span>
+                <div>
+                  <strong
+                    style="color: #3fb950"
+                    data-uk="Models Layer"
+                    data-en="Models Layer"
+                    >Models Layer</strong
+                  >
+                  <div
+                    style="color: #8b949e; font-size: 0.85rem"
+                    data-uk="Моделі даних та структури"
+                    data-en="Data models and structures"
+                  >
+                    Моделі даних та структури
+                  </div>
+                </div>
+              </div>
+              <div class="legend-item">
+                <span style="color: #d29922; font-size: 1.2rem">🛠️</span>
+                <div>
+                  <strong
+                    style="color: #d29922"
+                    data-uk="Utils Layer"
+                    data-en="Utils Layer"
+                    >Utils Layer</strong
+                  >
+                  <div
+                    style="color: #8b949e; font-size: 0.85rem"
+                    data-uk="Допоміжні утиліти та форматування"
+                    data-en="Helper utilities and formatting"
+                  >
+                    Допоміжні утиліти та форматування
+                  </div>
+                </div>
+              </div>
+              <div class="legend-item">
+                <span style="color: #f85149; font-size: 1.2rem">💾</span>
+                <div>
+                  <strong
+                    style="color: #f85149"
+                    data-uk="Storage Layer"
+                    data-en="Storage Layer"
+                    >Storage Layer</strong
+                  >
+                  <div
+                    style="color: #8b949e; font-size: 0.85rem"
+                    data-uk="Збереження та завантаження даних"
+                    data-en="Data persistence and loading"
+                  >
+                    Збереження та завантаження даних
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Slide 8: Class Diagram -->
+      <div class="slide" id="slide-8">
+        <div class="slide-content">
+          <h2
+            class="logo"
+            style="text-align: center; margin-bottom: 2rem"
+            data-uk="Діаграма класів"
+            data-en="Class Diagram"
+          >
+            Діаграма класів
+          </h2>
+
+          <div class="diagram-container">
+            <div class="diagram-zoom-controls">
+              <button
+                class="zoom-btn"
+                onclick="zoomDiagram('class-diagram', 'in')"
+                title="Збільшити"
+              >
+                +
+              </button>
+              <button
+                class="zoom-btn"
+                onclick="zoomDiagram('class-diagram', 'out')"
+                title="Зменшити"
+              >
+                −
+              </button>
+              <button
+                class="zoom-reset-btn"
+                onclick="resetDiagram('class-diagram')"
+                title="Скинути"
+              >
+                <span data-uk="Скинути" data-en="Reset">Reset</span>
+              </button>
+              <div class="zoom-level">
+                <span id="class-zoom-level">100%</span>
+              </div>
+            </div>
+            <div class="diagram-wrapper" id="class-diagram">
+              <div class="zoom-hint" id="class-hint">
+                <span data-uk="💡 Підказка:" data-en="💡 Tip:"
+                  >💡 Підказка:</span
+                >
+                <span
+                  data-uk="Ctrl+Колесо миші для збільшення, перетягніть для переміщення"
+                  data-en="Ctrl+Mouse wheel to zoom, drag to pan"
+                  >Ctrl+Колесо миші для збільшення, перетягніть для
+                  переміщення</span
+                >
+                <span
+                  class="close-hint"
+                  onclick="this.parentElement.style.display='none'"
+                  >×</span
+                >
+              </div>
+              <div class="mermaid" id="class-mermaid">
+classDiagram
+    class Field {
+        +value: any
+        +__init__(value)
+        +__str__()
+    }
+    
+    class Name {
+        +value: str
+    }
+    
+    class Phone {
+        +value: str
+        +validate(phone)
+    }
+    
+    class Email {
+        +value: str
+        +validate(email)
+    }
+    
+    class Birthday {
+        +value: date
+        +validate(birthday)
+    }
+    
+    class Address {
+        +value: str
+        +validate(address)
+    }
+    
+    class Record {
+        +name: Name
+        +phones: List~Phone~
+        +email: Email
+        +birthday: Birthday
+        +address: Address
+        +add_phone(phone)
+        +edit_phone(old, new)
+        +delete_phone(phone)
+        +add_email(email)
+        +add_birthday(birthday)
+        +add_address(address)
+        +edit_address(address)
+        +remove_address()
+    }
+    
+    class AddressBook {
+        +data: dict
+        +add_record(record)
+        +delete(name)
+        +find(name)
+        +search_contacts_by_name(name)
+        +search_contacts_by_phone(phone)
+        +search_contacts_by_email(email)
+        +get_upcoming_birthdays(days)
+    }
+    
+    class Note {
+        -_uuid: str
+        +text: str
+        +tags: List~str~
+        +created_at: datetime
+        +updated_at: datetime
+        +add_tag(tag)
+        +remove_tag(tag)
+        +edit_tags(tags)
+    }
+    
+    class NoteBook {
+        +notes: dict
+        +add_note(note)
+        +delete_note(note_id)
+        +get_all_notes(sort_by)
+        +search_notes(query)
+        +search_by_tags(tags)
+    }
+    
+    Field <|-- Name
+    Field <|-- Phone
+    Field <|-- Email
+    Field <|-- Birthday
+    Field <|-- Address
+    Record *-- Name
+    Record *-- Phone
+    Record o-- Email
+    Record o-- Birthday
+    Record o-- Address
+    AddressBook *-- Record
+    NoteBook *-- Note
+              </div>
+            </div>
+          </div>
+
+          <div class="diagram-legend">
+            <h3
+              style="color: #58a6ff; margin-bottom: 1rem; font-size: 1.2rem"
+              data-uk="Легенда"
+              data-en="Legend"
+            >
+              Легенда
+            </h3>
+            <div class="legend-grid">
+              <div class="legend-item">
+                <span style="color: #58a6ff; font-weight: bold">&lt;|--</span>
+                <span data-uk="Наслідування (inheritance)" data-en="Inheritance"
+                  >Наслідування (inheritance)</span
+                >
+              </div>
+              <div class="legend-item">
+                <span style="color: #58a6ff; font-weight: bold">*--</span>
+                <span
+                  data-uk="Композиція (1 до багатьох)"
+                  data-en="Composition (1 to many)"
+                  >Композиція (1 до багатьох)</span
+                >
+              </div>
+              <div class="legend-item">
+                <span style="color: #58a6ff; font-weight: bold">o--</span>
+                <span
+                  data-uk="Агрегація (0 до 1)"
+                  data-en="Aggregation (0 to 1)"
+                  >Агрегація (0 до 1)</span
+                >
+              </div>
+              <div class="legend-item">
+                <span style="color: #c9d1d9; font-weight: bold">+</span>
+                <span
+                  data-uk="Публічний атрибут/метод"
+                  data-en="Public attribute/method"
+                  >Публічний атрибут/метод</span
+                >
+              </div>
+              <div class="legend-item">
+                <span style="color: #8b949e; font-weight: bold">-</span>
+                <span data-uk="Приватний атрибут" data-en="Private attribute"
+                  >Приватний атрибут</span
+                >
+              </div>
+            </div>
+          </div>
+
+          <footer
+            class="footer"
+            style="
+              margin-top: 3rem;
+              padding-top: 2rem;
+              border-top: 1px solid #30363d;
+            "
+          >
+            <p
+              data-uk="Address Book Assistant - Персональний помічник з адресною книгою та нотатками"
+              data-en="Address Book Assistant - Personal assistant with address book and notes"
+            >
+              Address Book Assistant - Персональний помічник з адресною книгою
+              та нотатками
+            </p>
+            <p
+              data-uk="Розроблено на Python з використанням colorama, tabulate та pytest"
+              data-en="Developed in Python using colorama, tabulate and pytest"
+            >
+              Розроблено на Python з використанням colorama, tabulate та pytest
+            </p>
+            <p>
+              <a href="https://github.com/tonybearrr/project-a_s_followers05"
+                >GitHub</a
+              >
+              |
+              <a href="mailto:tonybear.bb@gmail.com">Email</a>
+            </p>
+            <p
+              data-uk="&copy; 2025 Address Book Assistant. Всі права захищені."
+              data-en="&copy; 2025 Address Book Assistant. All rights reserved."
+            >
+              &copy; 2025 Address Book Assistant. Всі права захищені.
+            </p>
+          </footer>
+        </div>
+      </div>
+    </div>
+
+    <!-- Navigation Dots -->
+    <div class="slide-nav" id="slide-nav">
+      <div class="nav-dot active" onclick="goToSlide(1)"></div>
+      <div class="nav-dot" onclick="goToSlide(2)"></div>
+      <div class="nav-dot" onclick="goToSlide(3)"></div>
+      <div class="nav-dot" onclick="goToSlide(4)"></div>
+      <div class="nav-dot" onclick="goToSlide(5)"></div>
+      <div class="nav-dot" onclick="goToSlide(6)"></div>
+      <div class="nav-dot" onclick="goToSlide(7)"></div>
+      <div class="nav-dot" onclick="goToSlide(8)"></div>
+    </div>
+
+    <script>
+      // Language switching
+      let currentLanguage = "uk";
+
+      function switchLanguage(lang) {
+        currentLanguage = lang;
+
+        // Update active button
+        document.querySelectorAll(".lang-btn").forEach((btn) => {
+          btn.classList.remove("active");
+        });
+        document
+          .querySelector(`[onclick="switchLanguage('${lang}')"]`)
+          .classList.add("active");
+
+        // Update all elements with data attributes
+        document.querySelectorAll("[data-uk][data-en]").forEach((element) => {
+          element.textContent = element.getAttribute(`data-${lang}`);
+        });
+
+        // Update page title
+        if (lang === "uk") {
+          document.title = "Address Book Assistant - CLI Application";
+        } else {
+          document.title = "Address Book Assistant - CLI Application";
+        }
+
+        // Save language preference
+        localStorage.setItem("preferredLanguage", lang);
+      }
+
+      // Slide Navigation
+      const slidesContainer = document.getElementById("slides-container");
+      const totalSlides = 8;
+      let currentSlide = 1;
+
+      function updateSlideIndicator() {
+        document.getElementById("current-slide").textContent = currentSlide;
+        document.getElementById("total-slides").textContent = totalSlides;
+
+        // Update navigation dots
+        document.querySelectorAll(".nav-dot").forEach((dot, index) => {
+          if (index + 1 === currentSlide) {
+            dot.classList.add("active");
+          } else {
+            dot.classList.remove("active");
+          }
+        });
+
+        // Hide scroll hint after first slide
+        const scrollHint = document.getElementById("scroll-hint");
+        if (currentSlide > 1) {
+          scrollHint.style.display = "none";
+        } else {
+          scrollHint.style.display = "flex";
+        }
+      }
+
+      function goToSlide(slideNumber) {
+        currentSlide = slideNumber;
+        const slide = document.getElementById(`slide-${slideNumber}`);
+        slide.scrollIntoView({
+          behavior: "smooth",
+          block: "nearest",
+          inline: "start",
+        });
+        updateSlideIndicator();
+      }
+
+      // Handle scroll to update current slide
+      slidesContainer.addEventListener("scroll", () => {
+        const scrollPosition = slidesContainer.scrollLeft;
+        const slideWidth = window.innerWidth;
+        const newSlide = Math.round(scrollPosition / slideWidth) + 1;
+
+        if (
+          newSlide !== currentSlide &&
+          newSlide >= 1 &&
+          newSlide <= totalSlides
+        ) {
+          currentSlide = newSlide;
+          updateSlideIndicator();
+        }
+      });
+
+      // Keyboard navigation
+      document.addEventListener("keydown", (e) => {
+        if (e.key === "ArrowLeft" && currentSlide > 1) {
+          goToSlide(currentSlide - 1);
+        } else if (e.key === "ArrowRight" && currentSlide < totalSlides) {
+          goToSlide(currentSlide + 1);
+        }
+      });
+
+      // Touch/swipe support
+      let touchStartX = 0;
+      let touchEndX = 0;
+
+      slidesContainer.addEventListener("touchstart", (e) => {
+        touchStartX = e.changedTouches[0].screenX;
+      });
+
+      slidesContainer.addEventListener("touchend", (e) => {
+        touchEndX = e.changedTouches[0].screenX;
+        handleSwipe();
+      });
+
+      function handleSwipe() {
+        const swipeThreshold = 50;
+        const diff = touchStartX - touchEndX;
+
+        if (Math.abs(diff) > swipeThreshold) {
+          if (diff > 0 && currentSlide < totalSlides) {
+            goToSlide(currentSlide + 1);
+          } else if (diff < 0 && currentSlide > 1) {
+            goToSlide(currentSlide - 1);
+          }
+        }
+      }
+
+      // Diagram Zoom and Pan functionality
+      const diagramZoomData = {
+        "arch-diagram": { scale: 1, x: 0, y: 0 },
+        "class-diagram": { scale: 1, x: 0, y: 0 },
+      };
+
+      function zoomDiagram(diagramId, direction) {
+        const wrapper = document.getElementById(diagramId);
+        const mermaidEl = wrapper.querySelector(".mermaid");
+        const zoomLevelEl = document.getElementById(
+          diagramId === "arch-diagram" ? "arch-zoom-level" : "class-zoom-level"
+        );
+
+        if (!wrapper || !mermaidEl) return;
+
+        const data = diagramZoomData[diagramId];
+        const zoomStep = 0.2;
+        const minZoom = 0.5;
+        const maxZoom = 3;
+
+        if (direction === "in") {
+          data.scale = Math.min(data.scale + zoomStep, maxZoom);
+        } else if (direction === "out") {
+          data.scale = Math.max(data.scale - zoomStep, minZoom);
+        }
+
+        updateDiagramTransform(diagramId);
+        zoomLevelEl.textContent = Math.round(data.scale * 100) + "%";
+      }
+
+      function resetDiagram(diagramId) {
+        const wrapper = document.getElementById(diagramId);
+        const zoomLevelEl = document.getElementById(
+          diagramId === "arch-diagram" ? "arch-zoom-level" : "class-zoom-level"
+        );
+
+        if (!wrapper) return;
+
+        const data = diagramZoomData[diagramId];
+        data.scale = 1;
+        data.x = 0;
+        data.y = 0;
+
+        updateDiagramTransform(diagramId);
+        zoomLevelEl.textContent = "100%";
+      }
+
+      function updateDiagramTransform(diagramId) {
+        const wrapper = document.getElementById(diagramId);
+        const mermaidEl = wrapper.querySelector(".mermaid");
+
+        if (!wrapper || !mermaidEl) return;
+
+        const data = diagramZoomData[diagramId];
+        mermaidEl.style.transform = `translate(${data.x}px, ${data.y}px) scale(${data.scale})`;
+        mermaidEl.style.transformOrigin = "top left";
+      }
+
+      // Pan functionality for diagrams
+      function initDiagramPan(diagramId) {
+        const wrapper = document.getElementById(diagramId);
+        if (!wrapper) return;
+
+        let isDragging = false;
+        let startX, startY, scrollLeft, scrollTop;
+
+        wrapper.addEventListener("mousedown", (e) => {
+          if (
+            e.target.closest(".zoom-btn") ||
+            e.target.closest(".zoom-reset-btn") ||
+            e.target.closest(".zoom-level")
+          ) {
+            return;
+          }
+          isDragging = true;
+          wrapper.classList.add("dragging");
+          startX = e.pageX - wrapper.offsetLeft;
+          startY = e.pageY - wrapper.offsetTop;
+          scrollLeft = wrapper.scrollLeft;
+          scrollTop = wrapper.scrollTop;
+          e.preventDefault();
+        });
+
+        wrapper.addEventListener("mouseleave", () => {
+          isDragging = false;
+          wrapper.classList.remove("dragging");
+        });
+
+        wrapper.addEventListener("mouseup", () => {
+          isDragging = false;
+          wrapper.classList.remove("dragging");
+        });
+
+        wrapper.addEventListener("mousemove", (e) => {
+          if (!isDragging) return;
+          e.preventDefault();
+          const x = e.pageX - wrapper.offsetLeft;
+          const y = e.pageY - wrapper.offsetTop;
+          const walkX = (x - startX) * 2;
+          const walkY = (y - startY) * 2;
+          wrapper.scrollLeft = scrollLeft - walkX;
+          wrapper.scrollTop = scrollTop - walkY;
+        });
+
+        // Touch support for mobile
+        let touchStartX, touchStartY, touchScrollLeft, touchScrollTop;
+
+        wrapper.addEventListener("touchstart", (e) => {
+          if (
+            e.target.closest(".zoom-btn") ||
+            e.target.closest(".zoom-reset-btn") ||
+            e.target.closest(".zoom-level")
+          ) {
+            return;
+          }
+          touchStartX = e.touches[0].pageX - wrapper.offsetLeft;
+          touchStartY = e.touches[0].pageY - wrapper.offsetTop;
+          touchScrollLeft = wrapper.scrollLeft;
+          touchScrollTop = wrapper.scrollTop;
+        });
+
+        wrapper.addEventListener("touchmove", (e) => {
+          if (!touchStartX || !touchStartY) return;
+          e.preventDefault();
+          const x = e.touches[0].pageX - wrapper.offsetLeft;
+          const y = e.touches[0].pageY - wrapper.offsetTop;
+          const walkX = (x - touchStartX) * 2;
+          const walkY = (y - touchStartY) * 2;
+          wrapper.scrollLeft = touchScrollLeft - walkX;
+          wrapper.scrollTop = touchScrollTop - walkY;
+        });
+
+        wrapper.addEventListener("touchend", () => {
+          touchStartX = null;
+          touchStartY = null;
+        });
+
+        // Mouse wheel zoom
+        wrapper.addEventListener(
+          "wheel",
+          (e) => {
+            if (e.ctrlKey || e.metaKey) {
+              e.preventDefault();
+              const direction = e.deltaY > 0 ? "out" : "in";
+              zoomDiagram(diagramId, direction);
+              // Hide hint after first zoom
+              const hint = wrapper.querySelector(".zoom-hint");
+              if (hint) {
+                setTimeout(() => {
+                  hint.style.opacity = "0";
+                  setTimeout(() => (hint.style.display = "none"), 300);
+                }, 2000);
+              }
+            }
+          },
+          { passive: false }
+        );
+      }
+
+      // Load saved language preference
+      document.addEventListener("DOMContentLoaded", function () {
+        const savedLang = localStorage.getItem("preferredLanguage") || "uk";
+        switchLanguage(savedLang);
+        updateSlideIndicator();
+
+        // Scroll to first slide
+        goToSlide(1);
+
+        // Initialize diagram pan after Mermaid renders
+        setTimeout(() => {
+          initDiagramPan("arch-diagram");
+          initDiagramPan("class-diagram");
+        }, 1000);
+      });
+    </script>
+  </body>
+</html>
