@@ -5,6 +5,7 @@ This module provides the Address class that represents a contact's address
 with basic validation.
 """
 
+
 class Address:
     """
     Address field for a contact.
@@ -25,7 +26,7 @@ class Address:
         Raises:
             ValueError: If address is empty or contains only whitespace
         """
-          
+
         if not value or not value.strip():
             raise ValueError("Address cannot be empty")
         self.value = value.strip()
@@ -38,5 +39,3 @@ class Address:
             str: The address value
         """
         return self.value
-    
-    
