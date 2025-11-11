@@ -23,7 +23,8 @@ def format_contact_table(records):
         f"{Fore.CYAN}Name{Style.RESET_ALL}",
         f"{Fore.GREEN}Phones{Style.RESET_ALL}",
         f"{Fore.YELLOW}Email{Style.RESET_ALL}",
-        f"{Fore.MAGENTA}Birthday{Style.RESET_ALL}"
+        f"{Fore.MAGENTA}Birthday{Style.RESET_ALL}",
+        f"{Fore.BLUE}Address{Style.RESET_ALL}"
     ]
     table_data = []
 
@@ -32,8 +33,9 @@ def format_contact_table(records):
         phones = f"{Fore.GREEN}{'; '.join(p.value for p in record.phones)}{Style.RESET_ALL}" if record.phones else f"{Fore.WHITE}-{Style.RESET_ALL}"
         email = f"{Fore.YELLOW}{record.email.value}{Style.RESET_ALL}" if record.email else f"{Fore.WHITE}-{Style.RESET_ALL}"
         birthday = f"{Fore.MAGENTA}{str(record.birthday)}{Style.RESET_ALL}" if record.birthday else f"{Fore.WHITE}-{Style.RESET_ALL}"
+        address = f"{Fore.MAGENTA}{str(record.address)}{Style.RESET_ALL}" if record.address else f"{Fore.WHITE}-{Style.RESET_ALL}"
 
-        table_data.append([name, phones, email, birthday])
+        table_data.append([name, phones, email, birthday, address])
 
     return tabulate(table_data, headers=headers, tablefmt="rounded_outline")
 

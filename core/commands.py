@@ -29,3 +29,6 @@ class Command(StrEnum):
     DELETE_NOTE = "delete-note"
     SEARCH_TAGS = "search-tags"
     STATS = "stats"
+    ADD_ADDRESS = "add-address"
+    CHANGE_ADDRESS = "change-address"
+    REMOVE_ADDRESS = "remove-address"
