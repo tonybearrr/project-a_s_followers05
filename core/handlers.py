@@ -639,6 +639,160 @@ def list_notes(args, notebook: NoteBook):
     return header + table
 
 
+def _get_contacts_statistics(book: AddressBook) -> list[str]:
+    """
+    Get contacts statistics.
+    
+    Args:
+        book: AddressBook instance
+        
+    Returns:
+        list[str]: List of formatted contact statistics lines
+    """
+    total_contacts = len(book.data)
+    return [f"{Fore.YELLOW}{Style.BRIGHT}📇 CONTACTS:{Style.RESET_ALL} {Fore.CYAN}{total_contacts}{Style.RESET_ALL}"]
+
+
+def _get_notes_statistics(notebook: NoteBook) -> list[str]:
+    """
+    Get notes statistics including top tags.
+    
+    Args:
+        notebook: NoteBook instance
+        
+    Returns:
+        list[str]: List of formatted note statistics lines
+    """
+    all_notes = notebook.get_all_notes()
+    total_notes = len(all_notes)
+
+    stats = [f"{Fore.YELLOW}{Style.BRIGHT}📝 NOTES:{Style.RESET_ALL} {Fore.CYAN}{total_notes}{Style.RESET_ALL}"]
+
+    # Collect all tags
+    all_tags = []
+    for note in all_notes:
+        all_tags.extend(note.tags)
+
+    tag_counts = Counter(all_tags)
+    top_tags = tag_counts.most_common(3)
+
+    if top_tags:
+        stats.append(f"{Fore.YELLOW}🔝 TOP 3 TAGS:{Style.RESET_ALL}")
+        for i, (tag, count) in enumerate(top_tags, 1):
+            stats.append(
+                f"    {Fore.CYAN}{i}.{Style.RESET_ALL} {Fore.GREEN}{tag}{Style.RESET_ALL} "
+                f"({Fore.BLUE}{count}{Style.RESET_ALL} notes)"
+            )
+
+    return stats
+
+
+def _calculate_birthday_info(birthday_str: str, today: date) -> tuple[date | None, int | None, int | None]:
+    """
+    Calculate birthday information: next occurrence date, days until, and age.
+    
+    Args:
+        birthday_str: Birthday string in DD.MM.YYYY format
+        today: Current date
+        
+    Returns:
+        tuple: (next_birthday_date, days_until, age) or (None, None, None) if parsing fails
+    """
+    try:
+        bday_parts = birthday_str.split('.')
+        if len(bday_parts) == 3:
+            day, month, birth_year = int(bday_parts[0]), int(bday_parts[1]), int(bday_parts[2])
+            this_year_birthday = date(today.year, month, day)
+
+            if this_year_birthday < today:
+                this_year_birthday = date(today.year + 1, month, day)
+
+            days_until = (this_year_birthday - today).days
+            age = this_year_birthday.year - birth_year
+
+            return (this_year_birthday, days_until, age)
+    except (ValueError, IndexError):
+        pass
+
+    return (None, None, None)
+
+
+def _format_birthday_entry(name: str, birthday_str: str, bday_date: date | None, 
+                          days_until: int | None, age: int | None) -> str:
+    """
+    Format a single birthday entry for display.
+    
+    Args:
+        name: Contact name
+        birthday_str: Original birthday string
+        bday_date: Next birthday date
+        days_until: Days until birthday
+        age: Age that will be on birthday
+        
+    Returns:
+        str: Formatted birthday entry
+    """
+    if days_until == 0:
+        emoji = "🎉"
+        days_text = f"{Fore.RED}{Style.BRIGHT}TODAY!{Style.RESET_ALL}"
+    elif days_until == 1:
+        emoji = "🎁"
+        days_text = f"{Fore.YELLOW}{Style.BRIGHT}Tomorrow{Style.RESET_ALL}"
+    elif days_until is not None and days_until <= 3:
+        emoji = "🎈"
+        days_text = f"{Fore.YELLOW}in {days_until} days{Style.RESET_ALL}"
+    else:
+        emoji = "📅"
+        days_text = f"{Fore.CYAN}in {days_until} days{Style.RESET_ALL}" if days_until is not None else ""
+
+    if bday_date:
+        date_display = bday_date.strftime("%d.%m")
+    else:
+        date_display = birthday_str
+
+    age_text = ""
+    if age is not None:
+        age_text = f" - {Fore.BLUE}will be {age} years old{Style.RESET_ALL}"
+
+    return f"  {emoji} {Fore.GREEN}{name}{Style.RESET_ALL} - {Fore.MAGENTA}{date_display}{Style.RESET_ALL} ({days_text}){age_text}"
+
+
+def _get_birthdays_statistics(book: AddressBook, days_ahead: int = 10) -> list[str]:
+    """
+    Get upcoming birthdays statistics.
+    
+    Args:
+        book: AddressBook instance
+        days_ahead: Number of days ahead to look for birthdays
+        
+    Returns:
+        list[str]: List of formatted birthday statistics lines
+    """
+    stats = [f"{Fore.YELLOW}{Style.BRIGHT}🎂 UPCOMING BIRTHDAYS (next {days_ahead} days):{Style.RESET_ALL}"]
+
+    upcoming = book.get_upcoming_birthdays(days_ahead=days_ahead)
+
+    if not upcoming:
+        stats.append(f"  {Fore.WHITE}No birthdays in the next {days_ahead} days{Style.RESET_ALL}")
+        return stats
+
+    today = datetime.now().date()
+    birthday_list = []
+
+    for name, birthday_str in upcoming:
+        bday_date, days_until, age = _calculate_birthday_info(birthday_str, today)
+        birthday_list.append((name, birthday_str, bday_date, days_until, age))
+
+    # Sort by days until birthday
+    birthday_list.sort(key=lambda x: x[3] if x[3] is not None else 999)
+
+    for name, birthday_str, bday_date, days_until, age in birthday_list:
+        formatted_entry = _format_birthday_entry(name, birthday_str, bday_date, days_until, age)
+        stats.append(formatted_entry)
+
+    return stats
+
+
 def show_statistics(book: AddressBook, notebook: NoteBook):
     """
     Show comprehensive application statistics.
@@ -650,7 +804,6 @@ def show_statistics(book: AddressBook, notebook: NoteBook):
     Returns:
         str: Formatted statistics
     """
-
     stats = []
 
     # Header
@@ -658,89 +811,15 @@ def show_statistics(book: AddressBook, notebook: NoteBook):
     stats.append(f"{Fore.CYAN}{' '*25}{Style.BRIGHT}📊 STATISTICS{Style.RESET_ALL}")
     stats.append(_header_line() + "\n")
 
-    # ========== CONTACTS STATISTICS ==========
-    total_contacts = len(book.data)
+    # Contacts statistics
+    stats.extend(_get_contacts_statistics(book))
 
-    stats.append(f"{Fore.YELLOW}{Style.BRIGHT}📇 CONTACTS:{Style.RESET_ALL} {Fore.CYAN}{total_contacts}{Style.RESET_ALL}")
-
-    # ========== NOTES STATISTICS ==========
-    all_notes = notebook.get_all_notes()
-    total_notes = len(all_notes)
-    # Collect all tags
-    all_tags = []
-    for note in all_notes:
-        all_tags.extend(note.tags)
-
-    tag_counts = Counter(all_tags)
-    top_tags = tag_counts.most_common(3)
-
-    stats.append(f"{Fore.YELLOW}{Style.BRIGHT}📝 NOTES:{Style.RESET_ALL} {Fore.CYAN}{total_notes}{Style.RESET_ALL}")
-
-    if top_tags:
-        stats.append(f"{Fore.YELLOW}🔝 TOP 3 TAGS:{Style.RESET_ALL}")
-        for i, (tag, count) in enumerate(top_tags, 1):
-            stats.append(f"    {Fore.CYAN}{i}.{Style.RESET_ALL} {Fore.GREEN}{tag}{Style.RESET_ALL} ({Fore.BLUE}{count}{Style.RESET_ALL} notes)")
-
+    # Notes statistics
+    stats.extend(_get_notes_statistics(notebook))
     stats.append("")
 
-    # ========== UPCOMING BIRTHDAYS (10 days) ==========
-    days_ahead = 10
-    upcoming = book.get_upcoming_birthdays(days_ahead=days_ahead)
-
-    stats.append(f"{Fore.YELLOW}{Style.BRIGHT}🎂 UPCOMING BIRTHDAYS (next {days_ahead} days):{Style.RESET_ALL}")
-
-    if upcoming:
-
-        today = datetime.now().date()
-
-        birthday_list = []
-        for name, birthday_str in upcoming:
-            try:
-                bday_parts = birthday_str.split('.')
-                if len(bday_parts) == 3:
-                    day, month, birth_year = int(bday_parts[0]), int(bday_parts[1]), int(bday_parts[2])
-                    this_year_birthday = date(today.year, month, day)
-
-                    if this_year_birthday < today:
-                        this_year_birthday = date(today.year + 1, month, day)
-
-                    days_until = (this_year_birthday - today).days
-
-                    age = this_year_birthday.year - birth_year
-                    birthday_list.append((name, birthday_str, this_year_birthday, days_until, age))
-            except (ValueError, IndexError):
-
-                birthday_list.append((name, birthday_str, None, None, None))
-
-        birthday_list.sort(key=lambda x: x[3] if x[3] is not None else 999)
-
-        for name, birthday_str, bday_date, days_until, age in birthday_list:
-            if days_until == 0:
-                emoji = "🎉"
-                days_text = f"{Fore.RED}{Style.BRIGHT}TODAY!{Style.RESET_ALL}"
-            elif days_until == 1:
-                emoji = "🎁"
-                days_text = f"{Fore.YELLOW}{Style.BRIGHT}Tomorrow{Style.RESET_ALL}"
-            elif days_until <= 3:
-                emoji = "🎈"
-                days_text = f"{Fore.YELLOW}in {days_until} days{Style.RESET_ALL}"
-            else:
-                emoji = "📅"
-                days_text = f"{Fore.CYAN}in {days_until} days{Style.RESET_ALL}"
-
-            if bday_date:
-                date_display = bday_date.strftime("%d.%m")
-            else:
-                date_display = birthday_str
-
-            age_text = ""
-            if age is not None:
-                age_text = f" - {Fore.BLUE}will be {age} years old{Style.RESET_ALL}"
-
-            stats.append(f"  {emoji} {Fore.GREEN}{name}{Style.RESET_ALL} - {Fore.MAGENTA}{date_display}{Style.RESET_ALL} ({days_text}){age_text}")
-    else:
-        stats.append(f"  {Fore.WHITE}No birthdays in the next {days_ahead} days{Style.RESET_ALL}")
-
+    # Upcoming birthdays statistics
+    stats.extend(_get_birthdays_statistics(book, days_ahead=10))
     stats.append("")
 
     # Footer
