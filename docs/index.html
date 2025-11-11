@@ -778,6 +778,179 @@
         margin-right: 0.5rem;
       }
 
+      /* Quick Start Styles */
+      .quick-start-section {
+        margin: 2rem 0;
+        text-align: left;
+      }
+
+      .quick-start-section h3 {
+        color: #58a6ff;
+        font-size: 1.4rem;
+        margin-bottom: 1.5rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+
+      .step-card {
+        background: #161b22;
+        border: 1px solid #30363d;
+        border-radius: 8px;
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+        transition: all 0.3s ease;
+      }
+
+      .step-card:hover {
+        border-color: #58a6ff;
+        box-shadow: 0 4px 12px rgba(88, 166, 255, 0.1);
+      }
+
+      .step-number {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 32px;
+        height: 32px;
+        background: linear-gradient(135deg, #58a6ff, #7c3aed);
+        color: #0d1117;
+        border-radius: 50%;
+        font-weight: 700;
+        font-size: 1rem;
+        margin-right: 1rem;
+      }
+
+      .step-title {
+        color: #c9d1d9;
+        font-size: 1.1rem;
+        margin-bottom: 1rem;
+        display: flex;
+        align-items: center;
+      }
+
+      .step-description {
+        color: #8b949e;
+        font-size: 0.95rem;
+        margin-bottom: 0.8rem;
+        line-height: 1.6;
+      }
+
+      .requirements-list {
+        display: flex;
+        flex-direction: column;
+        margin-top: 1rem;
+      }
+
+      .requirement-item {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        color: #c9d1d9;
+      }
+
+      .requirement-item::before {
+        content: "✓";
+        color: #3fb950;
+        font-weight: bold;
+        font-size: 1.2rem;
+      }
+
+      /* Statistics Styles */
+      .statistics-container {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 2rem;
+        margin: 3rem 0;
+        padding: 1rem 0;
+      }
+
+      .stat-card {
+        background: linear-gradient(135deg, #161b22 0%, #0d1117 100%);
+        border: 2px solid #30363d;
+        border-radius: 16px;
+        padding: 2rem;
+        text-align: center;
+        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        position: relative;
+        overflow: hidden;
+        animation: slideInUp 0.6s ease-out backwards;
+      }
+
+      .stat-card:nth-child(1) { animation-delay: 0.1s; }
+      .stat-card:nth-child(2) { animation-delay: 0.2s; }
+      .stat-card:nth-child(3) { animation-delay: 0.3s; }
+      .stat-card:nth-child(4) { animation-delay: 0.4s; }
+      .stat-card:nth-child(5) { animation-delay: 0.5s; }
+      .stat-card:nth-child(6) { animation-delay: 0.6s; }
+      .stat-card:nth-child(7) { animation-delay: 0.7s; }
+      .stat-card:nth-child(8) { animation-delay: 0.8s; }
+      .stat-card:nth-child(9) { animation-delay: 0.9s; }
+
+      .stat-card::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: linear-gradient(90deg, #58a6ff, #7c3aed, #ffbf00);
+        transform: scaleX(0);
+        transform-origin: left;
+        transition: transform 0.4s ease;
+      }
+
+      .stat-card:hover {
+        border-color: #58a6ff;
+        box-shadow: 0 8px 24px rgba(88, 166, 255, 0.2);
+        transform: translateY(-4px);
+      }
+
+      .stat-card:hover::before {
+        transform: scaleX(1);
+      }
+
+      .stat-icon {
+        font-size: 3rem;
+        margin-bottom: 1rem;
+        filter: drop-shadow(0 4px 8px rgba(88, 166, 255, 0.3));
+        animation: float 3s ease-in-out infinite;
+      }
+
+      .stat-card:nth-child(1) .stat-icon { animation-delay: 0s; }
+      .stat-card:nth-child(2) .stat-icon { animation-delay: 0.5s; }
+      .stat-card:nth-child(3) .stat-icon { animation-delay: 1s; }
+      .stat-card:nth-child(4) .stat-icon { animation-delay: 1.5s; }
+      .stat-card:nth-child(5) .stat-icon { animation-delay: 2s; }
+      .stat-card:nth-child(6) .stat-icon { animation-delay: 2.5s; }
+      .stat-card:nth-child(7) .stat-icon { animation-delay: 3s; }
+      .stat-card:nth-child(8) .stat-icon { animation-delay: 3.5s; }
+      .stat-card:nth-child(9) .stat-icon { animation-delay: 4s; }
+
+      @keyframes float {
+        0%, 100% { transform: translateY(0px); }
+        50% { transform: translateY(-10px); }
+      }
+
+      .stat-value {
+        font-size: 2.5rem;
+        font-weight: 700;
+        background: linear-gradient(135deg, #58a6ff, #7c3aed);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        margin: 1rem 0;
+        line-height: 1.2;
+      }
+
+      .stat-label {
+        color: #8b949e;
+        font-size: 1rem;
+        font-weight: 500;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+
       /* Commands Table */
       .commands-table {
         background: #161b22;
@@ -799,6 +972,7 @@
         width: 100%;
         border-collapse: collapse;
         margin-top: 1rem;
+        table-layout: fixed;
       }
 
       th,
@@ -806,6 +980,23 @@
         padding: 1rem;
         text-align: left;
         border-bottom: 1px solid #30363d;
+        word-wrap: break-word;
+        overflow-wrap: break-word;
+      }
+
+      th:first-child,
+      td:first-child {
+        width: 25%;
+      }
+
+      th:nth-child(2),
+      td:nth-child(2) {
+        width: 35%;
+      }
+
+      th:nth-child(3),
+      td:nth-child(3) {
+        width: 40%;
       }
 
       th {
@@ -826,6 +1017,27 @@
         color: #58a6ff;
         font-weight: 600;
         font-family: "JetBrains Mono", monospace;
+      }
+
+      /* Command Categories */
+      .command-category {
+        margin-top: 2rem;
+        margin-bottom: 1rem;
+      }
+
+      .command-category:first-child {
+        margin-top: 0;
+      }
+
+      .category-header {
+
+        color: #ffbf00;
+        font-weight: 700;
+        font-size: 1.1rem;
+        padding: 0.8rem 1rem;
+        margin-bottom: 0.5rem;
+        border-bottom: 1px solid #58a6ff4a;
+        text-align: left;
       }
 
       /* Footer */
@@ -1231,7 +1443,7 @@
 
     <!-- Slide Number Indicator -->
     <div class="slide-number">
-      <span id="current-slide">1</span> / <span id="total-slides">8</span>
+      <span id="current-slide">1</span> / <span id="total-slides">9</span>
     </div>
 
     <!-- Scroll Hint -->
@@ -1270,9 +1482,9 @@
                 data-en="not very"
                 >Не дуже</span
               ><span
-                data-uk="Професійна команда розробників"
-                data-en="Professional development team"
-                >Професійна команда розробників</span
+                data-uk="Професійна команда розробників 🤙🏼"
+                data-en="Professional development team 🤙🏼"
+                >Професійна команда розробників 🤙🏼</span
               >
             </p>
           </div>
@@ -1562,7 +1774,7 @@
           </div>
           <div class="features">
             <div class="feature-card">
-              <div class="feature-icon">📞</div>
+              <div class="feature-icon">☎️</div>
               <h3
                 class="feature-title"
                 data-uk="Управління контактами"
@@ -1595,7 +1807,7 @@
               </p>
             </div>
             <div class="feature-card">
-              <div class="feature-icon">🎂</div>
+              <div class="feature-icon">🎁</div>
               <h3
                 class="feature-title"
                 data-uk="Дні народження"
@@ -1675,7 +1887,7 @@
               </p>
             </div>
             <div class="feature-card">
-              <div class="feature-icon">🎨</div>
+              <div class="feature-icon">🦄</div>
               <h3
                 class="feature-title"
                 data-uk="Кольоровий вивід"
@@ -1694,16 +1906,16 @@
               </p>
             </div>
             <div class="feature-card">
-              <div class="feature-icon">✅</div>
+              <div class="feature-icon">🧪</div>
               <h3 class="feature-title" data-uk="Тестування" data-en="Testing">
                 Тестування
               </h3>
               <p
                 class="feature-description"
-                data-uk="Повне покриття тестами (pytest). 400+ тестів для всіх функцій. Валідація даних та обробка помилок."
-                data-en="Full test coverage (pytest). 376+ tests for all functions. Data validation and error handling."
+                data-uk="Повне покриття тестами (pytest). 420+ тестів для всіх функцій. Валідація даних та обробка помилок."
+                data-en="Full test coverage (pytest). 420+ tests for all functions. Data validation and error handling."
               >
-                Повне покриття тестами (pytest). 376+ тестів для всіх функцій.
+                Повне покриття тестами (pytest). 420+ тестів для всіх функцій.
                 Валідація даних та обробка помилок.
               </p>
             </div>
@@ -1711,214 +1923,320 @@
         </div>
       </div>
 
-      <!-- Slide 5: Commands -->
+      <!-- Slide 5: Quick Start -->
       <div class="slide" id="slide-5">
+        <div class="slide-content">
+          <div class="installation">
+            <h2 data-uk="Швидкий старт" data-en="Quick Start">🚀 Швидкий старт</h2>
+            
+            <!-- Requirements -->
+            <div class="quick-start-section">
+              <h3 data-uk="Вимоги" data-en="Requirements">📋 Вимоги</h3>
+              <div class="requirements-list">
+                <div class="requirement-item" data-uk="Python 3.11 або вище" data-en="Python 3.11 or higher">Python 3.11 або вище</div>
+                <div class="requirement-item" data-uk="pip (менеджер пакетів Python)" data-en="pip (Python package manager)">pip (менеджер пакетів Python)</div>
+              </div>
+            </div>
+
+            <!-- Dependencies -->
+            <div class="quick-start-section">
+              <h3 data-uk="Залежності" data-en="Dependencies">📦 Залежності</h3>
+              <div class="code-block" data-lang="requirements.txt" style="text-align: left; margin: 1rem 0;">
+                <pre>pytest==8.4.2      <span class="comment"># Тестування</span>
+flake8==7.1.1      <span class="comment"># Лінтер коду</span>
+colorama==0.4.6    <span class="comment"># Кольоровий вивід</span>
+tabulate==0.9.0    <span class="comment"># Форматування таблиць</span></pre>
+              </div>
+            </div>
+
+            <!-- Step by Step -->
+            <div class="quick-start-section">
+              <h3 data-uk="Крок за кроком" data-en="Step by Step">⚡ Крок за кроком</h3>
+              
+              <!-- Step 1 -->
+              <div class="step-card">
+                <div class="step-title">
+                  <span class="step-number">1</span>
+                  <span data-uk="Переконайтеся, що у вас встановлений Python 3.11+" data-en="Make sure you have Python 3.11+ installed">Переконайтеся, що у вас встановлений Python 3.11+</span>
+                </div>
+                <div class="install-commands" style="max-width: 100%; margin-top: 0.5rem;">
+                  <div class="install-command">python3 --version</div>
+                </div>
+              </div>
+
+              <!-- Step 2 -->
+              <div class="step-card">
+                <div class="step-title">
+                  <span class="step-number">2</span>
+                  <span data-uk="Клонуйте репозиторій" data-en="Clone the repository">Клонуйте репозиторій</span>
+                </div>
+                <div class="install-commands" style="max-width: 100%; margin-top: 0.5rem;">
+                  <div class="install-command">git clone https://github.com/tonybearrr/project-a_s_followers05.git</div>
+                  <div class="install-command">cd project-a_s_followers05</div>
+                </div>
+              </div>
+
+              <!-- Step 3 -->
+              <div class="step-card">
+                <div class="step-title">
+                  <span class="step-number">3</span>
+                  <span data-uk="Створіть та активуйте віртуальне середовище" data-en="Create and activate virtual environment">Створіть та активуйте віртуальне середовище</span>
+                </div>
+                <div class="step-description" data-uk="Linux/Mac:" data-en="Linux/Mac:">Linux/Mac:</div>
+                <div class="install-commands" style="max-width: 100%; margin-top: 0.5rem;">
+                  <div class="install-command">python3 -m venv .venv</div>
+                  <div class="install-command">source .venv/bin/activate</div>
+                </div>
+                <div class="step-description" style="margin-top: 1rem;" data-uk="Windows:" data-en="Windows:">Windows:</div>
+                <div class="install-commands" style="max-width: 100%; margin-top: 0.5rem;">
+                  <div class="install-command">python3 -m venv .venv</div>
+                  <div class="install-command">.venv\Scripts\activate</div>
+                </div>
+              </div>
+
+              <!-- Step 4 -->
+              <div class="step-card">
+                <div class="step-title">
+                  <span class="step-number">4</span>
+                  <span data-uk="Встановіть залежності" data-en="Install dependencies">Встановіть залежності</span>
+                </div>
+                <div class="install-commands" style="max-width: 100%; margin-top: 0.5rem;">
+                  <div class="install-command">pip install -r requirements.txt</div>
+                </div>
+              </div>
+
+              <!-- Step 5 -->
+              <div class="step-card">
+                <div class="step-title">
+                  <span class="step-number">5</span>
+                  <span data-uk="Запустіть застосунок" data-en="Run the application">Запустіть застосунок</span>
+                </div>
+                <div class="install-commands" style="max-width: 100%; margin-top: 0.5rem;">
+                  <div class="install-command">python main.py</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Slide 6: Commands -->
+      <div class="slide" id="slide-6">
         <div class="slide-content">
           <div class="commands-table">
             <h2 data-uk="Доступні команди" data-en="Available Commands">
               Доступні команди
             </h2>
-            <table>
-              <thead>
-                <tr>
-                  <th data-uk="Команда" data-en="Command">Команда</th>
-                  <th data-uk="Опис" data-en="Description">Опис</th>
-                  <th data-uk="Приклад" data-en="Example">Приклад</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td><span class="command-name">add</span></td>
-                  <td data-uk="Додати контакт" data-en="Add contact">
-                    Додати контакт
-                  </td>
-                  <td><code>add "John Doe" 1234567890</code></td>
-                </tr>
-                <tr>
-                  <td><span class="command-name">change</span></td>
-                  <td data-uk="Оновити телефон" data-en="Update phone">
-                    Оновити телефон
-                  </td>
-                  <td><code>change "John Doe" 1234567890 0987654321</code></td>
-                </tr>
-                <tr>
-                  <td><span class="command-name">phone</span></td>
-                  <td data-uk="Показати телефон" data-en="Show phone">
-                    Показати телефон
-                  </td>
-                  <td><code>phone "John Doe"</code></td>
-                </tr>
-                <tr>
-                  <td><span class="command-name">all</span></td>
-                  <td
-                    data-uk="Показати всі контакти"
-                    data-en="Show all contacts"
-                  >
-                    Показати всі контакти
-                  </td>
-                  <td><code>all</code></td>
-                </tr>
-                <tr>
-                  <td><span class="command-name">search</span></td>
-                  <td data-uk="Пошук контактів" data-en="Search contacts">
-                    Пошук контактів
-                  </td>
-                  <td><code>search John</code></td>
-                </tr>
-                <tr>
-                  <td><span class="command-name">delete</span></td>
-                  <td data-uk="Видалити контакт" data-en="Delete contact">
-                    Видалити контакт
-                  </td>
-                  <td><code>delete "John Doe"</code></td>
-                </tr>
-                <tr>
-                  <td><span class="command-name">add-email</span></td>
-                  <td data-uk="Додати email" data-en="Add email">
-                    Додати email
-                  </td>
-                  <td><code>add-email "John Doe" john@example.com</code></td>
-                </tr>
-                <tr>
-                  <td><span class="command-name">show-email</span></td>
-                  <td data-uk="Показати email" data-en="Show email">
-                    Показати email
-                  </td>
-                  <td><code>show-email "John Doe"</code></td>
-                </tr>
-                <tr>
-                  <td><span class="command-name">delete-email</span></td>
-                  <td data-uk="Видалити email" data-en="Delete email">
-                    Видалити email
-                  </td>
-                  <td><code>delete-email "John Doe"</code></td>
-                </tr>
-                <tr>
-                  <td><span class="command-name">add-birthday</span></td>
-                  <td data-uk="Додати день народження" data-en="Add birthday">
-                    Додати день народження
-                  </td>
-                  <td><code>add-birthday "John Doe" 15.03.1990</code></td>
-                </tr>
-                <tr>
-                  <td><span class="command-name">show-birthday</span></td>
-                  <td
-                    data-uk="Показати день народження"
-                    data-en="Show birthday"
-                  >
-                    Показати день народження
-                  </td>
-                  <td><code>show-birthday "John Doe"</code></td>
-                </tr>
-                <tr>
-                  <td><span class="command-name">birthdays</span></td>
-                  <td
-                    data-uk="Майбутні дні народження"
-                    data-en="Upcoming birthdays"
-                  >
-                    Майбутні дні народження
-                  </td>
-                  <td><code>birthdays 7</code></td>
-                </tr>
-                <tr>
-                  <td><span class="command-name">add-address</span></td>
-                  <td data-uk="Додати адресу" data-en="Add address">
-                    Додати адресу
-                  </td>
-                  <td><code>add-address "John Doe" "123 Main St"</code></td>
-                </tr>
-                <tr>
-                  <td><span class="command-name">change-address</span></td>
-                  <td data-uk="Змінити адресу" data-en="Change address">
-                    Змінити адресу
-                  </td>
-                  <td><code>change-address "John Doe" "456 New Ave"</code></td>
-                </tr>
-                <tr>
-                  <td><span class="command-name">remove-address</span></td>
-                  <td data-uk="Видалити адресу" data-en="Remove address">
-                    Видалити адресу
-                  </td>
-                  <td><code>remove-address "John Doe"</code></td>
-                </tr>
-                <tr>
-                  <td><span class="command-name">add-note</span></td>
-                  <td data-uk="Додати нотатку" data-en="Add note">
-                    Додати нотатку
-                  </td>
-                  <td><code>add-note "Call John" work important</code></td>
-                </tr>
-                <tr>
-                  <td><span class="command-name">list-notes</span></td>
-                  <td data-uk="Список нотаток" data-en="List notes">
-                    Список нотаток
-                  </td>
-                  <td><code>list-notes created a</code></td>
-                </tr>
-                <tr>
-                  <td><span class="command-name">search-notes</span></td>
-                  <td data-uk="Пошук нотаток" data-en="Search notes">
-                    Пошук нотаток
-                  </td>
-                  <td><code>search-notes meeting</code></td>
-                </tr>
-                <tr>
-                  <td><span class="command-name">search-tags</span></td>
-                  <td data-uk="Пошук за тегами" data-en="Search by tags">
-                    Пошук за тегами
-                  </td>
-                  <td><code>search-tags work important</code></td>
-                </tr>
-                <tr>
-                  <td><span class="command-name">edit-note</span></td>
-                  <td data-uk="Редагувати нотатку" data-en="Edit note">
-                    Редагувати нотатку
-                  </td>
-                  <td><code>edit-note 1 "Updated text" new-tag</code></td>
-                </tr>
-                <tr>
-                  <td><span class="command-name">delete-note</span></td>
-                  <td data-uk="Видалити нотатку" data-en="Delete note">
-                    Видалити нотатку
-                  </td>
-                  <td><code>delete-note 1</code></td>
-                </tr>
-                <tr>
-                  <td><span class="command-name">help</span></td>
-                  <td data-uk="Допомога" data-en="Help">Допомога</td>
-                  <td><code>help</code> або <code>help contacts</code></td>
-                </tr>
-                <tr>
-                  <td><span class="command-name">exit/close</span></td>
-                  <td data-uk="Вихід" data-en="Exit">Вихід</td>
-                  <td><code>exit</code> або <code>close</code></td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        </div>
-      </div>
+            
+            <!-- Category: Contacts -->
+            <div class="command-category">
+              <div class="category-header" data-uk="Контакти" data-en="Contacts">Контакти</div>
+              <table>
+                <thead>
+                  <tr>
+                    <th data-uk="Команда" data-en="Command">Команда</th>
+                    <th data-uk="Опис" data-en="Description">Опис</th>
+                    <th data-uk="Приклад" data-en="Example">Приклад</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><span class="command-name">add</span></td>
+                    <td data-uk="Додати контакт" data-en="Add contact">Додати контакт</td>
+                    <td><code>add "John Doe" 1234567890</code></td>
+                  </tr>
+                  <tr>
+                    <td><span class="command-name">change</span></td>
+                    <td data-uk="Оновити телефон" data-en="Update phone">Оновити телефон</td>
+                    <td><code>change "John Doe" 1234567890 0987654321</code></td>
+                  </tr>
+                  <tr>
+                    <td><span class="command-name">phone</span></td>
+                    <td data-uk="Показати телефон" data-en="Show phone">Показати телефон</td>
+                    <td><code>phone "John Doe"</code></td>
+                  </tr>
+                  <tr>
+                    <td><span class="command-name">all</span></td>
+                    <td data-uk="Показати всі контакти" data-en="Show all contacts">Показати всі контакти</td>
+                    <td><code>all</code></td>
+                  </tr>
+                  <tr>
+                    <td><span class="command-name">search</span></td>
+                    <td data-uk="Пошук контактів" data-en="Search contacts">Пошук контактів</td>
+                    <td><code>search John</code></td>
+                  </tr>
+                  <tr>
+                    <td><span class="command-name">delete</span></td>
+                    <td data-uk="Видалити контакт" data-en="Delete contact">Видалити контакт</td>
+                    <td><code>delete "John Doe"</code></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
 
-      <!-- Slide 6: Installation -->
-      <div class="slide" id="slide-6">
-        <div class="slide-content">
-          <div class="installation">
-            <h2 data-uk="Встановлення" data-en="Installation">Встановлення</h2>
-            <div class="install-commands">
-              <div class="install-command">
-                git clone
-                https://github.com/yourusername/project-a_s_followers05.git
-              </div>
-              <div class="install-command">cd project-a_s_followers05</div>
-              <div class="install-command">python3 -m venv .venv</div>
-              <div class="install-command">
-                source .venv/bin/activate # Linux/Mac
-              </div>
-              <div class="install-command">
-                # або .venv\Scripts\activate # Windows
-              </div>
-              <div class="install-command">pip install -r requirements.txt</div>
-              <div class="install-command">python main.py</div>
+            <!-- Category: Email -->
+            <div class="command-category">
+              <div class="category-header" data-uk="Email" data-en="Email">Email</div>
+              <table>
+                <thead>
+                  <tr>
+                    <th data-uk="Команда" data-en="Command">Команда</th>
+                    <th data-uk="Опис" data-en="Description">Опис</th>
+                    <th data-uk="Приклад" data-en="Example">Приклад</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><span class="command-name">add-email</span></td>
+                    <td data-uk="Додати email" data-en="Add email">Додати email</td>
+                    <td><code>add-email "John Doe" john@example.com</code></td>
+                  </tr>
+                  <tr>
+                    <td><span class="command-name">show-email</span></td>
+                    <td data-uk="Показати email" data-en="Show email">Показати email</td>
+                    <td><code>show-email "John Doe"</code></td>
+                  </tr>
+                  <tr>
+                    <td><span class="command-name">delete-email</span></td>
+                    <td data-uk="Видалити email" data-en="Delete email">Видалити email</td>
+                    <td><code>delete-email "John Doe"</code></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <!-- Category: Birthdays -->
+            <div class="command-category">
+              <div class="category-header" data-uk="Дні народження" data-en="Birthdays">Дні народження</div>
+              <table>
+                <thead>
+                  <tr>
+                    <th data-uk="Команда" data-en="Command">Команда</th>
+                    <th data-uk="Опис" data-en="Description">Опис</th>
+                    <th data-uk="Приклад" data-en="Example">Приклад</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><span class="command-name">add-birthday</span></td>
+                    <td data-uk="Додати день народження" data-en="Add birthday">Додати день народження</td>
+                    <td><code>add-birthday "John Doe" 15.03.1990</code></td>
+                  </tr>
+                  <tr>
+                    <td><span class="command-name">show-birthday</span></td>
+                    <td data-uk="Показати день народження" data-en="Show birthday">Показати день народження</td>
+                    <td><code>show-birthday "John Doe"</code></td>
+                  </tr>
+                  <tr>
+                    <td><span class="command-name">birthdays</span></td>
+                    <td data-uk="Майбутні дні народження" data-en="Upcoming birthdays">Майбутні дні народження</td>
+                    <td><code>birthdays 7</code></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <!-- Category: Addresses -->
+            <div class="command-category">
+              <div class="category-header" data-uk="Адреси" data-en="Addresses">Адреси</div>
+              <table>
+                <thead>
+                  <tr>
+                    <th data-uk="Команда" data-en="Command">Команда</th>
+                    <th data-uk="Опис" data-en="Description">Опис</th>
+                    <th data-uk="Приклад" data-en="Example">Приклад</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><span class="command-name">add-address</span></td>
+                    <td data-uk="Додати адресу" data-en="Add address">Додати адресу</td>
+                    <td><code>add-address "John Doe" "123 Main St"</code></td>
+                  </tr>
+                  <tr>
+                    <td><span class="command-name">change-address</span></td>
+                    <td data-uk="Змінити адресу" data-en="Change address">Змінити адресу</td>
+                    <td><code>change-address "John Doe" "456 New Ave"</code></td>
+                  </tr>
+                  <tr>
+                    <td><span class="command-name">remove-address</span></td>
+                    <td data-uk="Видалити адресу" data-en="Remove address">Видалити адресу</td>
+                    <td><code>remove-address "John Doe"</code></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <!-- Category: Notes -->
+            <div class="command-category">
+              <div class="category-header" data-uk="Нотатки" data-en="Notes">Нотатки</div>
+              <table>
+                <thead>
+                  <tr>
+                    <th data-uk="Команда" data-en="Command">Команда</th>
+                    <th data-uk="Опис" data-en="Description">Опис</th>
+                    <th data-uk="Приклад" data-en="Example">Приклад</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><span class="command-name">add-note</span></td>
+                    <td data-uk="Додати нотатку" data-en="Add note">Додати нотатку</td>
+                    <td><code>add-note "Call John" work important</code></td>
+                  </tr>
+                  <tr>
+                    <td><span class="command-name">list-notes</span></td>
+                    <td data-uk="Список нотаток" data-en="List notes">Список нотаток</td>
+                    <td><code>list-notes created a</code></td>
+                  </tr>
+                  <tr>
+                    <td><span class="command-name">search-notes</span></td>
+                    <td data-uk="Пошук нотаток" data-en="Search notes">Пошук нотаток</td>
+                    <td><code>search-notes meeting</code></td>
+                  </tr>
+                  <tr>
+                    <td><span class="command-name">search-tags</span></td>
+                    <td data-uk="Пошук за тегами" data-en="Search by tags">Пошук за тегами</td>
+                    <td><code>search-tags work important</code></td>
+                  </tr>
+                  <tr>
+                    <td><span class="command-name">edit-note</span></td>
+                    <td data-uk="Редагувати нотатку" data-en="Edit note">Редагувати нотатку</td>
+                    <td><code>edit-note 1 "Updated text" new-tag</code></td>
+                  </tr>
+                  <tr>
+                    <td><span class="command-name">delete-note</span></td>
+                    <td data-uk="Видалити нотатку" data-en="Delete note">Видалити нотатку</td>
+                    <td><code>delete-note 1</code></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <!-- Category: Help & Exit -->
+            <div class="command-category">
+              <div class="category-header" data-uk="Допомога та вихід" data-en="Help & Exit">Допомога та вихід</div>
+              <table>
+                <thead>
+                  <tr>
+                    <th data-uk="Команда" data-en="Command">Команда</th>
+                    <th data-uk="Опис" data-en="Description">Опис</th>
+                    <th data-uk="Приклад" data-en="Example">Приклад</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><span class="command-name">help/?</span></td>
+                    <td data-uk="Допомога" data-en="Help">Допомога</td>
+                    <td><code>help</code> або <code>help contacts</code></td>
+                  </tr>
+                  <tr>
+                    <td><span class="command-name">exit/close</span></td>
+                    <td data-uk="Вихід" data-en="Exit">Вихід</td>
+                    <td><code>exit</code> або <code>close</code></td>
+                  </tr>
+                </tbody>
+              </table>
             </div>
           </div>
         </div>
@@ -2398,6 +2716,81 @@ classDiagram
           </footer>
         </div>
       </div>
+
+      <!-- Slide 9: Statistics -->
+      <div class="slide" id="slide-9">
+        <div class="slide-content">
+          <div style="text-align: center; margin-bottom: 3rem">
+            <h2
+              class="logo"
+              style="margin-bottom: 1rem"
+              data-uk="Статистика проекту"
+              data-en="Project Statistics"
+            >
+              📊 Статистика проекту
+            </h2>
+            <p
+              style="
+                color: #8b949e;
+                font-size: 1.1rem;
+                max-width: 600px;
+                margin: 0 auto;
+              "
+              data-uk="Цікаві цифри про розробку"
+              data-en="Interesting numbers about development"
+            >
+              Цікаві цифри про розробку
+            </p>
+          </div>
+          <div class="statistics-container">
+            <div class="stat-card">
+              <div class="stat-icon">🔤</div>
+              <div class="stat-value">374,756</div>
+              <div class="stat-label" data-uk="Символів коду" data-en="Characters of code">Символів коду</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-icon">✏️</div>
+              <div class="stat-value">10,867</div>
+              <div class="stat-label" data-uk="Строк коду" data-en="Lines of code">Строк коду</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-icon">📄</div>
+              <div class="stat-value">47</div>
+              <div class="stat-label" data-uk="Файлів" data-en="Files">Файлів</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-icon">🗂️</div>
+              <div class="stat-value">10</div>
+              <div class="stat-label" data-uk="Папок" data-en="Folders">Папок</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-icon">💾</div>
+              <div class="stat-value">16</div>
+              <div class="stat-label" data-uk="Комітів" data-en="Commits">Комітів</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-icon">✅</div>
+              <div class="stat-value">26</div>
+              <div class="stat-label" data-uk="Задач" data-en="Tasks">Задач</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-icon">📞</div>
+              <div class="stat-value">5</div>
+              <div class="stat-label" data-uk="Мітингів (дзвінків)" data-en="Meetings (calls)">Мітингів (дзвінків)</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-icon">🌚</div>
+              <div class="stat-value">1,234</div>
+              <div class="stat-label" data-uk="Видалених пробілів (flake8)" data-en="Removed spaces (flake8)">Видалених пробілів (flake8)</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-icon">🍺</div>
+              <div class="stat-value">127</div>
+              <div class="stat-label" data-uk="Чашок кави" data-en="Cups of coffee">Чашок кави</div>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
 
     <!-- Navigation Dots -->
@@ -2410,6 +2803,7 @@ classDiagram
       <div class="nav-dot" onclick="goToSlide(6)"></div>
       <div class="nav-dot" onclick="goToSlide(7)"></div>
       <div class="nav-dot" onclick="goToSlide(8)"></div>
+      <div class="nav-dot" onclick="goToSlide(9)"></div>
     </div>
 
     <script>
@@ -2445,7 +2839,7 @@ classDiagram
 
       // Slide Navigation
       const slidesContainer = document.getElementById("slides-container");
-      const totalSlides = 8;
+      const totalSlides = 9;
       let currentSlide = 1;
 
       function updateSlideIndicator() {
