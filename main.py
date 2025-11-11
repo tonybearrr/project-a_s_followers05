@@ -77,6 +77,12 @@ def get_output_by_command(command, args, book, notebook):
         command_output = edit_note(args, notebook)
     elif command == Command.DELETE_NOTE:
         command_output = delete_note(args, notebook)
+    elif command == Command.ADD_ADDRESS:
+        command_output = add_address(args, book)
+    elif command == Command.CHANGE_ADDRESS:
+        command_output = edit_address(args, book)
+    elif command == Command.REMOVE_ADDRESS:
+        command_output = remove_address(args, book)
     elif command in Command.STATS:
         command_output = show_statistics(book, notebook)
     elif command in [Command.HELP, Command.HELP_ALT]:
@@ -101,10 +107,10 @@ def get_help_output(args):
     try:
         if args and len(args) > 0:
             first_arg = args[0].lower()
-
+            command_output=first_arg
             if first_arg in ["short", "s", "quick"]:   # short help
                 command_output = format_help_short()
-            elif first_arg in ["contacts", "notes", "birthdays", "email"]:   # Help by category
+            elif first_arg in ["contacts", "notes", "birthdays", "email", "address"]:   # Help by category
                 command_output = format_help_category(first_arg)
             else:  # Unknown category
                 command_output = (

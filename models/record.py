@@ -138,3 +138,33 @@ class Record:
             ValueError: If birthday format is invalid
         """
         self.birthday = Birthday(birthday)
+
+    def add_address(self, address):
+        """
+        Add address for the contact.
+
+        Args:
+            address (str): Address to add or update
+
+        Raises:
+            ValueError: If address is empty or contains only whitespace
+        """
+        self.address = Address(address)
+
+    def edit_address(self, new_address):
+        """
+        Edit the existing address for the contact.
+
+        Args:
+            new_address (str): New address to set
+
+        Raises:
+            ValueError: If new address is empty or contains only whitespace
+        """
+        self.address = Address(new_address)
+
+    def remove_address(self):
+        """
+        Remove address from the contact.
+        """
+        self.address = None

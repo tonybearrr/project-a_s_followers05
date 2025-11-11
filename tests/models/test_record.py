@@ -204,6 +204,12 @@ class TestRecord:
         record.add_email("test@example.com")
         assert "test@example.com" in str(record)
 
+    def test_str_representation_with_email(self):
+        """Test string representation with email."""
+        record = Record("Test User")
+        record.add_email("test@example.com")
+        assert "test@example.com" in str(record)
+
     def test_record_with_phones_email_and_birthday(self):
         """Test record with phones, email and birthday."""
         record = Record("Complete User")
@@ -217,3 +223,32 @@ class TestRecord:
         assert "1111111111" in str(record)
         assert "user@example.com" in str(record)
         assert "01.01.2000" in str(record)
+        
+    def test_add_address(self):
+        """Test adding an address."""
+        record = Record("John Doe")
+        record.add_address("123 Main Street")
+        assert record.address is not None
+        assert record.address.value == "123 Main Street"
+
+    def test_update_address(self):
+        """Test updating an address (replacing existing)."""
+        record = Record("John Doe")
+        record.add_address("123 Main Street")
+        assert record.address.value == "123 Main Street"
+        record.add_address("528 Linkoln Avenue")
+        assert record.address.value == "528 Linkoln Avenue"
+
+    def test_delete_address(self):
+        """Test deleting an address."""
+        record = Record("John Doe")
+        record.add_address("123 Main Street")
+        assert record.address is not None
+        record.remove_address()
+        assert record.email is None
+
+    def test_str_representation_with_address(self):
+        """Test string representation with an address."""
+        record = Record("John Doe")
+        record.add_address("123 Main Street")
+        assert "123 Main Street" in str(record)
