@@ -51,6 +51,9 @@ def format_help_full():
     help_text.append("    Show this help message")
     help_text.append(f"    {Fore.CYAN}Usage:{Style.RESET_ALL} {Command.HELP} {Fore.BLUE}[category]{Style.RESET_ALL} or {Fore.BLUE}{Command.HELP} short{Style.RESET_ALL}\n")
 
+    help_text.append(f"  {Fore.GREEN}{Command.STATS}{Style.RESET_ALL}")
+    help_text.append("    Show comprehensive application statistics \n")
+
     help_text.append(f"  {Fore.GREEN}{Command.EXIT_1}{Style.RESET_ALL} or {Fore.GREEN}{Command.EXIT_2}{Style.RESET_ALL}")
     help_text.append("    Exit the program\n")
 
@@ -193,7 +196,7 @@ def format_help_short():
     help_text.append(f"  {Command.SEARCH_TAGS}, {Command.EDIT_NOTE}, {Command.DELETE_NOTE}")
 
     help_text.append(f"\n{Fore.YELLOW}{Style.BRIGHT}System:{Style.RESET_ALL}")
-    help_text.append(f"  {Command.HELLO}, {Command.HELP}, {Command.EXIT_1}, {Command.EXIT_2}")
+    help_text.append(f"  {Command.HELLO}, {Command.HELP}, {Command.STATS}, {Command.EXIT_1}, {Command.EXIT_2}")
 
     help_text.append(f"\n{_header_line()}")
     help_text.append(f"{Fore.CYAN}Type '{Command.HELP}' for detailed information{Style.RESET_ALL}")

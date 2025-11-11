@@ -12,7 +12,7 @@ from core.handlers import (
     add_contact, update_contact, get_all_contacts, search_contacts, get_one_contact,
     delete_contact, add_birthday, show_birthday, show_upcoming_birthdays,
     add_note, list_notes, search_notes, search_notes_by_tags,
-    edit_note, delete_note, add_email, delete_email, show_email
+    edit_note, delete_note, add_email, delete_email, show_email, show_statistics
 )
 from utils.parsers import parse_input, detect_command
 from utils.help_formatter import (
@@ -77,6 +77,8 @@ def get_output_by_command(command, args, book, notebook):
         command_output = edit_note(args, notebook)
     elif command == Command.DELETE_NOTE:
         command_output = delete_note(args, notebook)
+    elif command in Command.STATS:
+        command_output = show_statistics(book, notebook)
     elif command in [Command.HELP, Command.HELP_ALT]:
         command_output = get_help_output(args)
     else:
