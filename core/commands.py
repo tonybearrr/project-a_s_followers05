@@ -28,3 +28,4 @@ class Command(StrEnum):
     EDIT_NOTE = "edit-note"
     DELETE_NOTE = "delete-note"
     SEARCH_TAGS = "search-tags"
+    STATS = "stats"

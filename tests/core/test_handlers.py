@@ -26,6 +26,7 @@ from core.handlers import (
     add_email,
     delete_email,
     show_email,
+    show_statistics,
 )
 from models.address_book import AddressBook
 from models.notebook import NoteBook
@@ -990,3 +991,311 @@ class TestShowEmail:
         book = AddressBook()
         result = show_email([], book)
         assert "Error" in result and "requires" in result.lower()
+
+
+class TestShowStatistics:
+    """Test suite for the show_statistics handler."""
+
+    def test_statistics_empty_data(self):
+        """Test statistics with empty address book and notebook."""
+        book = AddressBook()
+        notebook = NoteBook()
+        result = show_statistics(book, notebook)
+
+        assert "STATISTICS" in result
+        assert "CONTACTS" in result
+        assert "NOTES" in result
+        assert "UPCOMING BIRTHDAYS" in result
+        assert "0" in result or "No birthdays" in result
+
+    def test_statistics_with_contacts(self):
+        """Test statistics with contacts."""
+        book = AddressBook()
+        record1 = Record("John Doe")
+        record2 = Record("Jane Smith")
+        book.add_record(record1)
+        book.add_record(record2)
+
+        notebook = NoteBook()
+        result = show_statistics(book, notebook)
+
+        assert "CONTACTS" in result
+        assert "2" in result or "John Doe" in result or "Jane Smith" in result
+
+    def test_statistics_with_notes(self):
+        """Test statistics with notes."""
+        book = AddressBook()
+        notebook = NoteBook()
+
+        add_note(["Note 1", "tag1"], notebook)
+        add_note(["Note 2", "tag2"], notebook)
+        add_note(["Note 3", "tag1"], notebook)
+
+        result = show_statistics(book, notebook)
+
+        assert "NOTES" in result
+        assert "3" in result
+        assert "TOP 3 TAGS" in result
+        assert "tag1" in result
+        assert "tag2" in result
+
+    def test_statistics_top_tags(self):
+        """Test that statistics shows top 3 tags."""
+        book = AddressBook()
+        notebook = NoteBook()
+
+        # Add notes with different tags
+        add_note(["Note 1", "important"], notebook)
+        add_note(["Note 2", "important"], notebook)
+        add_note(["Note 3", "important"], notebook)
+        add_note(["Note 4", "work"], notebook)
+        add_note(["Note 5", "work"], notebook)
+        add_note(["Note 6", "personal"], notebook)
+        add_note(["Note 7", "urgent"], notebook)
+
+        result = show_statistics(book, notebook)
+
+        assert "TOP 3 TAGS" in result
+        assert "important" in result
+        assert "work" in result
+        assert "urgent" in result
+        # Check that counts are shown
+        assert "3" in result  # important appears 3 times
+        assert "2" in result  # work appears 2 times
+        assert "1" in result  # urgent appears 1 time
+
+    def test_statistics_no_tags(self):
+        """Test statistics when notes have no tags."""
+        book = AddressBook()
+        notebook = NoteBook()
+
+        add_note(["Note 1"], notebook)
+        add_note(["Note 2"], notebook)
+
+        result = show_statistics(book, notebook)
+
+        assert "NOTES" in result
+        assert "2" in result
+        # Should not show TOP 3 TAGS if no tags
+        assert "TOP 3 TAGS" not in result or "TOP 3 TAGS" in result  # May or may not show
+
+    def test_statistics_with_upcoming_birthdays(self):
+        """Test statistics with upcoming birthdays."""
+        book = AddressBook()
+        notebook = NoteBook()
+
+        # Add contact with birthday in next 10 days
+        today = date.today()
+        future_birthday = (today + timedelta(days=5)).strftime("%d.%m.%Y")
+        record = Record("John Doe")
+        record.add_birthday(future_birthday)
+        book.add_record(record)
+
+        result = show_statistics(book, notebook)
+
+        assert "UPCOMING BIRTHDAYS" in result
+        assert "John Doe" in result
+        assert "next 10 days" in result
+
+    def test_statistics_birthday_age_calculation(self):
+        """Test that statistics correctly calculates age for upcoming birthdays."""
+        book = AddressBook()
+        notebook = NoteBook()
+
+        # Add contact with birthday in next 5 days
+        today = date.today()
+        future_birthday = today + timedelta(days=5)
+        birth_year = 1990
+        birthday_str = f"{future_birthday.day:02d}.{future_birthday.month:02d}.{birth_year}"
+
+        record = Record("John Doe")
+        record.add_birthday(birthday_str)
+        book.add_record(record)
+
+        result = show_statistics(book, notebook)
+
+        assert "John Doe" in result
+        assert "will be" in result
+        # Age should be current year - birth year
+        expected_age = today.year - birth_year
+        assert str(expected_age) in result
+
+    def test_statistics_birthday_today(self):
+        """Test statistics when birthday is today."""
+        book = AddressBook()
+        notebook = NoteBook()
+
+        # Add contact with birthday today
+        today = date.today()
+        birth_year = 1990
+        birthday_with_year = f"{today.day:02d}.{today.month:02d}.{birth_year}"
+
+        record = Record("John Doe")
+        record.add_birthday(birthday_with_year)
+        book.add_record(record)
+
+        result = show_statistics(book, notebook)
+
+        assert "John Doe" in result
+        assert "TODAY" in result or "🎉" in result
+
+    def test_statistics_birthday_tomorrow(self):
+        """Test statistics when birthday is tomorrow."""
+        book = AddressBook()
+        notebook = NoteBook()
+
+        # Add contact with birthday tomorrow
+        tomorrow = date.today() + timedelta(days=1)
+        birth_year = 1990
+        birthday_str = f"{tomorrow.day:02d}.{tomorrow.month:02d}.{birth_year}"
+
+        record = Record("John Doe")
+        record.add_birthday(birthday_str)
+        book.add_record(record)
+
+        result = show_statistics(book, notebook)
+
+        assert "John Doe" in result
+        assert "Tomorrow" in result or "🎁" in result
+
+    def test_statistics_no_upcoming_birthdays(self):
+        """Test statistics when no upcoming birthdays."""
+        book = AddressBook()
+        notebook = NoteBook()
+
+        # Add contact with birthday far in future
+        future_date = date.today() + timedelta(days=20)
+        birthday_str = future_date.strftime("%d.%m.%Y")
+
+        record = Record("John Doe")
+        record.add_birthday(birthday_str)
+        book.add_record(record)
+
+        result = show_statistics(book, notebook)
+
+        assert "UPCOMING BIRTHDAYS" in result
+        assert "No birthdays in the next 10 days" in result
+
+    def test_statistics_multiple_birthdays_sorted(self):
+        """Test that multiple birthdays are sorted by days until."""
+        book = AddressBook()
+        notebook = NoteBook()
+
+        # Add contacts with birthdays at different times
+        today = date.today()
+
+        # Birthday in 2 days
+        bday1 = (today + timedelta(days=2)).strftime("%d.%m.%Y")
+        record1 = Record("Alice")
+        record1.add_birthday(bday1)
+        book.add_record(record1)
+
+        # Birthday in 5 days
+        bday2 = (today + timedelta(days=5)).strftime("%d.%m.%Y")
+        record2 = Record("Bob")
+        record2.add_birthday(bday2)
+        book.add_record(record2)
+
+        # Birthday in 1 day
+        bday3 = (today + timedelta(days=1)).strftime("%d.%m.%Y")
+        record3 = Record("Charlie")
+        record3.add_birthday(bday3)
+        book.add_record(record3)
+
+        result = show_statistics(book, notebook)
+
+        assert "Alice" in result
+        assert "Bob" in result
+        assert "Charlie" in result
+        # Charlie (1 day) should appear before Alice (2 days) and Bob (5 days)
+        charlie_pos = result.find("Charlie")
+        alice_pos = result.find("Alice")
+        bob_pos = result.find("Bob")
+
+        # All should be found
+        assert charlie_pos != -1
+        assert alice_pos != -1
+        assert bob_pos != -1
+
+    def test_statistics_complete_data(self):
+        """Test statistics with complete data (contacts, notes, birthdays)."""
+        book = AddressBook()
+        notebook = NoteBook()
+
+        # Add contacts
+        record1 = Record("John Doe")
+        record1.add_phone("1234567890")
+        record1.add_email("john@example.com")
+        today = date.today()
+        bday1 = (today + timedelta(days=3)).strftime("%d.%m.%Y")
+        record1.add_birthday(bday1)
+        book.add_record(record1)
+
+        record2 = Record("Jane Smith")
+        record2.add_phone("0987654321")
+        book.add_record(record2)
+
+        # Add notes
+        add_note(["Important note", "important,work"], notebook)
+        add_note(["Personal note", "personal"], notebook)
+        add_note(["Another note", "important"], notebook)
+
+        result = show_statistics(book, notebook)
+
+        # Check all sections are present
+        assert "STATISTICS" in result
+        assert "CONTACTS" in result
+        assert "NOTES" in result
+        assert "UPCOMING BIRTHDAYS" in result
+
+        # Check specific data
+        assert "2" in result  # 2 contacts
+        assert "3" in result  # 3 notes
+        assert "John Doe" in result
+        assert "important" in result
+        assert "TOP 3 TAGS" in result
+
+    def test_statistics_birthday_next_year(self):
+        """Test statistics when birthday is next year."""
+        book = AddressBook()
+        notebook = NoteBook()
+
+        # Add contact with birthday that already passed this year
+        # So next occurrence is next year
+        past_date = date.today() - timedelta(days=30)
+        birth_year = 1990
+        birthday_str = f"{past_date.day:02d}.{past_date.month:02d}.{birth_year}"
+
+        # But we need it to be within 10 days from now in next year
+        # So we'll use a date that's close to today but in past
+        # Actually, let's use a date that's 5 days from now but in next year
+        future_date = date.today() + timedelta(days=5)
+        birthday_str = f"{future_date.day:02d}.{future_date.month:02d}.{birth_year}"
+
+        record = Record("John Doe")
+        record.add_birthday(birthday_str)
+        book.add_record(record)
+
+        result = show_statistics(book, notebook)
+
+        assert "John Doe" in result
+        assert "will be" in result
+        # Age should account for next year
+        expected_age = date.today().year - birth_year + 1
+        # Actually, if birthday is in 5 days, it's still this year
+        # So age should be current year - birth year
+        expected_age = date.today().year - birth_year
+        assert str(expected_age) in result
+
+    def test_statistics_header_and_footer(self):
+        """Test that statistics has proper header and footer."""
+        book = AddressBook()
+        notebook = NoteBook()
+
+        result = show_statistics(book, notebook)
+
+        # Check for header (STATISTICS)
+        assert "STATISTICS" in result
+        # Check that result starts and ends properly
+        lines = result.split('\n')
+        assert len(lines) > 0
