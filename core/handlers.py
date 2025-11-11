@@ -110,7 +110,7 @@ def get_one_contact(args, book: AddressBook):
     record = book.find(name)
     if not record:
         return f"Contact '{name}' not found."
-    
+
     pattern = r"(\d{3})(\d{3})(\d{4})"
     replacement = r"(\1)\2-\3"
 
@@ -632,10 +632,10 @@ def list_notes(args, notebook: NoteBook):
     sort_direction = "descending" if actual_reverse else "ascending"
     sort_info = f"{sort_labels.get(sort_by, sort_by)} ({sort_direction})"
     header = (
-        f"{Fore.CYAN}{'─'*70}{Style.RESET_ALL}\n"
+        f"{Fore.CYAN}{'─' * 70}{Style.RESET_ALL}\n"
         f"{Fore.CYAN}{Style.BRIGHT}All notes{Style.RESET_ALL} "
         f"{Fore.YELLOW}(sorted {sort_info}){Style.RESET_ALL}\n"
-        f"{Fore.CYAN}{'─'*70}{Style.RESET_ALL}\n"
+        f"{Fore.CYAN}{'─' * 70}{Style.RESET_ALL}\n"
     )
     table = format_notes_table(notes, sort_by=sort_by, reverse=actual_reverse)
     return header + table

@@ -64,7 +64,7 @@ class AddressBook(UserDict):
         for record in self.data.values():
             if name.lower() in record.name.value.lower():
                 return record
-        
+
         # return self.data[name] if name in self.data else None
         # return self.data[name] if name in self.data else None
 
@@ -99,7 +99,7 @@ class AddressBook(UserDict):
         """
 
         phone = re.sub(r"\D", "", phone)
-        
+
         searched_records = []
 
         for record in self.data.values():
