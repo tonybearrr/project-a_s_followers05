@@ -4,8 +4,10 @@ Handler functions for the address book bot.
 This module contains all the command handler functions that process
 user commands and interact with the AddressBook and Record classes.
 """
-
+# flake8: noqa: E501
 import re
+from datetime import datetime, date
+from collections import Counter
 from colorama import init, Fore, Style, Back
 from models.address_book import AddressBook
 from models.record import Record
@@ -14,9 +16,9 @@ from models.note import Note
 from models.birthday import Birthday
 from utils.table_formatters import format_contact_table, format_notes_table
 from utils.confirmations import confirm_delete
+from utils.help_formatter import _header_line
 from .decorators import input_error
 from .commands import Command
-
 # Sort direction constants
 ASCENDING_KEYWORDS = ["a", "asc", "ascending"]
 DESCENDING_KEYWORDS = ["d", "desc", "descending"]
@@ -635,3 +637,113 @@ def list_notes(args, notebook: NoteBook):
     )
     table = format_notes_table(notes, sort_by=sort_by, reverse=actual_reverse)
     return header + table
+
+
+def show_statistics(book: AddressBook, notebook: NoteBook):
+    """
+    Show comprehensive application statistics.
+    
+    Args:
+        book: AddressBook instance
+        notebook: NoteBook instance
+        
+    Returns:
+        str: Formatted statistics
+    """
+
+    stats = []
+
+    # Header
+    stats.append(_header_line())
+    stats.append(f"{Fore.CYAN}{' '*25}{Style.BRIGHT}📊 STATISTICS{Style.RESET_ALL}")
+    stats.append(_header_line() + "\n")
+
+    # ========== CONTACTS STATISTICS ==========
+    total_contacts = len(book.data)
+
+    stats.append(f"{Fore.YELLOW}{Style.BRIGHT}📇 CONTACTS:{Style.RESET_ALL} {Fore.CYAN}{total_contacts}{Style.RESET_ALL}")
+
+    # ========== NOTES STATISTICS ==========
+    all_notes = notebook.get_all_notes()
+    total_notes = len(all_notes)
+    # Collect all tags
+    all_tags = []
+    for note in all_notes:
+        all_tags.extend(note.tags)
+
+    tag_counts = Counter(all_tags)
+    top_tags = tag_counts.most_common(3)
+
+    stats.append(f"{Fore.YELLOW}{Style.BRIGHT}📝 NOTES:{Style.RESET_ALL} {Fore.CYAN}{total_notes}{Style.RESET_ALL}")
+
+    if top_tags:
+        stats.append(f"{Fore.YELLOW}🔝 TOP 3 TAGS:{Style.RESET_ALL}")
+        for i, (tag, count) in enumerate(top_tags, 1):
+            stats.append(f"    {Fore.CYAN}{i}.{Style.RESET_ALL} {Fore.GREEN}{tag}{Style.RESET_ALL} ({Fore.BLUE}{count}{Style.RESET_ALL} notes)")
+
+    stats.append("")
+
+    # ========== UPCOMING BIRTHDAYS (10 days) ==========
+    days_ahead = 10
+    upcoming = book.get_upcoming_birthdays(days_ahead=days_ahead)
+
+    stats.append(f"{Fore.YELLOW}{Style.BRIGHT}🎂 UPCOMING BIRTHDAYS (next {days_ahead} days):{Style.RESET_ALL}")
+
+    if upcoming:
+
+        today = datetime.now().date()
+
+        birthday_list = []
+        for name, birthday_str in upcoming:
+            try:
+                bday_parts = birthday_str.split('.')
+                if len(bday_parts) == 3:
+                    day, month, birth_year = int(bday_parts[0]), int(bday_parts[1]), int(bday_parts[2])
+                    this_year_birthday = date(today.year, month, day)
+
+                    if this_year_birthday < today:
+                        this_year_birthday = date(today.year + 1, month, day)
+
+                    days_until = (this_year_birthday - today).days
+
+                    age = this_year_birthday.year - birth_year
+                    birthday_list.append((name, birthday_str, this_year_birthday, days_until, age))
+            except (ValueError, IndexError):
+
+                birthday_list.append((name, birthday_str, None, None, None))
+
+        birthday_list.sort(key=lambda x: x[3] if x[3] is not None else 999)
+
+        for name, birthday_str, bday_date, days_until, age in birthday_list:
+            if days_until == 0:
+                emoji = "🎉"
+                days_text = f"{Fore.RED}{Style.BRIGHT}TODAY!{Style.RESET_ALL}"
+            elif days_until == 1:
+                emoji = "🎁"
+                days_text = f"{Fore.YELLOW}{Style.BRIGHT}Tomorrow{Style.RESET_ALL}"
+            elif days_until <= 3:
+                emoji = "🎈"
+                days_text = f"{Fore.YELLOW}in {days_until} days{Style.RESET_ALL}"
+            else:
+                emoji = "📅"
+                days_text = f"{Fore.CYAN}in {days_until} days{Style.RESET_ALL}"
+
+            if bday_date:
+                date_display = bday_date.strftime("%d.%m")
+            else:
+                date_display = birthday_str
+
+            age_text = ""
+            if age is not None:
+                age_text = f" - {Fore.BLUE}will be {age} years old{Style.RESET_ALL}"
+
+            stats.append(f"  {emoji} {Fore.GREEN}{name}{Style.RESET_ALL} - {Fore.MAGENTA}{date_display}{Style.RESET_ALL} ({days_text}){age_text}")
+    else:
+        stats.append(f"  {Fore.WHITE}No birthdays in the next {days_ahead} days{Style.RESET_ALL}")
+
+    stats.append("")
+
+    # Footer
+    stats.append(_header_line())
+
+    return "\n".join(stats)
