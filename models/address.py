@@ -5,8 +5,10 @@ This module provides the Address class that represents a contact's address
 with basic validation.
 """
 
+from .field import Field
 
-class Address:
+
+class Address(Field):
     """
     Address field for a contact.
 
@@ -29,13 +31,13 @@ class Address:
 
         if not value or not value.strip():
             raise ValueError("Address cannot be empty")
-        self.value = value.strip()
+        super().__init__(value.strip())
 
-    def __str__(self):
-        """
-        Return string representation of the address.
+    # def __str__(self):
+    #     """
+    #     Return string representation of the address.
 
-        Returns:
-            str: The address value
-        """
-        return self.value
+    #     Returns:
+    #         str: The address value
+    #     """
+    #     return self.value

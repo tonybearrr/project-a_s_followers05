@@ -40,14 +40,13 @@ def format_contact_table(records, value=None):
                     value_position = match.span()
                     part1 = f"{Fore.CYAN}{record.name.value[:value_position[0]]}{Style.RESET_ALL}"
                     part2 = f"{Fore.CYAN}{record.name.value[value_position[1]:]}{Style.RESET_ALL}"
-                    value_hightligted = f"{Style.RESET_ALL}{Style.BRIGHT}{Fore.BLUE}{Back.LIGHTWHITE_EX}{record.name.value[value_position[0]:value_position[1]]}{Style.RESET_ALL}"
+                    value_hightligted = f"{Style.BRIGHT}{Fore.BLUE}{Back.LIGHTWHITE_EX}{record.name.value[value_position[0]:value_position[1]]}{Style.RESET_ALL}"
 
                     name = part1 + value_hightligted + part2
             else:
                 name = f"{Fore.CYAN}{record.name.value}{Style.RESET_ALL}"
 
             phones = f"{Fore.GREEN}{' | '.join((re.sub(pattern, replacement, p.value)) for p in record.phones)}{Style.RESET_ALL}" if record.phones else f"{Fore.WHITE}-{Style.RESET_ALL}"
-            # phones = f"{Fore.GREEN}{' | '.join(p.value for p in record.phones)}{Style.RESET_ALL}" if record.phones else f"{Fore.WHITE}-{Style.RESET_ALL}"
 
             if record.email:
                 if value in record.email.value:
@@ -56,23 +55,38 @@ def format_contact_table(records, value=None):
                         value_position = match.span()
                         part1 = f"{Fore.YELLOW}{record.email.value[:value_position[0]]}{Style.RESET_ALL}"
                         part2 = f"{Fore.YELLOW}{record.email.value[value_position[1]:]}{Style.RESET_ALL}"
-                        value_hightligted = f"{Style.RESET_ALL}{Style.BRIGHT}{Fore.YELLOW}{Back.LIGHTWHITE_EX}{record.email.value[value_position[0]:value_position[1]]}{Style.RESET_ALL}"
+                        value_hightligted = f"{Style.BRIGHT}{Fore.YELLOW}{Back.LIGHTWHITE_EX}{record.email.value[value_position[0]:value_position[1]]}{Style.RESET_ALL}"
 
                         email = part1 + value_hightligted + part2
                 else:
                     email = f"{Fore.YELLOW}{record.email.value}{Style.RESET_ALL}"
-
             else:
                 email = f"{Fore.WHITE}-{Style.RESET_ALL}"
 
             birthday = f"{Fore.MAGENTA}{str(record.birthday)}{Style.RESET_ALL}" if record.birthday else f"{Fore.WHITE}-{Style.RESET_ALL}"
 
+            # Check if the record has address attribute AND there is value in the address field
+            if hasattr(record, 'address') and record.address:
+                if value in record.address.value:
+                    match = re.search(value.lower(), record.address.value.lower())
+                    if match:
+                        value_position = match.span()
+                        part1 = f"{Fore.BLUE}{record.address.value[:value_position[0]]}{Style.RESET_ALL}"
+                        part2 = f"{Fore.BLUE}{record.address.value[value_position[1]:]}{Style.RESET_ALL}"
+                        value_hightligted = f"{Style.BRIGHT}{Fore.BLUE}{Back.LIGHTWHITE_EX}{record.address.value[value_position[0]:value_position[1]]}{Style.RESET_ALL}"
+
+                        address = part1 + value_hightligted + part2
+                else:
+                    address = f"{Fore.BLUE}{record.address.value}{Style.RESET_ALL}"
+            else:
+                address = f"{Fore.WHITE}-{Style.RESET_ALL}"
         else:
             name = f"{Fore.CYAN}{record.name.value}{Style.RESET_ALL}"
             phones = f"{Fore.GREEN}{' | '.join((re.sub(pattern, replacement, p.value)) for p in record.phones)}{Style.RESET_ALL}" if record.phones else f"{Fore.WHITE}-{Style.RESET_ALL}"
             email = f"{Fore.YELLOW}{record.email.value}{Style.RESET_ALL}" if record.email else f"{Fore.WHITE}-{Style.RESET_ALL}"
             birthday = f"{Fore.MAGENTA}{str(record.birthday)}{Style.RESET_ALL}" if record.birthday else f"{Fore.WHITE}-{Style.RESET_ALL}"
-            address = f"{Fore.MAGENTA}{str(record.address)}{Style.RESET_ALL}" if record.address else f"{Fore.WHITE}-{Style.RESET_ALL}"
+            address = f"{Fore.BLUE}{str(record.address)}{Style.RESET_ALL}" if getattr(record, "address", None) else f"{Fore.WHITE}-{Style.RESET_ALL}"
+            # address = f"{Fore.MAGENTA}{str(record.address)}{Style.RESET_ALL}" if record.address else f"{Fore.WHITE}-{Style.RESET_ALL}"
 
         table_data.append([name, phones, email, birthday, address])
 

@@ -8,7 +8,7 @@ user commands and interact with the AddressBook and Record classes.
 import re
 from datetime import datetime, date
 from collections import Counter
-from colorama import init, Fore, Style, Back
+from colorama import init, Fore, Style
 from models.address_book import AddressBook
 from models.record import Record
 from models.notebook import NoteBook
@@ -139,48 +139,14 @@ def search_contacts(args, book: AddressBook):
         search_by_name = book.search_contacts_by_name(value)
         search_by_phone = book.search_contacts_by_phone(value)
         search_by_email = book.search_contacts_by_email(value)
-        # search_by_address = book.search_contacts_by_address(value)
+        search_by_address = book.search_contacts_by_address(value)
 
-        searchable_contacts = search_by_name.union(search_by_phone).union(search_by_email)
+        searchable_contacts = search_by_name.union(search_by_phone).union(search_by_email).union(search_by_address)
 
         if not searchable_contacts:
             return "No contacts found."
 
-        # display_contacts = display_search_contacts(searchable_contacts, value)
-
-        # return display_contacts
         return format_contact_table(searchable_contacts, value)
-
-# def display_search_contacts(contacts, value):
-#     """
-#     Display searched contacts.
-
-#     Args:
-#         contacts (set): The searches contacts (records)
-#         value (str): Searched value
-
-#     Returns:
-#         str: Formatted contact information
-#     """
-#     init()
-#     result_record_str = ""
-#     value_hightligted = Fore.RED + Style.BRIGHT + Back.YELLOW + value + Style.RESET_ALL
-
-#     for record in contacts:
-#         str_record = str(record)
-#         match = re.search(value, str_record)
-#         if match:
-#             # Get position index of value in the record string
-#             value_position = match.span()
-
-#             # Cut the record string before value and after value
-#             part1 = Style.BRIGHT + str_record[:value_position[0]] + Style.RESET_ALL
-#             part2 = Style.BRIGHT + str_record[value_position[1]:] + Style.RESET_ALL
-
-#             # Combine all parts in one result string, adding hightligted part
-#             result_record_str += "\n" + part1 + value_hightligted + part2
-
-#     return result_record_str
 
 
 @input_error
@@ -358,6 +324,7 @@ def show_upcoming_birthdays(args, book: AddressBook):
     lines = [f"{name}: {birthday}" for name, birthday in upcoming]
     return "\n".join(lines)
 
+
 @input_error
 def add_address(args, book: AddressBook):
     """
@@ -378,7 +345,8 @@ def add_address(args, book: AddressBook):
     if not record:
         return f"Contact '{name}' not found."
     record.add_address(address)
-    return f"Email '{address}' for contact '{name}' added successfully."
+    return f"Address '{address}' for contact '{name}' added successfully."
+
 
 @input_error
 def edit_address(args, book: AddressBook):
@@ -402,6 +370,7 @@ def edit_address(args, book: AddressBook):
     record.edit_address(address)
     return f"Email '{address}' for contact '{name}' changed successfully."
 
+
 @input_error
 def remove_address(args, book: AddressBook):
     """
@@ -423,7 +392,7 @@ def remove_address(args, book: AddressBook):
         return f"Contact '{name}' not found."
     record.remove_address()
     return f"Email successfully removed for contact '{name}'."
-    
+
 
 def parse_tags(tags_input):
     """
@@ -712,10 +681,10 @@ def list_notes(args, notebook: NoteBook):
 def _get_contacts_statistics(book: AddressBook) -> list[str]:
     """
     Get contacts statistics.
-    
+
     Args:
         book: AddressBook instance
-        
+
     Returns:
         list[str]: List of formatted contact statistics lines
     """
@@ -726,10 +695,10 @@ def _get_contacts_statistics(book: AddressBook) -> list[str]:
 def _get_notes_statistics(notebook: NoteBook) -> list[str]:
     """
     Get notes statistics including top tags.
-    
+
     Args:
         notebook: NoteBook instance
-        
+
     Returns:
         list[str]: List of formatted note statistics lines
     """
@@ -760,11 +729,11 @@ def _get_notes_statistics(notebook: NoteBook) -> list[str]:
 def _calculate_birthday_info(birthday_str: str, today: date) -> tuple[date | None, int | None, int | None]:
     """
     Calculate birthday information: next occurrence date, days until, and age.
-    
+
     Args:
         birthday_str: Birthday string in DD.MM.YYYY format
         today: Current date
-        
+
     Returns:
         tuple: (next_birthday_date, days_until, age) or (None, None, None) if parsing fails
     """
@@ -787,18 +756,18 @@ def _calculate_birthday_info(birthday_str: str, today: date) -> tuple[date | Non
     return (None, None, None)
 
 
-def _format_birthday_entry(name: str, birthday_str: str, bday_date: date | None, 
-                          days_until: int | None, age: int | None) -> str:
+def _format_birthday_entry(name: str, birthday_str: str, bday_date: date | None,
+                           days_until: int | None, age: int | None) -> str:
     """
     Format a single birthday entry for display.
-    
+
     Args:
         name: Contact name
         birthday_str: Original birthday string
         bday_date: Next birthday date
         days_until: Days until birthday
         age: Age that will be on birthday
-        
+
     Returns:
         str: Formatted birthday entry
     """
@@ -830,11 +799,11 @@ def _format_birthday_entry(name: str, birthday_str: str, bday_date: date | None,
 def _get_birthdays_statistics(book: AddressBook, days_ahead: int = 10) -> list[str]:
     """
     Get upcoming birthdays statistics.
-    
+
     Args:
         book: AddressBook instance
         days_ahead: Number of days ahead to look for birthdays
-        
+
     Returns:
         list[str]: List of formatted birthday statistics lines
     """
@@ -866,11 +835,11 @@ def _get_birthdays_statistics(book: AddressBook, days_ahead: int = 10) -> list[s
 def show_statistics(book: AddressBook, notebook: NoteBook):
     """
     Show comprehensive application statistics.
-    
+
     Args:
         book: AddressBook instance
         notebook: NoteBook instance
-        
+
     Returns:
         str: Formatted statistics
     """
@@ -878,7 +847,7 @@ def show_statistics(book: AddressBook, notebook: NoteBook):
 
     # Header
     stats.append(_header_line())
-    stats.append(f"{Fore.CYAN}{' '*25}{Style.BRIGHT}📊 STATISTICS{Style.RESET_ALL}")
+    stats.append(f"{Fore.CYAN}{' ' * 25}{Style.BRIGHT}📊 STATISTICS{Style.RESET_ALL}")
     stats.append(_header_line() + "\n")
 
     # Contacts statistics
