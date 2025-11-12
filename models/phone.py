@@ -39,8 +39,4 @@ class Phone(Field):
         if not (phone.isdigit() and len(phone) == Phone.PHONE_LEN):
             raise ValueError(f"""Phone number must be {Phone.PHONE_LEN} digits and contain only digits""")
 
-        # pattern = r"(\d{3})(\d{3})(\d{4})"
-        # replacement = r"(\1)\2-\3"
-        # formatted_phone = re.sub(pattern, replacement, phone)
-
         super().__init__(phone)
