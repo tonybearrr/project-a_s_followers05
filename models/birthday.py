@@ -6,6 +6,7 @@ birthday dates in the address book system.
 """
 
 from datetime import datetime
+from colorama import Fore, Style
 from .field import Field
 
 
@@ -39,7 +40,7 @@ class Birthday(Field):
             date_value = datetime.strptime(value, Birthday.DATE_FORMAT).date()
             super().__init__(date_value)
         except ValueError:
-            raise ValueError(f"""Invalid date format. Use {Birthday.DATE_FORMAT_DISPLAY} format.""")
+            raise ValueError(f"❌ Invalid date format. Use {Fore.MAGENTA}{Birthday.DATE_FORMAT_DISPLAY}{Style.RESET_ALL} format.")
 
     def __str__(self):
         """

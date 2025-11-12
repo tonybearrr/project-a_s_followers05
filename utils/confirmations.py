@@ -41,6 +41,6 @@ def confirm_delete(entity_type, entity_name):
     """
     message = (
         f"⚠️  {Fore.RED}Are you sure you want to delete {entity_type}"
-        f"{Style.RESET_ALL} {Fore.CYAN}'{entity_name}'{Style.RESET_ALL}?"
+        f"{Style.RESET_ALL} {Fore.CYAN}{entity_name}{Style.RESET_ALL}{Fore.RED}?{Style.RESET_ALL}"
     )
     return confirm_action(message, default=False)
