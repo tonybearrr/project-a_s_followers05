@@ -32,6 +32,7 @@ class Phone(Field):
         """
         # Clean the phone number (remove all non-digit characters)
         phone = re.sub(r"\D", "", value)
+
         if phone == Phone.EMPTY_PHONE:
             raise ValueError("Phone number cannot be empty")
 

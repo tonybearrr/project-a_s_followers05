@@ -61,7 +61,9 @@ class AddressBook(UserDict):
         Returns:
             Record or None: Contact record if found, None otherwise
         """
-        return self.data[name] if name in self.data else None
+        for record in self.data.values():
+            if name.lower() in record.name.value.lower():
+                return record
 
     def search_contacts_by_name(self, name):
         """
@@ -92,13 +94,13 @@ class AddressBook(UserDict):
         Returns:
             List of the records or None: List of the Contacts if found, None otherwise
         """
+        phone = re.sub(r"\D", "", phone)
 
         searched_records = []
 
         for record in self.data.values():
-            for r in record.phones:
-                match = re.search(phone, r.value)
-                if match:
+            for p in record.phones:
+                if phone.isdigit() and (re.search(phone, p.value)):
                     searched_records.append(record)
         return set(searched_records)
 
@@ -112,7 +114,6 @@ class AddressBook(UserDict):
         Returns:
             List of the records or None: List of the Contacts if found, None otherwise
         """
-
         searched_records = []
         email_lower = email.lower()
 
@@ -133,16 +134,16 @@ class AddressBook(UserDict):
         Returns:
             List of the records or None: List of the Contacts if found, None otherwise
         """
-        pass
-        # searched_records = []
-        # address_lower = address.lower()
+        searched_records = []
+        address_lower = address.lower()
 
-        # for record in self.data.values():
-        #     if record.address != None:
-        #         match = re.search(address_lower, record.address.value.lower())
-        #         if match:
-        #             searched_records.append(record)
-        # return set(searched_records)
+        for record in self.data.values():
+            # Check if the record has address attribute AND there is value in the address field
+            if hasattr(record, 'address') and record.address:
+                match = re.search(address_lower, record.address.value.lower())
+                if match:
+                    searched_records.append(record)
+        return set(searched_records)
 
     def get_upcoming_birthdays(
         self, days_ahead: int = 7, now_date: date = datetime.now().date()

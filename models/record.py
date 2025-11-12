@@ -2,7 +2,7 @@
 Record class for the address book.
 
 This module provides the Record class that represents a single contact
-with name, phone numbers, email, and birthday information.
+with name, phone numbers, email, address,and birthday information.
 """
 
 from .phone import Phone
@@ -16,12 +16,13 @@ class Record:
     """
     A record representing a single contact in the address book.
 
-    Contains contact information including name, phone numbers, email and birthday.
+    Contains contact information including name, phone numbers, email, address, and birthday.
 
     Attributes:
         name (Name): Contact's name
         phones (list): List of Phone objects
         email (Email, optional): Contact's email
+        address (Address, optional): Contact's address
         birthday (Birthday, optional): Contact's birthday
     """
 

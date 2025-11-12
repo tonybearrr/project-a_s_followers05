@@ -133,7 +133,7 @@ class TestGetOneContact:
         book.add_record(record)
         result = get_one_contact(["John Doe"], book)
         assert "John Doe" in result
-        assert "1234567890" in result
+        assert "(123)456-7890" in result
 
     def test_get_one_contact_no_phones(self):
         """Test getting contact without phones."""
