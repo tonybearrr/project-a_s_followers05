@@ -145,7 +145,6 @@ class AddressBook(UserDict):
                     searched_records.append(record)
         return set(searched_records)
 
-
     def get_upcoming_birthdays(
         self, days_ahead: int = 7, now_date: date = datetime.now().date()
     ):
