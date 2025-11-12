@@ -21,6 +21,7 @@ from utils.help_formatter import (
     format_help_category,
     _header_line
 )
+from utils.input_enhancer import setup_readline
 from storage.file_storage import load_data, save_data, load_notes, save_notes
 
 
@@ -130,6 +131,7 @@ def get_help_output(args):
 
 
 if __name__ == "__main__":
+    setup_readline(Command)
     book = load_data()
     notebook = load_notes()
     print(f"{_header_line()}")

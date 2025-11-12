@@ -106,7 +106,7 @@ def format_notes_table(notes, sort_by=None, reverse=True, note_numbers=None):
         # Use custom numbering if provided, otherwise use enumerate
         note_number = note_numbers.get(note, i) if note_numbers else i
         
-        text = note.text[:47] + "..." if len(note.text) > 50 else note.text
+        text = note.text[:50] + "..." if len(note.text) > 50 else note.text
         tags = ", ".join(note.tags) if note.tags else "-"
         created = note.created_at.strftime("%Y-%m-%d %H:%M") if hasattr(note.created_at, 'strftime') else str(note.created_at)
         updated = note.updated_at.strftime("%Y-%m-%d %H:%M") if hasattr(note.updated_at, 'strftime') else str(note.updated_at)

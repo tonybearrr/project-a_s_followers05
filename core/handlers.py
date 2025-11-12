@@ -747,7 +747,7 @@ def list_notes(args, notebook: NoteBook):
     notes = notebook.get_all_notes(sort_by=sort_by, reverse=reverse)
 
     if not notes:
-        return f"{Fore.YELLOW}No notes found.{Style.RESET_ALL}"
+        return "❌ No notes found."
 
     sort_labels = {
         "created": "by creation date",
