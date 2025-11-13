@@ -24,6 +24,12 @@ class TestParseInput:
         assert cmd == "add"
         assert args == ["John", "1234567890"]
 
+    def test_parse_command_with_leading_trailing_spaces(self):
+        """Test parsing command with leading and trailing spaces."""
+        cmd, *args = parse_input("   delete   John   ")
+        assert cmd == "delete"
+        assert args == ["John"]
+
     def test_parse_command_lowercase(self):
         """Test that command is converted to lowercase."""
         cmd, *_ = parse_input("HELLO")

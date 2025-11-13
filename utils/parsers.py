@@ -22,6 +22,9 @@ def parse_input(input_string):
 
     arguments = parts[1:]
 
+    for i in range(len(arguments)):
+        arguments[i] = arguments[i].strip()
+
     return cmd, *arguments
 
 
