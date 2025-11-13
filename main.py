@@ -18,8 +18,10 @@ from utils.parsers import parse_input, detect_command
 from utils.help_formatter import (
     format_help_full,
     format_help_short,
-    format_help_category
+    format_help_category,
+    _header_line
 )
+from utils.input_enhancer import setup_readline
 from storage.file_storage import load_data, save_data, load_notes, save_notes
 
 
@@ -35,9 +37,9 @@ def get_output_by_command(command, args, book, notebook):
     if command in (Command.EXIT_1, Command.EXIT_2):
         is_break_main_loop = True
         command_output = (
-            f"{Fore.CYAN}{'═'*70}{Style.RESET_ALL}\n"
+            f"{_header_line()}\n"
             f"{Fore.GREEN}{Style.BRIGHT}👋 Goodbye!{Style.RESET_ALL} {Fore.CYAN}Thank you for using the assistant bot!{Style.RESET_ALL}\n"
-            f"{Fore.CYAN}{'═'*70}{Style.RESET_ALL}"
+            f"{_header_line()}"
         )
     elif command == Command.HELLO:
         command_output = "How can I help you?"
@@ -81,7 +83,7 @@ def get_output_by_command(command, args, book, notebook):
         command_output = add_address(args, book)
     elif command == Command.CHANGE_ADDRESS:
         command_output = edit_address(args, book)
-    elif command == Command.REMOVE_ADDRESS:
+    elif command == Command.DELETE_ADDRESS:
         command_output = remove_address(args, book)
     elif command in Command.STATS:
         command_output = show_statistics(book, notebook)
@@ -114,12 +116,12 @@ def get_help_output(args):
                 command_output = format_help_category(first_arg)
             else:  # Unknown category
                 command_output = (
-                    f"{Fore.CYAN}{'═'*70}{Style.RESET_ALL}\n"
+                    f"{_header_line()}\n"
                     f"Unknown help category: {Fore.MAGENTA}'{args[0]}'{Style.RESET_ALL}\n"
                     f"Available categories: {Fore.BLUE}contacts{Style.RESET_ALL}, {Fore.BLUE}notes{Style.RESET_ALL}, {Fore.BLUE}birthdays{Style.RESET_ALL}, {Fore.BLUE}email{Style.RESET_ALL}\n"
                     f"Use {Fore.CYAN}'{Command.HELP} short'{Style.RESET_ALL} for quick reference\n"
                     f"Use {Fore.CYAN}'{Command.HELP}'{Style.RESET_ALL} for full help\n"
-                    f"{Fore.CYAN}{'═'*70}{Style.RESET_ALL}"
+                    f"{_header_line()}"
                 )
         else:
             command_output = format_help_full()
@@ -129,11 +131,12 @@ def get_help_output(args):
 
 
 if __name__ == "__main__":
+    setup_readline(Command)
     book = load_data()
     notebook = load_notes()
-    print(f"{Fore.CYAN}{'═'*70}{Style.RESET_ALL}")
-    print(f"{Fore.CYAN}{' '*20}{Style.BRIGHT}🤖 Welcome to the assistant bot!{Style.RESET_ALL}")
-    print(f"{Fore.CYAN}{'═'*70}{Style.RESET_ALL}\n")
+    print(f"{_header_line()}")
+    print(f"{Fore.CYAN}{' ' * 20}{Style.BRIGHT}🤖 Welcome to the assistant bot!{Style.RESET_ALL}")
+    print(f"{_header_line()}\n")
 
     while True:
         user_input = input(f"{Fore.GREEN}{Style.BRIGHT}➜{Style.RESET_ALL} {Fore.LIGHTYELLOW_EX}Enter a command:{Style.RESET_ALL} ")

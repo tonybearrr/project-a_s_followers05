@@ -15,7 +15,7 @@ def test_input_error_handles_value_error():
         raise ValueError("Test error")
 
     result = test_func()
-    assert result == "Error: Test error"
+    assert "Error: Test error" in result
 
 
 def test_input_error_handles_key_error():

@@ -121,6 +121,23 @@ def format_help_full():
     help_text.append("    Delete contact's email")
     help_text.append(f"    {Fore.YELLOW}Example:{Style.RESET_ALL} {Fore.GREEN}{Command.DELETE_EMAIL}{Style.RESET_ALL} {Fore.MAGENTA}\"John Doe\"{Style.RESET_ALL}\n")
 
+    # Address Commands
+    help_text.append(_section_line())
+    help_text.append(f"{Fore.YELLOW}{Style.BRIGHT}ADDRESS COMMANDS{Style.RESET_ALL}")
+    help_text.append(_section_line() + "\n")
+
+    help_text.append(f"  {Fore.GREEN}{Command.ADD_ADDRESS}{Style.RESET_ALL} {Fore.MAGENTA}<name>{Style.RESET_ALL} {Fore.MAGENTA}<address>{Style.RESET_ALL}")
+    help_text.append("    Add a contact's address")
+    help_text.append(f"    {Fore.YELLOW}Example:{Style.RESET_ALL} {Fore.GREEN}{Command.ADD_ADDRESS}{Style.RESET_ALL} {Fore.MAGENTA}\"John Doe\"{Style.RESET_ALL} {Fore.MAGENTA}456 Oak Avenue{Style.RESET_ALL}")
+
+    help_text.append(f"  {Fore.GREEN}{Command.CHANGE_ADDRESS}{Style.RESET_ALL} {Fore.MAGENTA}<name>{Style.RESET_ALL} {Fore.MAGENTA}<address>{Style.RESET_ALL}")
+    help_text.append("    Change a contact's address")
+    help_text.append(f"    {Fore.YELLOW}Example:{Style.RESET_ALL} {Fore.GREEN}{Command.ADD_ADDRESS}{Style.RESET_ALL} {Fore.MAGENTA}\"John Doe\"{Style.RESET_ALL} {Fore.MAGENTA}315 Linkoln Street{Style.RESET_ALL}")
+
+    help_text.append(f"  {Fore.GREEN}{Command.DELETE_ADDRESS}{Style.RESET_ALL} {Fore.MAGENTA}<name>{Style.RESET_ALL}")
+    help_text.append("    Remove a contact's address")
+    help_text.append(f"    {Fore.YELLOW}Example:{Style.RESET_ALL} {Fore.GREEN}{Command.ADD_ADDRESS}{Style.RESET_ALL} {Fore.MAGENTA}\"John Doe\"{Style.RESET_ALL}")
+
     # Note Commands
     help_text.append(_section_line())
     help_text.append(f"{Fore.YELLOW}{Style.BRIGHT}NOTE COMMANDS{Style.RESET_ALL}")
@@ -150,23 +167,6 @@ def format_help_full():
     help_text.append(f"  {Fore.GREEN}{Command.DELETE_NOTE}{Style.RESET_ALL} {Fore.MAGENTA}<id>{Style.RESET_ALL}")
     help_text.append("     Delete a note by ID or number")
     help_text.append(f"    {Fore.YELLOW}Example:{Style.RESET_ALL} {Fore.GREEN}{Command.DELETE_NOTE}{Style.RESET_ALL} {Fore.MAGENTA}1{Style.RESET_ALL}\n")
-
-# Address Commands
-    help_text.append(_section_line())
-    help_text.append(f"{Fore.YELLOW}{Style.BRIGHT}ADDRESS COMMANDS{Style.RESET_ALL}")
-    help_text.append(_section_line() + "\n")
-
-    help_text.append(f"  {Fore.GREEN}{Command.ADD_ADDRESS}{Style.RESET_ALL} {Fore.MAGENTA}<name>{Style.RESET_ALL} {Fore.MAGENTA}<address>{Style.RESET_ALL}")
-    help_text.append("    Add a contact's address")
-    help_text.append(f"    {Fore.YELLOW}Example:{Style.RESET_ALL} {Fore.GREEN}{Command.ADD_ADDRESS}{Style.RESET_ALL} {Fore.MAGENTA}\"John Doe\"{Style.RESET_ALL} {Fore.MAGENTA}456 Oak Avenue{Style.RESET_ALL}")
-
-    help_text.append(f"  {Fore.GREEN}{Command.CHANGE_ADDRESS}{Style.RESET_ALL} {Fore.MAGENTA}<name>{Style.RESET_ALL} {Fore.MAGENTA}<address>{Style.RESET_ALL}")
-    help_text.append("    Change a contact's address")
-    help_text.append(f"    {Fore.YELLOW}Example:{Style.RESET_ALL} {Fore.GREEN}{Command.ADD_ADDRESS}{Style.RESET_ALL} {Fore.MAGENTA}\"John Doe\"{Style.RESET_ALL} {Fore.MAGENTA}315 Linkoln Street{Style.RESET_ALL}")
-
-    help_text.append(f"  {Fore.GREEN}{Command.REMOVE_ADDRESS}{Style.RESET_ALL} {Fore.MAGENTA}<name>{Style.RESET_ALL}")
-    help_text.append("    Remove a contact's address")
-    help_text.append(f"    {Fore.YELLOW}Example:{Style.RESET_ALL} {Fore.GREEN}{Command.ADD_ADDRESS}{Style.RESET_ALL} {Fore.MAGENTA}\"John Doe\"{Style.RESET_ALL}")
 
 
     # Tips
@@ -214,7 +214,7 @@ def format_help_short():
     help_text.append(f"  {Command.SEARCH_TAGS}, {Command.EDIT_NOTE}, {Command.DELETE_NOTE}")
 
     help_text.append(f"\n{Fore.YELLOW}{Style.BRIGHT}Address:{Style.RESET_ALL}")
-    help_text.append(f"  {Command.ADD_ADDRESS}, {Command.CHANGE_ADDRESS}, {Command.REMOVE_ADDRESS}")
+    help_text.append(f"  {Command.ADD_ADDRESS}, {Command.CHANGE_ADDRESS}, {Command.DELETE_ADDRESS}")
 
     help_text.append(f"\n{Fore.YELLOW}{Style.BRIGHT}System:{Style.RESET_ALL}")
     help_text.append(f"  {Command.HELLO}, {Command.HELP}, {Command.STATS}, {Command.EXIT_1}, {Command.EXIT_2}")
@@ -429,9 +429,9 @@ def format_address_help():
     help_text.append(f"    {Fore.YELLOW}Example:{Style.RESET_ALL} {Fore.GREEN}{Command.CHANGE_ADDRESS}{Style.RESET_ALL} {Fore.MAGENTA}\"John Doe\"{Style.RESET_ALL} {Fore.MAGENTA}789 Pine Road Suite 100{Style.RESET_ALL}")
     help_text.append(f"    {Fore.CYAN}Note:{Style.RESET_ALL} Replaces existing address with new one\n")
 
-    help_text.append(f"  {Fore.GREEN}{Command.REMOVE_ADDRESS}{Style.RESET_ALL} {Fore.MAGENTA}<name>{Style.RESET_ALL}")
+    help_text.append(f"  {Fore.GREEN}{Command.DELETE_ADDRESS}{Style.RESET_ALL} {Fore.MAGENTA}<name>{Style.RESET_ALL}")
     help_text.append("    Delete contact's address")
-    help_text.append(f"    {Fore.YELLOW}Example:{Style.RESET_ALL} {Fore.GREEN}{Command.REMOVE_ADDRESS}{Style.RESET_ALL} {Fore.MAGENTA}\"John Doe\"{Style.RESET_ALL}")
+    help_text.append(f"    {Fore.YELLOW}Example:{Style.RESET_ALL} {Fore.GREEN}{Command.DELETE_ADDRESS}{Style.RESET_ALL} {Fore.MAGENTA}\"John Doe\"{Style.RESET_ALL}")
     help_text.append(f"    {Fore.CYAN}Note:{Style.RESET_ALL} Removes address from contact (contact remains)\n")
 
     help_text.append(f"{_header_line()}\n")

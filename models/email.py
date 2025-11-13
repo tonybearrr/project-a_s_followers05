@@ -5,6 +5,7 @@ This module provides the Email class for storing and validating
 email addresses in the address book system.
 """
 import re
+from colorama import Fore, Style
 from .field import Field
 
 
@@ -37,6 +38,6 @@ class Email(Field):
         email = value.strip().lower()
 
         if not Email.EMAIL_PATTERN.match(email):
-            raise ValueError("Invalid email format. Use format: user@domain.com")
+            raise ValueError(f"Invalid email format. Use format: {Fore.YELLOW}user@domain.com{Style.RESET_ALL}")
 
         super().__init__(email)

@@ -65,7 +65,7 @@ def format_contact_table(records, value=None):
     return tabulate(table_data, headers=headers, tablefmt="rounded_outline")
 
 
-def format_notes_table(notes, sort_by=None, reverse=True):
+def format_notes_table(notes, sort_by=None, reverse=True, note_numbers=None):
     """
     Format notes as a simple table.
     
@@ -73,6 +73,7 @@ def format_notes_table(notes, sort_by=None, reverse=True):
         notes: List of Note objects
         sort_by: Optional sort column name (created, updated, text, tags)
         reverse: Sort direction (True for descending ↓, False for ascending ↑)
+        note_numbers: Optional dict mapping note._uuid to note number for custom numbering
         
     Returns:
         str: Formatted table string
@@ -102,12 +103,15 @@ def format_notes_table(notes, sort_by=None, reverse=True):
     table_data = []
 
     for i, note in enumerate(notes, 1):
-        text = note.text[:47] + "..." if len(note.text) > 50 else note.text
+        # Use custom numbering if provided, otherwise use enumerate
+        note_number = note_numbers.get(note, i) if note_numbers else i
+        
+        text = note.text[:50] + "..." if len(note.text) > 50 else note.text
         tags = ", ".join(note.tags) if note.tags else "-"
         created = note.created_at.strftime("%Y-%m-%d %H:%M") if hasattr(note.created_at, 'strftime') else str(note.created_at)
         updated = note.updated_at.strftime("%Y-%m-%d %H:%M") if hasattr(note.updated_at, 'strftime') else str(note.updated_at)
 
-        num = f"{Fore.GREEN}{i}{Style.RESET_ALL}"
+        num = f"{Fore.GREEN}{note_number}{Style.RESET_ALL}"
         text_colored = f"{Fore.WHITE}{text}{Style.RESET_ALL}"
         tags_colored = f"{Fore.CYAN}{tags}{Style.RESET_ALL}" if note.tags else f"{Fore.WHITE}-{Style.RESET_ALL}"
         created_colored = f"{Fore.BLUE}{created}{Style.RESET_ALL}"

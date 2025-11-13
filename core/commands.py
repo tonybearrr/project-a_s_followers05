@@ -31,4 +31,4 @@ class Command(StrEnum):
     STATS = "stats"
     ADD_ADDRESS = "add-address"
     CHANGE_ADDRESS = "change-address"
-    REMOVE_ADDRESS = "remove-address"
+    DELETE_ADDRESS = "delete-address"
