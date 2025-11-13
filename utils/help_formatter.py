@@ -132,11 +132,11 @@ def format_help_full():
 
     help_text.append(f"  {Fore.GREEN}{Command.CHANGE_ADDRESS}{Style.RESET_ALL} {Fore.MAGENTA}<name>{Style.RESET_ALL} {Fore.MAGENTA}<address>{Style.RESET_ALL}")
     help_text.append("    Change a contact's address")
-    help_text.append(f"    {Fore.YELLOW}Example:{Style.RESET_ALL} {Fore.GREEN}{Command.ADD_ADDRESS}{Style.RESET_ALL} {Fore.MAGENTA}\"John Doe\"{Style.RESET_ALL} {Fore.MAGENTA}315 Linkoln Street{Style.RESET_ALL}")
+    help_text.append(f"    {Fore.YELLOW}Example:{Style.RESET_ALL} {Fore.GREEN}{Command.CHANGE_ADDRESS}{Style.RESET_ALL} {Fore.MAGENTA}\"John Doe\"{Style.RESET_ALL} {Fore.MAGENTA}315 Linkoln Street{Style.RESET_ALL}")
 
     help_text.append(f"  {Fore.GREEN}{Command.DELETE_ADDRESS}{Style.RESET_ALL} {Fore.MAGENTA}<name>{Style.RESET_ALL}")
     help_text.append("    Remove a contact's address")
-    help_text.append(f"    {Fore.YELLOW}Example:{Style.RESET_ALL} {Fore.GREEN}{Command.ADD_ADDRESS}{Style.RESET_ALL} {Fore.MAGENTA}\"John Doe\"{Style.RESET_ALL}")
+    help_text.append(f"    {Fore.YELLOW}Example:{Style.RESET_ALL} {Fore.GREEN}{Command.DELETE_ADDRESS}{Style.RESET_ALL} {Fore.MAGENTA}\"John Doe\"{Style.RESET_ALL}")
 
     # Note Commands
     help_text.append(_section_line())
@@ -316,7 +316,7 @@ def format_notes_help():
     help_text.append(f"    {Fore.CYAN}Sort options:{Style.RESET_ALL}")
     help_text.append("      - created: Sort by creation date (newest first)")
     help_text.append("      - updated: Sort by last update date (newest first)")
-    help_text.append("      - tags: Sort alphabetically by first tag\n")
+    help_text.append("      - tags: Sort alphabetically by first tag")
     help_text.append("      - text: Sort alphabetically by text")
 
     help_text.append(f"  {Fore.GREEN}{Command.SEARCH_NOTES}{Style.RESET_ALL} {Fore.MAGENTA}<query>{Style.RESET_ALL}")
@@ -328,7 +328,6 @@ def format_notes_help():
     help_text.append(f"  {Fore.GREEN}{Command.SEARCH_TAGS}{Style.RESET_ALL} {Fore.MAGENTA}<tags>{Style.RESET_ALL}")
     help_text.append("    Search notes by specific tags only")
     help_text.append(f"    {Fore.YELLOW}Example:{Style.RESET_ALL} {Fore.GREEN}{Command.SEARCH_TAGS}{Style.RESET_ALL} {Fore.MAGENTA}work important{Style.RESET_ALL}")
-    help_text.append(f"    {Fore.YELLOW}Example:{Style.RESET_ALL} {Fore.GREEN}{Command.SEARCH_TAGS}{Style.RESET_ALL} {Fore.MAGENTA}work,important{Style.RESET_ALL}")
     help_text.append(f"    {Fore.CYAN}Note:{Style.RESET_ALL} Tags can be separated by commas or spaces\n")
 
     help_text.append(f"  {Fore.GREEN}{Command.EDIT_NOTE}{Style.RESET_ALL} {Fore.MAGENTA}<id>{Style.RESET_ALL} {Fore.MAGENTA}<text>{Style.RESET_ALL} {Fore.BLUE}[tags]{Style.RESET_ALL}")
@@ -357,7 +356,6 @@ def format_birthdays_help():
 
     help_text.append(f"  {Fore.GREEN}{Command.ADD_BIRTHDAY}{Style.RESET_ALL} {Fore.MAGENTA}<name>{Style.RESET_ALL} {Fore.MAGENTA}<{Birthday.DATE_FORMAT_DISPLAY}>{Style.RESET_ALL}")
     help_text.append("    Add or update contact's birthday")
-    help_text.append(f"    {Fore.YELLOW}Example:{Style.RESET_ALL} {Fore.GREEN}{Command.ADD_BIRTHDAY}{Style.RESET_ALL} {Fore.MAGENTA}\"John Doe\"{Style.RESET_ALL} {Fore.MAGENTA}01.01.1990{Style.RESET_ALL}")
     help_text.append(f"    {Fore.YELLOW}Example:{Style.RESET_ALL} {Fore.GREEN}{Command.ADD_BIRTHDAY}{Style.RESET_ALL} {Fore.MAGENTA}\"Jane Smith\"{Style.RESET_ALL} {Fore.MAGENTA}15.03.1985{Style.RESET_ALL}")
     help_text.append(f"    {Fore.CYAN}Format:{Style.RESET_ALL} {Birthday.DATE_FORMAT_DISPLAY} (DD.MM.YYYY)")
     help_text.append(f"    {Fore.CYAN}Note:{Style.RESET_ALL} Use quotes for names with spaces\n")
@@ -389,7 +387,6 @@ def format_email_help():
 
     help_text.append(f"  {Fore.GREEN}{Command.ADD_EMAIL}{Style.RESET_ALL} {Fore.MAGENTA}<name>{Style.RESET_ALL} {Fore.MAGENTA}<email>{Style.RESET_ALL}")
     help_text.append("    Add or update contact's email address")
-    help_text.append(f"    {Fore.YELLOW}Example:{Style.RESET_ALL} {Fore.GREEN}{Command.ADD_EMAIL}{Style.RESET_ALL} {Fore.MAGENTA}\"John Doe\"{Style.RESET_ALL} {Fore.MAGENTA}john@example.com{Style.RESET_ALL}")
     help_text.append(f"    {Fore.YELLOW}Example:{Style.RESET_ALL} {Fore.GREEN}{Command.ADD_EMAIL}{Style.RESET_ALL} {Fore.MAGENTA}\"Jane Smith\"{Style.RESET_ALL} {Fore.MAGENTA}jane.smith@company.com{Style.RESET_ALL}")
     help_text.append(f"    {Fore.CYAN}Note:{Style.RESET_ALL} Email must be in valid format (user@domain.com)")
     help_text.append(f"    {Fore.CYAN}Note:{Style.RESET_ALL} Each contact can have only one email")
@@ -418,8 +415,7 @@ def format_address_help():
 
     help_text.append(f"  {Fore.GREEN}{Command.ADD_ADDRESS}{Style.RESET_ALL} {Fore.MAGENTA}<name>{Style.RESET_ALL} {Fore.MAGENTA}<address>{Style.RESET_ALL}")
     help_text.append("    Add or update contact's address")
-    help_text.append(f"    {Fore.YELLOW}Example:{Style.RESET_ALL} {Fore.GREEN}{Command.ADD_ADDRESS}{Style.RESET_ALL} {Fore.MAGENTA}\"John Doe\"{Style.RESET_ALL} {Fore.MAGENTA}123 Main Street{Style.RESET_ALL}")
-    help_text.append(f"    {Fore.YELLOW}Example:{Style.RESET_ALL} {Fore.GREEN}{Command.ADD_ADDRESS}{Style.RESET_ALL} {Fore.MAGENTA}\"Jane Smith\"{Style.RESET_ALL} {Fore.MAGENTA}456 Oak Avenue{Style.RESET_ALL}")
+    help_text.append(f"    {Fore.YELLOW}Example:{Style.RESET_ALL} {Fore.GREEN}{Command.ADD_ADDRESS}{Style.RESET_ALL} {Fore.MAGENTA}\"John Doe\"{Style.RESET_ALL} {Fore.MAGENTA}456 Oak Avenue{Style.RESET_ALL}")
     help_text.append(f"    {Fore.CYAN}Note:{Style.RESET_ALL} Address can contain multiple words")
     help_text.append(f"    {Fore.CYAN}Note:{Style.RESET_ALL} Each contact can have only one address")
     help_text.append(f"    {Fore.CYAN}Note:{Style.RESET_ALL} Updating address replaces the existing one\n")
