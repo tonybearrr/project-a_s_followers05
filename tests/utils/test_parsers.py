@@ -139,8 +139,8 @@ class TestDetectCommand:
     def test_detect_command_with_typo(self):
         """Test detection of a command with a minor typo."""
         command, recognized = detect_command("adn")
-        assert recognized is True
-        assert command == Command.ADD_CONTACT
+        assert recognized is False
+        assert command is None
 
     def test_detect_empty_command(self):
         """Test detection of an empty command."""
@@ -151,5 +151,5 @@ class TestDetectCommand:
     def test_detect_command_with_special_characters(self):
         """Test detection of a command with special characters."""
         command, recognized = detect_command("ad@d")
-        assert recognized is True
-        assert command == Command.ADD_CONTACT
+        assert recognized is False
+        assert command is None

@@ -124,7 +124,7 @@ python main.py
 
 | Команда | Опис | Приклад |
 |---------|------|---------|
-| `add-email` | Додати email | `add-email "John Doe" john@example.com` |
+| `set-email` | Встановити email | `set-email "John Doe" john@example.com` |
 | `show-email` | Показати email | `show-email "John Doe"` |
 | `delete-email` | Видалити email | `delete-email "John Doe"` |
 
@@ -132,17 +132,18 @@ python main.py
 
 | Команда | Опис | Приклад |
 |---------|------|---------|
-| `add-birthday` | Додати день народження | `add-birthday "John Doe" 15.03.1990` |
+| `set-birthday` | Встановити день народження | `set-birthday "John Doe" 15.03.1990` |
 | `show-birthday` | Показати день народження | `show-birthday "John Doe"` |
+| `delete-birthday` | Видалити день народження | `delete-birthday "John Doe"` |
 | `birthdays` | Майбутні дні народження | `birthdays 7` |
 
 ### Адреси
 
 | Команда | Опис | Приклад |
 |---------|------|---------|
-| `add-address` | Додати адресу | `add-address "John Doe" "123 Main St"` |
-| `change-address` | Змінити адресу | `change-address "John Doe" "456 New Ave"` |
-| `remove-address` | Видалити адресу | `remove-address "John Doe"` |
+| `set-address` | Встановити адресу | `set-address "John Doe" "123 Main St"` |
+| `show-address` | Показати адресу | `show-address "John Doe"` |
+| `delete-address` | Видалити адресу | `delete-address "John Doe"` |
 
 ### Нотатки
 
@@ -188,13 +189,13 @@ list-notes tags d       # За тегами (зворотно)
 ➜ Enter a command: add "Alice Smith" 0501234567
 Contact 'Alice Smith' with phone '0501234567' added successfully.
 
-➜ Enter a command: add-email "Alice Smith" alice@example.com
+➜ Enter a command: set-email "Alice Smith" alice@example.com
 Email 'alice@example.com' added for contact 'Alice Smith'.
 
-➜ Enter a command: add-birthday "Alice Smith" 20.05.1985
+➜ Enter a command: set-birthday "Alice Smith" 20.05.1985
 Birthday added for Alice Smith: 20.05.1985
 
-➜ Enter a command: add-address "Alice Smith" "123 Main Street, Kyiv"
+➜ Enter a command: set-address "Alice Smith" "123 Main Street, Kyiv"
 Address added for Alice Smith: 123 Main Street, Kyiv
 ```
 
@@ -402,6 +403,7 @@ tests/
 
 ## 🔗 Посилання
 
+- **Презентація Проєкту**: [https://tonybearrr.github.io/project-a_s_followers05/](https://tonybearrr.github.io/project-a_s_followers05/)
 - **GitHub**: [https://github.com/tonybearrr/project-a_s_followers05](https://github.com/tonybearrr/project-a_s_followers05)
 - **Email**: [tonybear.bb@gmail.com](mailto:tonybear.bb@gmail.com)
 

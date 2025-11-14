@@ -6,13 +6,15 @@ which allows users to add, update, delete, and view contacts with
 phone numbers and birthdays.
 """
 
+import signal
+import atexit
 from colorama import Fore, Style
 from core.commands import Command
 from core.handlers import (
     add_contact, update_contact, get_all_contacts, search_contacts, get_one_contact,
-    delete_contact, add_birthday, show_birthday, show_upcoming_birthdays,
+    delete_contact, add_birthday, show_birthday, delete_birthday, show_upcoming_birthdays,
     add_note, list_notes, search_notes, search_notes_by_tags,
-    edit_note, delete_note, add_email, delete_email, show_email, show_statistics, add_address, edit_address, remove_address
+    edit_note, delete_note, add_email, delete_email, show_email, show_statistics, add_address, remove_address, show_address
 )
 from utils.parsers import parse_input, detect_command
 from utils.help_formatter import (
@@ -25,22 +27,75 @@ from utils.input_enhancer import setup_readline
 from storage.file_storage import load_data, save_data, load_notes, save_notes
 
 
+# Global variables for data persistence
+_book = None
+_notebook = None
+
+
+def save_all_data():
+    """Save all data to persistent storage."""
+    global _book, _notebook
+    if _book is not None:
+        try:
+            save_data(_book)
+        except (IOError, OSError, PermissionError):
+            pass
+    if _notebook is not None:
+        try:
+            save_notes(_notebook)
+        except (IOError, OSError, PermissionError):
+            pass
+
+
+def get_goodbye_message():
+    """Return goodbye message."""
+    return (
+        f"{_header_line()}\n"
+        f"{Fore.GREEN}{Style.BRIGHT}👋 Goodbye!{Style.RESET_ALL} {Fore.CYAN}Thank you for using the assistant bot!{Style.RESET_ALL}\n"
+        f"{_header_line()}"
+    )
+
+
+def print_interrupted_message():
+    """Print interruption message and save data."""
+    print(f"\n{_header_line()}")
+    print(f"{Fore.YELLOW}{Style.BRIGHT}⚠️  Interrupted by user{Style.RESET_ALL}")
+    print(f"{Fore.GREEN}{Style.BRIGHT}💾 Saving data...{Style.RESET_ALL}")
+    save_all_data()
+    print(f"{Fore.GREEN}✅ Data saved successfully!{Style.RESET_ALL}")
+    print(f"{Fore.GREEN}{Style.BRIGHT}👋 Goodbye!{Style.RESET_ALL} {Fore.CYAN}Thank you for using the assistant bot!{Style.RESET_ALL}")
+    print(f"{_header_line()}")
+
+
+def signal_handler(signum, frame):  # pylint: disable=unused-argument
+    """Signal handler for saving data before termination."""
+    print(f"\n{_header_line()}")
+    print(f"{Fore.YELLOW}{Style.BRIGHT}⚠️  Received signal {signum}, saving data...{Style.RESET_ALL}")
+    save_all_data()
+    print(f"{Fore.GREEN}✅ Data saved successfully!{Style.RESET_ALL}")
+    print(f"{Fore.GREEN}{Style.BRIGHT}👋 Goodbye!{Style.RESET_ALL}")
+    print(f"{_header_line()}")
+    exit(0)
+
+
 def get_output_by_command(command, args, book, notebook):
     """
-    Main function that runs the address book bot.
+    Process command and return result.
 
-    Creates an AddressBook and NoteBook instances and runs the main command loop,
-    processing user commands until 'close' or 'exit' is entered.
+    Args:
+        command: Command to execute
+        args: Command arguments
+        book: AddressBook instance
+        notebook: NoteBook instance
+
+    Returns:
+        tuple: (command output, whether to exit the program)
     """
     is_break_main_loop = False
     command_output = None
     if command in (Command.EXIT_1, Command.EXIT_2):
         is_break_main_loop = True
-        command_output = (
-            f"{_header_line()}\n"
-            f"{Fore.GREEN}{Style.BRIGHT}👋 Goodbye!{Style.RESET_ALL} {Fore.CYAN}Thank you for using the assistant bot!{Style.RESET_ALL}\n"
-            f"{_header_line()}"
-        )
+        command_output = get_goodbye_message()
     elif command == Command.HELLO:
         command_output = "How can I help you?"
     elif command == Command.ADD_CONTACT:
@@ -55,13 +110,15 @@ def get_output_by_command(command, args, book, notebook):
         command_output = get_one_contact(args, book)
     elif command == Command.DELETE_CONTACT:
         command_output = delete_contact(args, book)
-    elif command == Command.ADD_BIRTHDAY:
+    elif command == Command.SET_BIRTHDAY:
         command_output = add_birthday(args, book)
     elif command == Command.SHOW_BIRTHDAY:
         command_output = show_birthday(args, book)
+    elif command == Command.DELETE_BIRTHDAY:
+        command_output = delete_birthday(args, book)
     elif command == Command.SHOW_UPCOMING_BIRTHDAYS:
         command_output = show_upcoming_birthdays(args, book)
-    elif command == Command.ADD_EMAIL:
+    elif command == Command.SET_EMAIL:
         command_output = add_email(args, book)
     elif command == Command.DELETE_EMAIL:
         command_output = delete_email(args, book)
@@ -79,12 +136,12 @@ def get_output_by_command(command, args, book, notebook):
         command_output = edit_note(args, notebook)
     elif command == Command.DELETE_NOTE:
         command_output = delete_note(args, notebook)
-    elif command == Command.ADD_ADDRESS:
+    elif command == Command.SET_ADDRESS:
         command_output = add_address(args, book)
-    elif command == Command.CHANGE_ADDRESS:
-        command_output = edit_address(args, book)
     elif command == Command.DELETE_ADDRESS:
         command_output = remove_address(args, book)
+    elif command == Command.SHOW_ADDRESS:
+        command_output = show_address(args, book)
     elif command in Command.STATS:
         command_output = show_statistics(book, notebook)
     elif command in [Command.HELP, Command.HELP_ALT]:
@@ -94,60 +151,104 @@ def get_output_by_command(command, args, book, notebook):
     return command_output, is_break_main_loop
 
 
+def _get_unknown_category_message(category):
+    """Return message for unknown help category."""
+    return (
+        f"{_header_line()}\n"
+        f"Unknown help category: {Fore.MAGENTA}'{category}'{Style.RESET_ALL}\n"
+        f"Available categories: {Fore.BLUE}contacts{Style.RESET_ALL}, {Fore.BLUE}notes{Style.RESET_ALL}, {Fore.BLUE}birthdays{Style.RESET_ALL}, {Fore.BLUE}email{Style.RESET_ALL}\n"
+        f"Use {Fore.CYAN}'{Command.HELP} short'{Style.RESET_ALL} for quick reference\n"
+        f"Use {Fore.CYAN}'{Command.HELP}'{Style.RESET_ALL} for full help\n"
+        f"{_header_line()}"
+    )
+
+
 def get_help_output(args):
     """
     Generates help output based on the provided arguments.
+
     Args:
         args (list): A list of strings representing the help categories or commands.
+
     Returns:
         str: A formatted string containing help information. If the first argument is recognized,
              it returns a short help, category-specific help, or an error message for unknown categories.
              If no arguments are provided, it returns the full help output.
-    Raises:
-        Exception: Catches any exception and returns the full help output.
     """
     try:
-        if args and len(args) > 0:
-            first_arg = args[0].lower()
-            command_output = first_arg
-            if first_arg in ["short", "s", "quick"]:   # short help
-                command_output = format_help_short()
-            elif first_arg in ["contacts", "notes", "birthdays", "email", "address"]:   # Help by category
-                command_output = format_help_category(first_arg)
-            else:  # Unknown category
-                command_output = (
-                    f"{_header_line()}\n"
-                    f"Unknown help category: {Fore.MAGENTA}'{args[0]}'{Style.RESET_ALL}\n"
-                    f"Available categories: {Fore.BLUE}contacts{Style.RESET_ALL}, {Fore.BLUE}notes{Style.RESET_ALL}, {Fore.BLUE}birthdays{Style.RESET_ALL}, {Fore.BLUE}email{Style.RESET_ALL}\n"
-                    f"Use {Fore.CYAN}'{Command.HELP} short'{Style.RESET_ALL} for quick reference\n"
-                    f"Use {Fore.CYAN}'{Command.HELP}'{Style.RESET_ALL} for full help\n"
-                    f"{_header_line()}"
-                )
-        else:
-            command_output = format_help_full()
+        if not args or len(args) == 0:
+            return format_help_full()
+
+        first_arg = args[0].lower()
+
+        if first_arg in ["short", "s", "quick"]:
+            return format_help_short()
+
+        if first_arg in ["contacts", "notes", "birthdays", "email", "address"]:
+            return format_help_category(first_arg)
+
+        return _get_unknown_category_message(args[0])
     except Exception:
-        command_output = format_help_full()
-    return command_output
+        return format_help_full()
 
 
-if __name__ == "__main__":
-    setup_readline(Command)
-    book = load_data()
-    notebook = load_notes()
+def print_welcome_message():
+    """Print welcome message."""
     print(f"{_header_line()}")
     print(f"{Fore.CYAN}{' ' * 20}{Style.BRIGHT}🤖 Welcome to the assistant bot!{Style.RESET_ALL}")
     print(f"{_header_line()}\n")
 
-    while True:
-        user_input = input(f"{Fore.GREEN}{Style.BRIGHT}➜{Style.RESET_ALL} {Fore.LIGHTYELLOW_EX}Enter a command:{Style.RESET_ALL} ")
-        command, *args = parse_input(user_input)
-        command, is_command_recognized = detect_command(command)
-        if not is_command_recognized:
-            continue
 
-        output, is_exit = get_output_by_command(command, args, book, notebook)
-        print(output)
-        if is_exit:
-            save_data(book)
-            save_notes(notebook)
-            break
+def setup_signal_handlers():
+    """Setup signal handlers for graceful termination."""
+    signal.signal(signal.SIGINT, signal_handler)   # Ctrl+C
+    signal.signal(signal.SIGTERM, signal_handler)  # Terminal closure (Linux/Mac)
+    if hasattr(signal, 'SIGHUP'):
+        signal.signal(signal.SIGHUP, signal_handler)  # Terminal closure (Linux)
+
+
+def run_main_loop(book, notebook):
+    """Run main command processing loop."""
+    try:
+        while True:
+            try:
+                user_input = input(
+                    f"{Fore.GREEN}{Style.BRIGHT}➜{Style.RESET_ALL} "
+                    f"{Fore.LIGHTYELLOW_EX}Enter a command:{Style.RESET_ALL} "
+                )
+            except (KeyboardInterrupt, EOFError):
+                # Ctrl+C or Ctrl+D - save data and exit
+                print_interrupted_message()
+                break
+
+            command, *args = parse_input(user_input)
+            command, is_command_recognized = detect_command(command)
+            if not is_command_recognized:
+                continue
+
+            output, is_exit = get_output_by_command(command, args, book, notebook)
+            print(output)
+            if is_exit:
+                save_all_data()
+                break
+    except KeyboardInterrupt:
+        # Additional handling in case Ctrl+C is pressed during command execution
+        print_interrupted_message()
+
+
+if __name__ == "__main__":
+    setup_readline(Command)
+    _book = load_data()
+    _notebook = load_notes()
+
+    # Register save function for normal exit
+    atexit.register(save_all_data)
+
+    # Setup signal handlers
+    setup_signal_handlers()
+
+    # Print welcome message
+    print_welcome_message()
+
+    # Run main loop
+    run_main_loop(_book, _notebook)

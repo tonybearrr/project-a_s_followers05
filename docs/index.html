@@ -1241,11 +1241,12 @@
 
       .diagram-wrapper {
         position: relative;
-        overflow: auto;
+        overflow: hidden;
         max-height: 70vh;
         cursor: grab;
         background: #0d1117;
         border-radius: 4px;
+        user-select: none;
       }
 
       .diagram-wrapper:active {
@@ -1254,6 +1255,14 @@
 
       .diagram-wrapper.dragging {
         cursor: grabbing;
+      }
+      
+      .diagram-wrapper .mermaid {
+        transition: transform 0.1s ease-out;
+      }
+      
+      .diagram-wrapper.dragging .mermaid {
+        transition: none;
       }
 
       .diagram-zoom-controls {
@@ -1641,21 +1650,21 @@
                 <span class="comment"># Додавання email</span>
               </div>
               <div class="output">
-                <span class="prompt">➜</span> <span class="yellow">Enter a command:</span> <span class="command">add-email "Alice Smith" alice@example.com</span>
+                <span class="prompt">➜</span> <span class="yellow">Enter a command:</span> <span class="command">set-email "Alice Smith" alice@example.com</span>
               </div>
               <div class="output success">Email 'alice@example.com' added for contact 'Alice Smith'.</div>
               <div class="output">
                 <span class="comment"># Додавання дня народження</span>
               </div>
               <div class="output">
-                <span class="prompt">➜</span> <span class="yellow">Enter a command:</span> <span class="command">add-birthday "Alice Smith" 20.05.1985</span>
+                <span class="prompt">➜</span> <span class="yellow">Enter a command:</span> <span class="command">set-birthday "Alice Smith" 20.05.1985</span>
               </div>
               <div class="output success">Birthday added for Alice Smith: 20.05.1985</div>
               <div class="output">
                 <span class="comment"># Додавання адреси</span>
               </div>
               <div class="output">
-                <span class="prompt">➜</span> <span class="yellow">Enter a command:</span> <span class="command">add-address "Alice Smith" "123 Main Street, Kyiv"</span>
+                <span class="prompt">➜</span> <span class="yellow">Enter a command:</span> <span class="command">set-address "Alice Smith" "123 Main Street, Kyiv"</span>
               </div>
               <div class="output success">Address added for Alice Smith: 123 Main Street, Kyiv</div>
               <div class="output">
@@ -2051,6 +2060,11 @@ tabulate==0.9.0    <span class="comment"># Форматування таблиц
                     <td><code>change "John Doe" 1234567890 0987654321</code></td>
                   </tr>
                   <tr>
+                    <td><span class="command-name">delete</span></td>
+                    <td data-uk="Видалити контакт" data-en="Delete contact">Видалити контакт</td>
+                    <td><code>delete "John Doe"</code></td>
+                  </tr>
+                  <tr>
                     <td><span class="command-name">phone</span></td>
                     <td data-uk="Показати телефон" data-en="Show phone">Показати телефон</td>
                     <td><code>phone "John Doe"</code></td>
@@ -2064,11 +2078,6 @@ tabulate==0.9.0    <span class="comment"># Форматування таблиц
                     <td><span class="command-name">search</span></td>
                     <td data-uk="Пошук контактів" data-en="Search contacts">Пошук контактів</td>
                     <td><code>search John</code></td>
-                  </tr>
-                  <tr>
-                    <td><span class="command-name">delete</span></td>
-                    <td data-uk="Видалити контакт" data-en="Delete contact">Видалити контакт</td>
-                    <td><code>delete "John Doe"</code></td>
                   </tr>
                 </tbody>
               </table>
@@ -2087,9 +2096,9 @@ tabulate==0.9.0    <span class="comment"># Форматування таблиц
                 </thead>
                 <tbody>
                   <tr>
-                    <td><span class="command-name">add-email</span></td>
-                    <td data-uk="Додати email" data-en="Add email">Додати email</td>
-                    <td><code>add-email "John Doe" john@example.com</code></td>
+                    <td><span class="command-name">set-email</span></td>
+                    <td data-uk="Встановити email" data-en="Set email">Встановити email</td>
+                    <td><code>set-email "John Doe" john@example.com</code></td>
                   </tr>
                   <tr>
                     <td><span class="command-name">show-email</span></td>
@@ -2118,14 +2127,19 @@ tabulate==0.9.0    <span class="comment"># Форматування таблиц
                 </thead>
                 <tbody>
                   <tr>
-                    <td><span class="command-name">add-birthday</span></td>
-                    <td data-uk="Додати день народження" data-en="Add birthday">Додати день народження</td>
-                    <td><code>add-birthday "John Doe" 15.03.1990</code></td>
+                    <td><span class="command-name">set-birthday</span></td>
+                    <td data-uk="Встановити день народження" data-en="Set birthday">Встановити день народження</td>
+                    <td><code>set-birthday "John Doe" 15.03.1990</code></td>
                   </tr>
                   <tr>
                     <td><span class="command-name">show-birthday</span></td>
                     <td data-uk="Показати день народження" data-en="Show birthday">Показати день народження</td>
                     <td><code>show-birthday "John Doe"</code></td>
+                  </tr>
+                  <tr>
+                    <td><span class="command-name">delete-birthday</span></td>
+                    <td data-uk="Видалити день народження" data-en="Delete birthday">Видалити день народження</td>
+                    <td><code>delete-birthday "John Doe"</code></td>
                   </tr>
                   <tr>
                     <td><span class="command-name">birthdays</span></td>
@@ -2149,19 +2163,19 @@ tabulate==0.9.0    <span class="comment"># Форматування таблиц
                 </thead>
                 <tbody>
                   <tr>
-                    <td><span class="command-name">add-address</span></td>
-                    <td data-uk="Додати адресу" data-en="Add address">Додати адресу</td>
-                    <td><code>add-address "John Doe" "123 Main St"</code></td>
+                    <td><span class="command-name">set-address</span></td>
+                    <td data-uk="Встановити адресу" data-en="Set address">Встановити адресу</td>
+                    <td><code>set-address "John Doe" "123 Main St"</code></td>
                   </tr>
                   <tr>
-                    <td><span class="command-name">change-address</span></td>
-                    <td data-uk="Змінити адресу" data-en="Change address">Змінити адресу</td>
-                    <td><code>change-address "John Doe" "456 New Ave"</code></td>
+                    <td><span class="command-name">show-address</span></td>
+                    <td data-uk="Показати адресу" data-en="Show address">Показати адресу</td>
+                    <td><code>show-address "John Doe"</code></td>
                   </tr>
                   <tr>
-                    <td><span class="command-name">remove-address</span></td>
+                    <td><span class="command-name">delete-address</span></td>
                     <td data-uk="Видалити адресу" data-en="Remove address">Видалити адресу</td>
-                    <td><code>remove-address "John Doe"</code></td>
+                    <td><code>delete-address "John Doe"</code></td>
                   </tr>
                 </tbody>
               </table>
@@ -2185,6 +2199,16 @@ tabulate==0.9.0    <span class="comment"># Форматування таблиц
                     <td><code>add-note "Call John" work important</code></td>
                   </tr>
                   <tr>
+                  <tr>
+                    <td><span class="command-name">edit-note</span></td>
+                    <td data-uk="Редагувати нотатку" data-en="Edit note">Редагувати нотатку</td>
+                    <td><code>edit-note 1 "Updated text" new-tag</code></td>
+                  </tr>
+                  <tr>
+                    <td><span class="command-name">delete-note</span></td>
+                    <td data-uk="Видалити нотатку" data-en="Delete note">Видалити нотатку</td>
+                    <td><code>delete-note 1</code></td>
+                  </tr>
                     <td><span class="command-name">list-notes</span></td>
                     <td data-uk="Список нотаток" data-en="List notes">Список нотаток</td>
                     <td><code>list-notes created a</code></td>
@@ -2198,16 +2222,6 @@ tabulate==0.9.0    <span class="comment"># Форматування таблиц
                     <td><span class="command-name">search-tags</span></td>
                     <td data-uk="Пошук за тегами" data-en="Search by tags">Пошук за тегами</td>
                     <td><code>search-tags work important</code></td>
-                  </tr>
-                  <tr>
-                    <td><span class="command-name">edit-note</span></td>
-                    <td data-uk="Редагувати нотатку" data-en="Edit note">Редагувати нотатку</td>
-                    <td><code>edit-note 1 "Updated text" new-tag</code></td>
-                  </tr>
-                  <tr>
-                    <td><span class="command-name">delete-note</span></td>
-                    <td data-uk="Видалити нотатку" data-en="Delete note">Видалити нотатку</td>
-                    <td><code>delete-note 1</code></td>
                   </tr>
                 </tbody>
               </table>
@@ -2229,6 +2243,11 @@ tabulate==0.9.0    <span class="comment"># Форматування таблиц
                     <td><span class="command-name">help/?</span></td>
                     <td data-uk="Допомога" data-en="Help">Допомога</td>
                     <td><code>help</code> або <code>help contacts</code></td>
+                  </tr>
+                  <tr>
+                    <td><span class="command-name">stats</span></td>
+                    <td data-uk="Статистика" data-en="Statistics">Статистика</td>
+                    <td><code>stats</code></td>
                   </tr>
                   <tr>
                     <td><span class="command-name">exit/close</span></td>
@@ -2538,12 +2557,9 @@ graph TB
               </div>
               <div class="mermaid" id="class-mermaid">
 classDiagram
-    class Field {
-        +value: any
-        +__init__(value)
-        +__str__()
-    }
+    direction TB
     
+    %% Field Subclasses (inheritance tree) - defined first
     class Name {
         +value: str
     }
@@ -2568,6 +2584,7 @@ classDiagram
         +validate(address)
     }
     
+    %% Record uses Field subclasses
     class Record {
         +name: Name
         +phones: List~Phone~
@@ -2580,10 +2597,10 @@ classDiagram
         +add_email(email)
         +add_birthday(birthday)
         +add_address(address)
-        +edit_address(address)
         +remove_address()
     }
     
+    %% AddressBook uses Record
     class AddressBook {
         +data: dict
         +add_record(record)
@@ -2595,6 +2612,7 @@ classDiagram
         +get_upcoming_birthdays(days)
     }
     
+    %% Note entity
     class Note {
         -_uuid: str
         +text: str
@@ -2606,6 +2624,7 @@ classDiagram
         +edit_tags(tags)
     }
     
+    %% NoteBook uses Note
     class NoteBook {
         +notes: dict
         +add_note(note)
@@ -2615,11 +2634,21 @@ classDiagram
         +search_by_tags(tags)
     }
     
-    Field <|-- Name
-    Field <|-- Phone
-    Field <|-- Email
-    Field <|-- Birthday
-    Field <|-- Address
+    %% Base Field Class - defined last to appear at bottom
+    class Field {
+        +value: any
+        +__init__(value)
+        +__str__()
+    }
+    
+    %% Inheritance relationships (Field hierarchy) - connections defined last
+    Name --|> Field
+    Phone --|> Field
+    Email --|> Field
+    Birthday --|> Field
+    Address --|> Field
+    
+    %% Composition relationships
     Record *-- Name
     Record *-- Phone
     Record o-- Email
@@ -2745,27 +2774,27 @@ classDiagram
           <div class="statistics-container">
             <div class="stat-card">
               <div class="stat-icon">🔤</div>
-              <div class="stat-value">374,756</div>
-              <div class="stat-label" data-uk="Символів коду" data-en="Characters of code">Символів коду</div>
+              <div class="stat-value">274,977</div>
+              <div class="stat-label" data-uk="Символів" data-en="Characters">Символів</div>
             </div>
             <div class="stat-card">
               <div class="stat-icon">✏️</div>
-              <div class="stat-value">10,867</div>
+              <div class="stat-value">8,145</div>
               <div class="stat-label" data-uk="Строк коду" data-en="Lines of code">Строк коду</div>
             </div>
             <div class="stat-card">
               <div class="stat-icon">📄</div>
-              <div class="stat-value">47</div>
+              <div class="stat-value">48</div>
               <div class="stat-label" data-uk="Файлів" data-en="Files">Файлів</div>
             </div>
             <div class="stat-card">
-              <div class="stat-icon">🗂️</div>
-              <div class="stat-value">10</div>
-              <div class="stat-label" data-uk="Папок" data-en="Folders">Папок</div>
+              <div class="stat-icon">🔀</div>
+              <div class="stat-value">22</div>
+              <div class="stat-label" data-uk="Пул реквестів" data-en="Pull Requests">Pull Requests</div>
             </div>
             <div class="stat-card">
               <div class="stat-icon">💾</div>
-              <div class="stat-value">16</div>
+              <div class="stat-value">73</div>
               <div class="stat-label" data-uk="Комітів" data-en="Commits">Комітів</div>
             </div>
             <div class="stat-card">
@@ -2775,7 +2804,7 @@ classDiagram
             </div>
             <div class="stat-card">
               <div class="stat-icon">📞</div>
-              <div class="stat-value">5</div>
+              <div class="stat-value">6</div>
               <div class="stat-label" data-uk="Мітингів (дзвінків)" data-en="Meetings (calls)">Мітингів (дзвінків)</div>
             </div>
             <div class="stat-card">
@@ -2785,7 +2814,7 @@ classDiagram
             </div>
             <div class="stat-card">
               <div class="stat-icon">🍺</div>
-              <div class="stat-value">127</div>
+              <div class="stat-value">149</div>
               <div class="stat-label" data-uk="Чашок кави" data-en="Cups of coffee">Чашок кави</div>
             </div>
           </div>
@@ -2984,13 +3013,14 @@ classDiagram
         mermaidEl.style.transformOrigin = "top left";
       }
 
-      // Pan functionality for diagrams
+      // Pan functionality for diagrams (improved with transform)
       function initDiagramPan(diagramId) {
         const wrapper = document.getElementById(diagramId);
-        if (!wrapper) return;
+        const mermaidEl = wrapper ? wrapper.querySelector(".mermaid") : null;
+        if (!wrapper || !mermaidEl) return;
 
         let isDragging = false;
-        let startX, startY, scrollLeft, scrollTop;
+        let startX, startY, initialX, initialY;
 
         wrapper.addEventListener("mousedown", (e) => {
           if (
@@ -3002,36 +3032,40 @@ classDiagram
           }
           isDragging = true;
           wrapper.classList.add("dragging");
-          startX = e.pageX - wrapper.offsetLeft;
-          startY = e.pageY - wrapper.offsetTop;
-          scrollLeft = wrapper.scrollLeft;
-          scrollTop = wrapper.scrollTop;
+          wrapper.style.cursor = "grabbing";
+          startX = e.clientX;
+          startY = e.clientY;
+          const data = diagramZoomData[diagramId];
+          initialX = data.x;
+          initialY = data.y;
           e.preventDefault();
         });
 
         wrapper.addEventListener("mouseleave", () => {
           isDragging = false;
           wrapper.classList.remove("dragging");
+          wrapper.style.cursor = "grab";
         });
 
         wrapper.addEventListener("mouseup", () => {
           isDragging = false;
           wrapper.classList.remove("dragging");
+          wrapper.style.cursor = "grab";
         });
 
         wrapper.addEventListener("mousemove", (e) => {
           if (!isDragging) return;
           e.preventDefault();
-          const x = e.pageX - wrapper.offsetLeft;
-          const y = e.pageY - wrapper.offsetTop;
-          const walkX = (x - startX) * 2;
-          const walkY = (y - startY) * 2;
-          wrapper.scrollLeft = scrollLeft - walkX;
-          wrapper.scrollTop = scrollTop - walkY;
+          const data = diagramZoomData[diagramId];
+          const deltaX = e.clientX - startX;
+          const deltaY = e.clientY - startY;
+          data.x = initialX + deltaX;
+          data.y = initialY + deltaY;
+          updateDiagramTransform(diagramId);
         });
 
         // Touch support for mobile
-        let touchStartX, touchStartY, touchScrollLeft, touchScrollTop;
+        let touchStartX, touchStartY, touchInitialX, touchInitialY;
 
         wrapper.addEventListener("touchstart", (e) => {
           if (
@@ -3041,26 +3075,30 @@ classDiagram
           ) {
             return;
           }
-          touchStartX = e.touches[0].pageX - wrapper.offsetLeft;
-          touchStartY = e.touches[0].pageY - wrapper.offsetTop;
-          touchScrollLeft = wrapper.scrollLeft;
-          touchScrollTop = wrapper.scrollTop;
+          if (e.touches.length === 1) {
+            touchStartX = e.touches[0].clientX;
+            touchStartY = e.touches[0].clientY;
+            const data = diagramZoomData[diagramId];
+            touchInitialX = data.x;
+            touchInitialY = data.y;
+          }
         });
 
         wrapper.addEventListener("touchmove", (e) => {
-          if (!touchStartX || !touchStartY) return;
-          e.preventDefault();
-          const x = e.touches[0].pageX - wrapper.offsetLeft;
-          const y = e.touches[0].pageY - wrapper.offsetTop;
-          const walkX = (x - touchStartX) * 2;
-          const walkY = (y - touchStartY) * 2;
-          wrapper.scrollLeft = touchScrollLeft - walkX;
-          wrapper.scrollTop = touchScrollTop - walkY;
+          if (e.touches.length === 1 && touchStartX !== undefined && touchStartY !== undefined) {
+            e.preventDefault();
+            const data = diagramZoomData[diagramId];
+            const deltaX = e.touches[0].clientX - touchStartX;
+            const deltaY = e.touches[0].clientY - touchStartY;
+            data.x = touchInitialX + deltaX;
+            data.y = touchInitialY + deltaY;
+            updateDiagramTransform(diagramId);
+          }
         });
 
         wrapper.addEventListener("touchend", () => {
-          touchStartX = null;
-          touchStartY = null;
+          touchStartX = undefined;
+          touchStartY = undefined;
         });
 
         // Mouse wheel zoom
