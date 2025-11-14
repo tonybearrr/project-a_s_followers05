@@ -44,7 +44,7 @@ def detect_command(user_command):
     if is_command_found:
         return (user_command, True)
 
-    if suggestions := get_close_matches(user_command, Command, n=4, cutoff=0.5):
+    if suggestions := get_close_matches(user_command, Command, n=3, cutoff=0.5):
         if suggestions and len(suggestions) == 1:
             print(f"It seems you've meant: '{suggestions[0]}' command. Apply auto-correction.")
             return (suggestions[0], True)
