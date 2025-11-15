@@ -162,19 +162,19 @@ def delete_contact(args, book: AddressBook):
         str: Success message or error message
     """
     if len(args) < 1:
-        return f"❌ Error: {Fore.RED}[{Command.DELETE_CONTACT}]{Style.RESET_ALL} command requires a {Fore.CYAN}'name'{Style.RESET_ALL}."
+        return f"❌ Error: {Fore.RED}[{Command.DELETE_CONTACT}]{Style.RESET_ALL} command requires a {Fore.CYAN}name{Style.RESET_ALL}."
 
     name = args[0]
     record = book.find(name)
 
     if not record:
-        return f"❌ Contact {Fore.CYAN}'{name}'{Style.RESET_ALL} not found."
+        return f"❌ Contact {Fore.CYAN}{name}{Style.RESET_ALL} not found."
 
     if not confirm_delete("contact", name):
-        return "❌ Deletion cancelled."
+        return f"❌ {Style.DIM}Deletion cancelled.{Style.RESET_ALL}"
 
     book.delete(name)
-    return f"✅ Contact {Fore.CYAN}'{name}'{Style.RESET_ALL} successfully deleted."
+    return f"✅ Contact {Fore.CYAN}{name}{Style.RESET_ALL} successfully deleted."
 
 
 @input_error
@@ -191,16 +191,16 @@ def add_birthday(args, book: AddressBook):
     """
     if len(args) < 2:
         return (
-            f"❌ Error: {Fore.RED}[{Command.ADD_BIRTHDAY}]{Style.RESET_ALL} command requires a {Fore.CYAN}'name'{Style.RESET_ALL} and "
+            f"❌ Error: {Fore.RED}[{Command.SET_BIRTHDAY}]{Style.RESET_ALL} command requires a {Fore.CYAN}name{Style.RESET_ALL} and "
             f"a birthday {Fore.MAGENTA}'{Birthday.DATE_FORMAT_DISPLAY}'{Style.RESET_ALL}."
         )
 
     name, birthday, *_ = args
     record = book.find(name)
     if not record:
-        return f"❌ Contact {Fore.CYAN}'{name}'{Style.RESET_ALL} not found."
+        return f"❌ Contact {Fore.CYAN}{name}{Style.RESET_ALL} not found."
     record.add_birthday(birthday)
-    return f"✅ Birthday added for {Fore.CYAN}'{name}'{Style.RESET_ALL}: {Fore.MAGENTA}'{birthday}'{Style.RESET_ALL}"
+    return f"✅ Birthday added for {Fore.CYAN}{name}{Style.RESET_ALL}: {Fore.MAGENTA}{birthday}{Style.RESET_ALL}"
 
 
 @input_error
@@ -216,16 +216,41 @@ def show_birthday(args, book: AddressBook):
         str: Birthday information or error message
     """
     if len(args) < 1:
-        return f"❌ Error: {Fore.RED}[{Command.SHOW_BIRTHDAY}]{Style.RESET_ALL} command requires a {Fore.CYAN}'name'{Style.RESET_ALL}."
+        return f"❌ Error: {Fore.RED}[{Command.SHOW_BIRTHDAY}]{Style.RESET_ALL} command requires a {Fore.CYAN}name{Style.RESET_ALL}."
     name = args[0]
     if record := book.find(name):
         return (
-            f"🎁 {Fore.CYAN}'{name}'{Style.RESET_ALL}'s birthday is {Fore.MAGENTA}'{record.birthday}'{Style.RESET_ALL}"
+            f"🎁 {Fore.CYAN}{name}'s{Style.RESET_ALL} birthday is {Fore.MAGENTA}{record.birthday}{Style.RESET_ALL}"
             if record.birthday
-            else f"❌ {Fore.CYAN}'{name}'{Style.RESET_ALL} has no birthday set."
+            else f"❌ {Fore.CYAN}{name}{Style.RESET_ALL} has no birthday set."
         )
     else:
-        return f"❌ Contact {Fore.CYAN}'{name}'{Style.RESET_ALL} not found."
+        return f"❌ Contact {Fore.CYAN}{name}{Style.RESET_ALL} not found."
+
+
+@input_error
+def delete_birthday(args, book: AddressBook):
+    """
+    Delete birthday from a contact.
+
+    Args:
+        args (list): Command arguments [name]
+        book (AddressBook): Address book instance
+
+    Returns:
+        str: Success message or error message
+    """
+    if len(args) < 1:
+        return f"❌ Error: {Fore.RED}[{Command.DELETE_BIRTHDAY}]{Style.RESET_ALL} command requires a {Fore.CYAN}name{Style.RESET_ALL}."
+
+    name = args[0]
+    record = book.find(name)
+    if not record:
+        return f"❌ Contact {Fore.CYAN}{name}{Style.RESET_ALL} not found."
+    if not record.birthday:
+        return f"❌ Contact {Fore.CYAN}{name}{Style.RESET_ALL} has no {Fore.MAGENTA}birthday{Style.RESET_ALL} to delete."
+    record.delete_birthday()
+    return f"✅ Birthday deleted for contact {Fore.CYAN}{name}{Style.RESET_ALL}."
 
 
 @input_error
@@ -241,16 +266,16 @@ def add_email(args, book: AddressBook):
         str: Success message or error message
     """
     if len(args) < 2:
-        return f"❌ Error: {Fore.RED}[{Command.ADD_EMAIL}]{Style.RESET_ALL} command requires a {Fore.CYAN}'name'{Style.RESET_ALL} and an {Fore.YELLOW}'email'{Style.RESET_ALL}."
+        return f"❌ Error: {Fore.RED}[{Command.SET_EMAIL}]{Style.RESET_ALL} command requires a {Fore.CYAN}name{Style.RESET_ALL} and an {Fore.YELLOW}email{Style.RESET_ALL}."
 
     name, email = args
     record = book.find(name)
     if not record:
-        return f"❌ Contact {Fore.CYAN}'{name}'{Style.RESET_ALL} not found."
+        return f"❌ Contact {Fore.CYAN}{name}{Style.RESET_ALL} not found."
     old_email = record.email.value if record.email else None
     record.add_email(email)
     status = "updated" if old_email else "added"
-    return f"✅ Email {Fore.YELLOW}'{email}'{Style.RESET_ALL} {status} for contact {Fore.CYAN}'{name}'{Style.RESET_ALL}."
+    return f"✅ Email {Fore.YELLOW}{email}{Style.RESET_ALL} {status} for contact {Fore.CYAN}{name}{Style.RESET_ALL}."
 
 
 @input_error
@@ -266,16 +291,16 @@ def delete_email(args, book: AddressBook):
         str: Success message or error message
     """
     if len(args) < 1:
-        return f"❌ Error: {Fore.RED}[{Command.DELETE_EMAIL}]{Style.RESET_ALL} command requires a {Fore.CYAN}'name'{Style.RESET_ALL}."
+        return f"❌ Error: {Fore.RED}[{Command.DELETE_EMAIL}]{Style.RESET_ALL} command requires a {Fore.CYAN}name{Style.RESET_ALL}."
 
     name = args[0]
     record = book.find(name)
     if not record:
-        return f"❌ Contact {Fore.CYAN}'{name}'{Style.RESET_ALL} not found."
+        return f"❌ Contact {Fore.CYAN}{name}{Style.RESET_ALL} not found."
     if not record.email:
-        return f"❌ Contact {Fore.CYAN}'{name}'{Style.RESET_ALL} has no {Fore.YELLOW}'email'{Style.RESET_ALL} to delete."
+        return f"❌ Contact {Fore.CYAN}{name}{Style.RESET_ALL} has no {Fore.YELLOW}email{Style.RESET_ALL} to delete."
     record.delete_email()
-    return f"✅ Email successfully removed from contact {Fore.CYAN}'{name}'{Style.RESET_ALL}."
+    return f"✅ Email successfully removed from contact {Fore.CYAN}{name}{Style.RESET_ALL}."
 
 
 @input_error
@@ -291,14 +316,14 @@ def show_email(args, book: AddressBook):
         str: Contact name and email address or error message
     """
     if len(args) < 1:
-        return f"❌ Error: {Fore.RED}[{Command.SHOW_EMAIL}]{Style.RESET_ALL} command requires a {Fore.CYAN}'name'{Style.RESET_ALL}."
+        return f"❌ Error: {Fore.RED}[{Command.SHOW_EMAIL}]{Style.RESET_ALL} command requires a {Fore.CYAN}name{Style.RESET_ALL}."
 
     name = args[0]
     record = book.find(name)
     if not record:
-        return f"❌ Contact {Fore.CYAN}'{name}'{Style.RESET_ALL} not found."
+        return f"❌ Contact {Fore.CYAN}{name}{Style.RESET_ALL} not found."
     email = record.email.value if record.email else "no email"
-    return f"📧 {Fore.YELLOW}'{email}'{Style.RESET_ALL} - {Fore.CYAN}'{name}'{Style.RESET_ALL} "
+    return f"📧 {Fore.YELLOW}{email}{Style.RESET_ALL} - {Fore.CYAN}{name}{Style.RESET_ALL} "
 
 
 @input_error
@@ -317,7 +342,7 @@ def show_upcoming_birthdays(args, book: AddressBook):
     if days_ahead is None:
         return (
             f"❌ Error: Please input valid number for "
-            f"{Fore.RED}'{Command.SHOW_UPCOMING_BIRTHDAYS}'{Style.RESET_ALL} command"
+            f"{Fore.RED}{Command.SHOW_UPCOMING_BIRTHDAYS}{Style.RESET_ALL} command"
         )
 
     upcoming = book.get_upcoming_birthdays(days_ahead=days_ahead)
@@ -392,7 +417,7 @@ def _format_upcoming_birthday(name: str, birthday_str: str,
 @input_error
 def add_address(args, book: AddressBook):
     """
-    Add address for a contact.
+    Add or update address for a contact.
 
     Args:
         args (list): Command arguments [name, address]
@@ -402,37 +427,17 @@ def add_address(args, book: AddressBook):
         str: Success message or error message
     """
     if len(args) < 2:
-        return f"❌ Error: {Fore.RED}[{Command.ADD_ADDRESS}]{Style.RESET_ALL} command requires a {Fore.CYAN}'name'{Style.RESET_ALL} and an {Fore.BLUE}'address'{Style.RESET_ALL}."
+        return f"❌ Error: {Fore.RED}[{Command.SET_ADDRESS}]{Style.RESET_ALL} command requires a {Fore.CYAN}name{Style.RESET_ALL} and an {Fore.BLUE}address{Style.RESET_ALL}."
+
     name, *address_parts = args
     address = " ".join(address_parts)
     record = book.find(name)
     if not record:
-        return f"❌ Contact {Fore.CYAN}'{name}'{Style.RESET_ALL} not found."
+        return f"❌ Contact {Fore.CYAN}{name}{Style.RESET_ALL} not found."
+    old_address = record.address.value if record.address else None
     record.add_address(address)
-    return f"✅ Address {Fore.BLUE}'{address}'{Style.RESET_ALL} for contact {Fore.CYAN}'{name}'{Style.RESET_ALL} added successfully."
-
-@input_error
-def edit_address(args, book: AddressBook):
-    """
-    Update address for a contact.
-
-    Args:
-        args (list): Command arguments [name, address]
-        book (AddressBook): Address book instance
-
-    Returns:
-        str: Success message or error message
-    """
-    if len(args) < 2:
-        return f"❌ Error: {Fore.RED}[{Command.CHANGE_ADDRESS}]{Style.RESET_ALL} command requires a {Fore.CYAN}'name'{Style.RESET_ALL} and a new {Fore.BLUE}'address'{Style.RESET_ALL}."
-    name, *address_parts = args
-    address = " ".join(address_parts)
-    record = book.find(name)
-    if not record:
-        return f"❌ Contact {Fore.CYAN}'{name}'{Style.RESET_ALL} not found."
-    record.edit_address(address)
-    return f"✅ Address {Fore.BLUE}'{address}'{Style.RESET_ALL} for contact {Fore.CYAN}'{name}'{Style.RESET_ALL} changed successfully."
-
+    status = "updated" if old_address else "added"
+    return f"✅ Address {Fore.BLUE}{address}{Style.RESET_ALL} {status} for contact {Fore.CYAN}{name}{Style.RESET_ALL}."
 
 @input_error
 def remove_address(args, book: AddressBook):
@@ -447,14 +452,40 @@ def remove_address(args, book: AddressBook):
         str: Success message or error message
     """
     if len(args) < 1:
-        return f"❌ Error: {Fore.RED}[{Command.DELETE_ADDRESS}]{Style.RESET_ALL} command requires a {Fore.CYAN}'name'{Style.RESET_ALL}."
+        return f"❌ Error: {Fore.RED}[{Command.DELETE_ADDRESS}]{Style.RESET_ALL} command requires a {Fore.CYAN}name{Style.RESET_ALL}."
     name = args[0]
     record = book.find(name)
     if not record:
         print(f"error {name}")
-        return f"❌ Contact {Fore.CYAN}'{name}'{Style.RESET_ALL} not found."
+        return f"❌ Contact {Fore.CYAN}{name}{Style.RESET_ALL} not found."
     record.remove_address()
-    return f"✅ Address successfully removed for contact {Fore.CYAN}'{name}'{Style.RESET_ALL}."
+    return f"✅ Address successfully removed for contact {Fore.CYAN}{name}{Style.RESET_ALL}."
+
+
+@input_error
+def show_address(args, book: AddressBook):
+    """
+    Show address for a contact.
+
+    Args:
+        args (list): Command arguments [name]
+        book (AddressBook): Address book instance
+
+    Returns:
+        str: Address information or error message
+    """
+    if len(args) < 1:
+        return f"❌ Error: {Fore.RED}[{Command.SHOW_ADDRESS}]{Style.RESET_ALL} command requires a {Fore.CYAN}name{Style.RESET_ALL}."
+    name = args[0]
+    if record := book.find(name):
+        return (
+            f"📍 {Fore.CYAN}{name}'s{Style.RESET_ALL} address is {Fore.BLUE}{record.address}{Style.RESET_ALL}"
+            if record.address
+            else f"❌ {Fore.CYAN}{name}{Style.RESET_ALL} has no {Fore.BLUE}address{Style.RESET_ALL} set."
+        )
+    else:
+        return f"❌ Contact {Fore.CYAN}{name}{Style.RESET_ALL} not found."
+
 
 def parse_tags(tags_input):
     """
@@ -499,7 +530,7 @@ def add_note(args, notebook: NoteBook):
         str: Success message with note number
     """
     if not args:
-        raise ValueError(f"{Fore.RED}[{Command.ADD_NOTE}]{Style.RESET_ALL} command requires a {Fore.CYAN}'text'{Style.RESET_ALL}.")
+        raise ValueError(f"{Fore.RED}[{Command.ADD_NOTE}]{Style.RESET_ALL} command requires a {Fore.CYAN}text{Style.RESET_ALL}.")
 
     text = args[0]
     tags = parse_tags(args[1:]) if len(args) > 1 else []
@@ -536,18 +567,20 @@ def search_notes(args, notebook: NoteBook):
     if not results:
         return (
             f"❌ No {Fore.GREEN}notes{Style.RESET_ALL} found matching "
-            f"{Fore.CYAN}'{query}'{Style.RESET_ALL}."
+            f"{Fore.CYAN}{query}{Style.RESET_ALL}."
         )
 
     sort_by = "created"
     reverse = True  # newest first
     sorted_results = sorted(results, key=lambda n: n.created_at, reverse=reverse)
 
-    all_notes = notebook.get_all_notes(sort_by=sort_by, reverse=reverse)
-    note_to_number = {note: i + 1 for i, note in enumerate(all_notes)}
+    # Get note numbers based on default sorting (by creation date, ascending)
+    # This ensures note IDs remain consistent regardless of current sort order
+    all_notes_default = notebook.get_all_notes(sort_by="created", reverse=False)
+    note_to_number = {note: i + 1 for i, note in enumerate(all_notes_default)}
     sorted_results_with_numbers = sorted(
         sorted_results,
-        key=lambda n: note_to_number.get(n, len(all_notes) + 1)
+        key=lambda n: note_to_number.get(n, len(all_notes_default) + 1)
     )
 
     header = (
@@ -601,12 +634,14 @@ def search_notes_by_tags(args, notebook: NoteBook):
     reverse = True
     sorted_results = sorted(results, key=lambda n: n.created_at, reverse=reverse)
 
-    all_notes = notebook.get_all_notes(sort_by=sort_by, reverse=reverse)
-    note_to_number = {note: i + 1 for i, note in enumerate(all_notes)}
+    # Get note numbers based on default sorting (by creation date, ascending)
+    # This ensures note IDs remain consistent regardless of current sort order
+    all_notes_default = notebook.get_all_notes(sort_by="created", reverse=False)
+    note_to_number = {note: i + 1 for i, note in enumerate(all_notes_default)}
 
     sorted_results_with_numbers = sorted(
         sorted_results,
-        key=lambda n: note_to_number.get(n, len(all_notes) + 1)
+        key=lambda n: note_to_number.get(n, len(all_notes_default) + 1)
     )
 
     tags_str = ", ".join(tags)
@@ -647,10 +682,11 @@ def edit_note(args, notebook: NoteBook):
     new_tags = parse_tags(args[2:]) if len(args) > 2 else []
 
     # Try to find note by number first
+    # Use standard sorting (created, ascending) to match table numbering
     note = None
     if identifier.isdigit():
         note_number = int(identifier)
-        note = notebook.get_note_by_number(note_number, sort_by="created")
+        note = notebook.get_note_by_number(note_number, sort_by="created", reverse=False)
     else:
         # Search by text fragment
         note = notebook.find_note_by_text(identifier)
@@ -685,12 +721,13 @@ def delete_note(args, notebook: NoteBook):
     identifier = args[0]
 
     # Try to find note by number first
+    # Use standard sorting (created, ascending) to match table numbering
     note = None
     if identifier.isdigit():
         note_number = int(identifier)
-        note_id = notebook.get_note_id_by_number(note_number, sort_by="created")
+        note_id = notebook.get_note_id_by_number(note_number, sort_by="created", reverse=False)
         if note_id:
-            note = notebook.get_note_by_number(note_number, sort_by="created")
+            note = notebook.get_note_by_number(note_number, sort_by="created", reverse=False)
     else:
         # Search by text fragment
         note = notebook.find_note_by_text(identifier)
@@ -768,13 +805,24 @@ def list_notes(args, notebook: NoteBook):
 
     sort_direction = "descending" if actual_reverse else "ascending"
     sort_info = f"{sort_labels.get(sort_by, sort_by)} ({sort_direction})"
+
+    # Get note numbers based on default sorting (by creation date, ascending)
+    # This ensures note IDs remain consistent regardless of current sort order
+    all_notes_default = notebook.get_all_notes(sort_by="created", reverse=False)
+    note_to_number = {note: i + 1 for i, note in enumerate(all_notes_default)}
+
     header = (
         f"{_section_line(Fore.CYAN)}\n"
         f"{Fore.CYAN}{Style.BRIGHT}All notes{Style.RESET_ALL} "
         f"{Fore.YELLOW}(sorted {sort_info}){Style.RESET_ALL}\n"
         f"{_section_line(Fore.CYAN)}\n"
     )
-    table = format_notes_table(notes, sort_by=sort_by, reverse=actual_reverse)
+    table = format_notes_table(
+        notes, 
+        sort_by=sort_by, 
+        reverse=actual_reverse,
+        note_numbers=note_to_number
+    )
     return header + table
 
 

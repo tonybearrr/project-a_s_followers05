@@ -143,9 +143,15 @@ class Record:
         """
         self.birthday = Birthday(birthday)
 
+    def delete_birthday(self):
+        """
+        Delete birthday from the contact.
+        """
+        self.birthday = None
+
     def add_address(self, address):
         """
-        Add address for the contact.
+        Add or update address for the contact.
 
         Args:
             address (str): Address to add or update
@@ -154,18 +160,6 @@ class Record:
             ValueError: If address is empty or contains only whitespace
         """
         self.address = Address(address)
-
-    def edit_address(self, new_address):
-        """
-        Edit the existing address for the contact.
-
-        Args:
-            new_address (str): New address to set
-
-        Raises:
-            ValueError: If new address is empty or contains only whitespace
-        """
-        self.address = Address(new_address)
 
     def remove_address(self):
         """

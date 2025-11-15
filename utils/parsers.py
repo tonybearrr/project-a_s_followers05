@@ -1,5 +1,6 @@
 import shlex
 from difflib import get_close_matches
+from colorama import Fore, Style
 from core.commands import Command
 
 
@@ -43,13 +44,13 @@ def detect_command(user_command):
     if is_command_found:
         return (user_command, True)
 
-    if suggestions := get_close_matches(user_command, Command, n=3, cutoff=0.6):
+    if suggestions := get_close_matches(user_command, Command, n=3, cutoff=0.5):
         if suggestions and len(suggestions) == 1:
             print(f"It seems you've meant: '{suggestions[0]}' command. Apply auto-correction.")
             return (suggestions[0], True)
         else:
-            print(f"Unknown command '{user_command}'. Did you mean: {', '.join(suggestions)}?")
+            print(f"❔ Unknown command {Fore.CYAN}{user_command}{Style.RESET_ALL}. Did you mean: {Fore.YELLOW}{', '.join(suggestions)}{Style.RESET_ALL}?")
             return (None, False)
     else:
-        print(f"Unknown command '{user_command}'. Use '{Command.HELP}' to review available commands.")
+        print(f"⚠️  Unknown command {Fore.CYAN}{user_command}{Style.RESET_ALL}. Use {Fore.YELLOW}{Command.HELP}{Style.RESET_ALL} to review available commands.")
         return (None, False)
