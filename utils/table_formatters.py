@@ -83,7 +83,7 @@ def format_notes_table(notes, sort_by=None, reverse=True, note_numbers=None):
 
     # Define column headers with colors
     column_configs = [
-        {"name": "#", "color": Fore.GREEN},
+        {"name": "ID", "color": Fore.GREEN},
         {"name": "Text", "color": Fore.WHITE, "sort_key": "text"},
         {"name": "Tags", "color": Fore.CYAN, "sort_key": "tags"},
         {"name": "Created", "color": Fore.BLUE, "sort_key": "created"},

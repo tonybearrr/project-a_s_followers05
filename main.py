@@ -221,7 +221,13 @@ def run_main_loop(book, notebook):
                 print_interrupted_message()
                 break
 
-            command, *args = parse_input(user_input)
+            try:
+                command, *args = parse_input(user_input)
+            except ValueError:
+                # Handle unclosed quotes error from shlex.split()
+                print(f"❌ Error: {Fore.RED}Unclosed quotes detected.{Style.RESET_ALL} Please check your input.")
+                continue
+
             command, is_command_recognized = detect_command(command)
             if not is_command_recognized:
                 continue
@@ -231,9 +237,16 @@ def run_main_loop(book, notebook):
             if is_exit:
                 save_all_data()
                 break
-    except KeyboardInterrupt:
-        # Additional handling in case Ctrl+C is pressed during command execution
-        print_interrupted_message()
+    except (KeyboardInterrupt, EOFError, Exception) as e:
+        # Handle any unexpected errors during command execution
+        if isinstance(e, (KeyboardInterrupt, EOFError)):
+            print_interrupted_message()
+        else:
+            print(f"\n{Fore.RED}⚠️  Unexpected error occurred: {e}{Style.RESET_ALL}")
+            print(f"{Fore.GREEN}💾 Saving data...{Style.RESET_ALL}")
+    finally:
+        # Always save data before exiting
+        save_all_data()
 
 
 if __name__ == "__main__":

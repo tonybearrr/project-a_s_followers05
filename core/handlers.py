@@ -574,11 +574,13 @@ def search_notes(args, notebook: NoteBook):
     reverse = True  # newest first
     sorted_results = sorted(results, key=lambda n: n.created_at, reverse=reverse)
 
-    all_notes = notebook.get_all_notes(sort_by=sort_by, reverse=reverse)
-    note_to_number = {note: i + 1 for i, note in enumerate(all_notes)}
+    # Get note numbers based on default sorting (by creation date, ascending)
+    # This ensures note IDs remain consistent regardless of current sort order
+    all_notes_default = notebook.get_all_notes(sort_by="created", reverse=False)
+    note_to_number = {note: i + 1 for i, note in enumerate(all_notes_default)}
     sorted_results_with_numbers = sorted(
         sorted_results,
-        key=lambda n: note_to_number.get(n, len(all_notes) + 1)
+        key=lambda n: note_to_number.get(n, len(all_notes_default) + 1)
     )
 
     header = (
@@ -632,12 +634,14 @@ def search_notes_by_tags(args, notebook: NoteBook):
     reverse = True
     sorted_results = sorted(results, key=lambda n: n.created_at, reverse=reverse)
 
-    all_notes = notebook.get_all_notes(sort_by=sort_by, reverse=reverse)
-    note_to_number = {note: i + 1 for i, note in enumerate(all_notes)}
+    # Get note numbers based on default sorting (by creation date, ascending)
+    # This ensures note IDs remain consistent regardless of current sort order
+    all_notes_default = notebook.get_all_notes(sort_by="created", reverse=False)
+    note_to_number = {note: i + 1 for i, note in enumerate(all_notes_default)}
 
     sorted_results_with_numbers = sorted(
         sorted_results,
-        key=lambda n: note_to_number.get(n, len(all_notes) + 1)
+        key=lambda n: note_to_number.get(n, len(all_notes_default) + 1)
     )
 
     tags_str = ", ".join(tags)
@@ -678,10 +682,11 @@ def edit_note(args, notebook: NoteBook):
     new_tags = parse_tags(args[2:]) if len(args) > 2 else []
 
     # Try to find note by number first
+    # Use standard sorting (created, ascending) to match table numbering
     note = None
     if identifier.isdigit():
         note_number = int(identifier)
-        note = notebook.get_note_by_number(note_number, sort_by="created")
+        note = notebook.get_note_by_number(note_number, sort_by="created", reverse=False)
     else:
         # Search by text fragment
         note = notebook.find_note_by_text(identifier)
@@ -716,12 +721,13 @@ def delete_note(args, notebook: NoteBook):
     identifier = args[0]
 
     # Try to find note by number first
+    # Use standard sorting (created, ascending) to match table numbering
     note = None
     if identifier.isdigit():
         note_number = int(identifier)
-        note_id = notebook.get_note_id_by_number(note_number, sort_by="created")
+        note_id = notebook.get_note_id_by_number(note_number, sort_by="created", reverse=False)
         if note_id:
-            note = notebook.get_note_by_number(note_number, sort_by="created")
+            note = notebook.get_note_by_number(note_number, sort_by="created", reverse=False)
     else:
         # Search by text fragment
         note = notebook.find_note_by_text(identifier)
@@ -799,13 +805,24 @@ def list_notes(args, notebook: NoteBook):
 
     sort_direction = "descending" if actual_reverse else "ascending"
     sort_info = f"{sort_labels.get(sort_by, sort_by)} ({sort_direction})"
+
+    # Get note numbers based on default sorting (by creation date, ascending)
+    # This ensures note IDs remain consistent regardless of current sort order
+    all_notes_default = notebook.get_all_notes(sort_by="created", reverse=False)
+    note_to_number = {note: i + 1 for i, note in enumerate(all_notes_default)}
+
     header = (
         f"{_section_line(Fore.CYAN)}\n"
         f"{Fore.CYAN}{Style.BRIGHT}All notes{Style.RESET_ALL} "
         f"{Fore.YELLOW}(sorted {sort_info}){Style.RESET_ALL}\n"
         f"{_section_line(Fore.CYAN)}\n"
     )
-    table = format_notes_table(notes, sort_by=sort_by, reverse=actual_reverse)
+    table = format_notes_table(
+        notes, 
+        sort_by=sort_by, 
+        reverse=actual_reverse,
+        note_numbers=note_to_number
+    )
     return header + table
 
 
