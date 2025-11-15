@@ -235,7 +235,6 @@ def run_main_loop(book, notebook):
             output, is_exit = get_output_by_command(command, args, book, notebook)
             print(output)
             if is_exit:
-                save_all_data()
                 break
     except (KeyboardInterrupt, EOFError, Exception) as e:
         # Handle any unexpected errors during command execution
